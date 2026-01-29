@@ -49,31 +49,106 @@ class DrawPDF {
             throw new Error('DrawPDF: CKEditor not loaded. Please include CKEditor script before using DrawPDF.');
         }
 
-        // Default CKEditor config
+        // Default CKEditor config derived from src/main.js
         const defaultConfig = {
             toolbar: {
                 items: [
+                    // History
                     'undo', 'redo', '|',
+                    // Find
+                    'findAndReplace', '|',
+                    // Formatting
                     'heading', '|',
-                    'bold', 'italic', 'underline', '|',
-                    'fontFamily', 'fontSize', 'fontColor', '|',
+                    'bold', 'italic', 'underline', 'strikethrough',
+                    'subscript', 'superscript', 'code', 'removeFormat', '|',
+                    // Font
+                    'fontFamily', 'fontSize', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
+                    // Alignment & Lists
                     'alignment', '|',
-                    'bulletedList', 'numberedList', '|',
-                    'insertTable', '|',
-                    'sourceEditing'
+                    'bulletedList', 'numberedList', 'todoList', '|',
+                    'outdent', 'indent', '|',
+                    // Insert
+                    'link', 'uploadImage', 'insertTable', 'blockQuote', 'codeBlock', '|',
+                    'horizontalLine', 'pageBreak', 'specialCharacters'
                 ],
                 shouldNotGroupWhenFull: true
             },
+            heading: {
+                options: [
+                    { model: 'paragraph', title: 'Paragraph', class: 'ck-heading_paragraph' },
+                    { model: 'heading1', view: 'h1', title: 'Heading 1' },
+                    { model: 'heading2', view: 'h2', title: 'Heading 2' },
+                    { model: 'heading3', view: 'h3', title: 'Heading 3' },
+                    { model: 'heading4', view: 'h4', title: 'Heading 4' },
+                    { model: 'heading5', view: 'h5', title: 'Heading 5' },
+                    { model: 'heading6', view: 'h6', title: 'Heading 6' }
+                ]
+            },
             fontSize: {
-                options: [10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36, 42, 48, 72],
+                options: [12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36, 42, 48, 72],
                 supportAllValues: true
             },
+            fontFamily: {
+                options: [
+                    'default',
+                    'Roboto, sans-serif',
+                    'Times New Roman, Times, serif',
+                    'Arial, Helvetica, sans-serif',
+                    'Georgia, serif',
+                    'Verdana, Geneva, sans-serif',
+                    'Courier New, Courier, monospace',
+                    'Tahoma, Geneva, sans-serif',
+                    'Trebuchet MS, sans-serif'
+                ],
+                supportAllValues: true
+            },
+            fontColor: {
+                colors: [
+                    { color: '#000000', label: 'Black' },
+                    { color: '#4d4d4d', label: 'Dark Gray' },
+                    { color: '#999999', label: 'Gray' },
+                    { color: '#e6e6e6', label: 'Light Gray' },
+                    { color: '#ffffff', label: 'White' },
+                    { color: '#e64c4c', label: 'Red' },
+                    { color: '#e6994c', label: 'Orange' },
+                    { color: '#e6e64c', label: 'Yellow' },
+                    { color: '#4ce64c', label: 'Green' },
+                    { color: '#4c4ce6', label: 'Blue' },
+                    { color: '#994ce6', label: 'Purple' }
+                ]
+            },
+            table: {
+                contentToolbar: [
+                    'tableColumn', 'tableRow', 'mergeTableCells',
+                    'tableProperties', 'tableCellProperties'
+                ]
+            },
+            image: {
+                toolbar: [
+                    'imageTextAlternative', 'toggleImageCaption',
+                    'imageStyle:inline', 'imageStyle:block', 'imageStyle:side',
+                    'linkImage'
+                ]
+            },
+            link: {
+                addTargetToExternalLinks: true,
+                defaultProtocol: 'https://'
+            },
+            placeholder: 'Soạn thảo văn bản ở đây...\n\nSử dụng {{tênBiến}} để chèn biến.',
             language: 'vi',
+            // Remove plugins that might cause issues
             removePlugins: [
+                // Premium plugins (require license)
                 'CKBox', 'CKFinder', 'EasyImage',
-                'RealTimeCollaborativeComments', 'RealTimeCollaborativeTrackChanges',
-                'Comments', 'TrackChanges', 'RevisionHistory',
-                'AIAssistant', 'AI', 'MultiLevelList',
+                'RealTimeCollaborativeComments', 'RealTimeCollaborativeTrackChanges', 'RealTimeCollaborativeRevisionHistory',
+                'PresenceList', 'Comments', 'TrackChanges', 'TrackChangesData', 'RevisionHistory',
+                'Pagination', 'WProofreader', 'MathType', 'SlashCommand', 'Template',
+                'DocumentOutline', 'FormatPainter', 'TableOfContents', 'PasteFromOfficeEnhanced', 'CaseChange',
+                // AI features (require license)
+                'AIAssistant', 'AI',
+                // Multi-level list (require license)
+                'MultiLevelList',
+                // Restricted editing (causes read-only mode)
                 'RestrictedEditingMode', 'StandardEditingMode'
             ]
         };
@@ -84,13 +159,21 @@ class DrawPDF {
         try {
             this.editor = await EditorClass.create(element, config);
 
-            // For DecoupledEditor, append toolbar if toolbar container provided
-            if (options.toolbarContainer && this.editor.ui?.view?.toolbar?.element) {
-                const toolbarEl = typeof options.toolbarContainer === 'string'
-                    ? document.querySelector(options.toolbarContainer)
-                    : options.toolbarContainer;
-                if (toolbarEl) {
-                    toolbarEl.appendChild(this.editor.ui.view.toolbar.element);
+            // For DecoupledEditor, handle toolbar
+            if (this.editor.ui?.view?.toolbar?.element) {
+                if (options.toolbarContainer) {
+                    // Case 1: User provided a container
+                    const toolbarEl = typeof options.toolbarContainer === 'string'
+                        ? document.querySelector(options.toolbarContainer)
+                        : options.toolbarContainer;
+                    if (toolbarEl) {
+                        toolbarEl.appendChild(this.editor.ui.view.toolbar.element);
+                    }
+                } else {
+                    // Case 2: Auto-insert before the editor element
+                    if (element instanceof HTMLElement && element.parentNode) {
+                        element.parentNode.insertBefore(this.editor.ui.view.toolbar.element, element);
+                    }
                 }
             }
 

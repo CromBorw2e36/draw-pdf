@@ -1,6 +1,6 @@
-import { jsPDF as k } from "jspdf";
+import { jsPDF as v } from "jspdf";
 import "jspdf-autotable";
-class N {
+class D {
   constructor() {
     this.inlineTags = ["b", "strong", "i", "em", "u", "s", "strike", "span"];
   }
@@ -185,7 +185,7 @@ const _ = {
 };
 class z {
   constructor() {
-    this.currentY = _.MARGIN_TOP, this.currentPage = 0, this.pages = [{ pageNumber: 1, elements: [] }], this.tokenizer = new N();
+    this.currentY = _.MARGIN_TOP, this.currentPage = 0, this.pages = [{ pageNumber: 1, elements: [] }], this.tokenizer = new D();
   }
   /**
    * Decode HTML entities in text
@@ -803,9 +803,9 @@ class w {
     return Array.from(i);
   }
 }
-class v {
+class N {
   constructor() {
-    this.doc = new k(), this.currentY = 20, this.lineHeight = 1, this.pageHeight = this.doc.internal.pageSize.height, this.pageWidth = this.doc.internal.pageSize.width, this.margins = { left: 15, right: 15, top: 20, bottom: 20 }, this.setupVietnameseFont();
+    this.doc = new v(), this.currentY = 20, this.lineHeight = 1, this.pageHeight = this.doc.internal.pageSize.height, this.pageWidth = this.doc.internal.pageSize.width, this.margins = { left: 15, right: 15, top: 20, bottom: 20 }, this.setupVietnameseFont();
   }
   // Thiết lập font tiếng Việt
   setupVietnameseFont() {
@@ -1462,7 +1462,7 @@ class v {
       } catch {
         this.doc.setFont("helvetica", "italic");
       }
-      const E = this._decodeHtmlEntities(n.nameTag), H = this.doc.getTextWidth(E), L = l - H / 2;
+      const E = this._decodeHtmlEntities(n.nameTag), I = this.doc.getTextWidth(E), L = l - I / 2;
       this._drawText(E, L, this.currentY + n.imageHeight / 2), this.doc.setTextColor(
         C[0] || 0,
         C[1] || 0,
@@ -1477,8 +1477,8 @@ class v {
       this.doc.setFont("helvetica", "bold");
     }
     this.doc.setTextColor(0, 0, 0);
-    const T = this._decodeHtmlEntities(t), W = this.doc.getTextWidth(T), D = l - W / 2;
-    return this._drawText(T, D, this.currentY), this.currentY += 15, this;
+    const T = this._decodeHtmlEntities(t), W = this.doc.getTextWidth(T), H = l - W / 2;
+    return this._drawText(T, H, this.currentY), this.currentY += 15, this;
   }
   // Thêm chữ ký từ file path (phương thức tiện lợi)
   async addSignatureFromFile(t, i, e, r = null, s = {}) {
@@ -2700,7 +2700,7 @@ class P {
    * @returns {JsPdfService} PDF service instance
    */
   render(t, i = {}) {
-    return this.pdfService = new v(), t.margins && (this.margins = { ...this.margins, ...t.margins }, this.contentWidth = this.pageWidth - this.margins.left - this.margins.right), t.pages.forEach((e, r) => {
+    return this.pdfService = new N(), t.margins && (this.margins = { ...this.margins, ...t.margins }, this.contentWidth = this.pageWidth - this.margins.left - this.margins.right), t.pages.forEach((e, r) => {
       r > 0 && this.pdfService.addNewPage(), this.pdfService.resetPosition(this.margins.top), this.renderPage(e, i);
     }), this;
   }
@@ -3134,7 +3134,7 @@ class P {
     });
   }
 }
-class I {
+class k {
   constructor() {
     this.editor = null, this.parser = new z(), this.renderer = new P(), this.blueprint = null, this._initialized = !1;
   }
@@ -3158,30 +3158,114 @@ class I {
           "undo",
           "redo",
           "|",
+          "findAndReplace",
+          "|",
           "heading",
           "|",
           "bold",
           "italic",
           "underline",
+          "strikethrough",
+          "subscript",
+          "superscript",
+          "code",
+          "removeFormat",
           "|",
           "fontFamily",
           "fontSize",
           "fontColor",
+          "fontBackgroundColor",
+          "highlight",
           "|",
           "alignment",
           "|",
           "bulletedList",
           "numberedList",
+          "todoList",
           "|",
+          "outdent",
+          "indent",
+          "|",
+          "link",
+          "uploadImage",
           "insertTable",
+          "blockQuote",
+          "codeBlock",
+          "|",
+          "horizontalLine",
+          "pageBreak",
+          "specialCharacters",
           "|",
           "sourceEditing"
         ],
         shouldNotGroupWhenFull: !0
       },
+      heading: {
+        options: [
+          { model: "paragraph", title: "Paragraph", class: "ck-heading_paragraph" },
+          { model: "heading1", view: "h1", title: "Heading 1" },
+          { model: "heading2", view: "h2", title: "Heading 2" },
+          { model: "heading3", view: "h3", title: "Heading 3" },
+          { model: "heading4", view: "h4", title: "Heading 4" },
+          { model: "heading5", view: "h5", title: "Heading 5" },
+          { model: "heading6", view: "h6", title: "Heading 6" }
+        ]
+      },
       fontSize: {
         options: [10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36, 42, 48, 72],
         supportAllValues: !0
+      },
+      fontFamily: {
+        options: [
+          "default",
+          "Roboto, sans-serif",
+          "Times New Roman, Times, serif",
+          "Arial, Helvetica, sans-serif",
+          "Georgia, serif",
+          "Verdana, Geneva, sans-serif",
+          "Courier New, Courier, monospace",
+          "Tahoma, Geneva, sans-serif",
+          "Trebuchet MS, sans-serif"
+        ],
+        supportAllValues: !0
+      },
+      fontColor: {
+        colors: [
+          { color: "#000000", label: "Black" },
+          { color: "#4d4d4d", label: "Dark Gray" },
+          { color: "#999999", label: "Gray" },
+          { color: "#e6e6e6", label: "Light Gray" },
+          { color: "#ffffff", label: "White" },
+          { color: "#e64c4c", label: "Red" },
+          { color: "#e6994c", label: "Orange" },
+          { color: "#e6e64c", label: "Yellow" },
+          { color: "#4ce64c", label: "Green" },
+          { color: "#4c4ce6", label: "Blue" },
+          { color: "#994ce6", label: "Purple" }
+        ]
+      },
+      table: {
+        contentToolbar: [
+          "tableColumn",
+          "tableRow",
+          "mergeTableCells",
+          "tableProperties",
+          "tableCellProperties"
+        ]
+      },
+      image: {
+        toolbar: [
+          "imageTextAlternative",
+          "toggleImageCaption",
+          "imageStyle:inline",
+          "imageStyle:block",
+          "imageStyle:side",
+          "linkImage"
+        ]
+      },
+      link: {
+        addTargetToExternalLinks: !0,
+        defaultProtocol: "https://"
       },
       language: "vi",
       removePlugins: [
@@ -3190,9 +3274,22 @@ class I {
         "EasyImage",
         "RealTimeCollaborativeComments",
         "RealTimeCollaborativeTrackChanges",
+        "RealTimeCollaborativeRevisionHistory",
+        "PresenceList",
         "Comments",
         "TrackChanges",
+        "TrackChangesData",
         "RevisionHistory",
+        "Pagination",
+        "WProofreader",
+        "MathType",
+        "SlashCommand",
+        "Template",
+        "DocumentOutline",
+        "FormatPainter",
+        "TableOfContents",
+        "PasteFromOfficeEnhanced",
+        "CaseChange",
         "AIAssistant",
         "AI",
         "MultiLevelList",
@@ -3201,10 +3298,12 @@ class I {
       ]
     }, ...i };
     try {
-      if (this.editor = await r.create(e, n), i.toolbarContainer && ((d = (c = (l = this.editor.ui) == null ? void 0 : l.view) == null ? void 0 : c.toolbar) != null && d.element)) {
-        const h = typeof i.toolbarContainer == "string" ? document.querySelector(i.toolbarContainer) : i.toolbarContainer;
-        h && h.appendChild(this.editor.ui.view.toolbar.element);
-      }
+      if (this.editor = await r.create(e, n), (d = (c = (l = this.editor.ui) == null ? void 0 : l.view) == null ? void 0 : c.toolbar) != null && d.element)
+        if (i.toolbarContainer) {
+          const h = typeof i.toolbarContainer == "string" ? document.querySelector(i.toolbarContainer) : i.toolbarContainer;
+          h && h.appendChild(this.editor.ui.view.toolbar.element);
+        } else
+          e instanceof HTMLElement && e.parentNode && e.parentNode.insertBefore(this.editor.ui.view.toolbar.element, e);
       this._initialized = !0, console.log("✅ DrawPDF initialized");
     } catch (h) {
       throw console.error("DrawPDF init failed:", h), h;
@@ -3310,7 +3409,7 @@ class I {
    * @returns {Promise<DrawPDF>} Initialized DrawPDF instance
    */
   static async create(t, i = {}) {
-    const e = new I();
+    const e = new k();
     return await e.init(t, i), e;
   }
   /**
@@ -3346,13 +3445,13 @@ class I {
 const Y = "2.1.0";
 export {
   z as CKEditorParser,
-  I as DrawPDF,
+  k as DrawPDF,
   x as FONTS,
-  v as JsPdfService,
+  N as JsPdfService,
   _ as PAGE,
   P as PDFRenderer,
-  N as RichTextTokenizer,
+  D as RichTextTokenizer,
   w as TemplateEngine,
   Y as VERSION,
-  I as default
+  k as default
 };
