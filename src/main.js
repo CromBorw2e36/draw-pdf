@@ -467,23 +467,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.templateEditor = new TemplateEditor();
 
   // Load sample data (optional - only if file exists)
-  async function loadSampleData() {
-    try {
-      const response = await fetch('sample-data.json');
-      if (!response.ok) {
-        console.log('ℹ️ No sample-data.json found (optional)');
-        return;
-      }
-      const data = await response.json();
-      templateEditor.variableData = data;
-      templateEditor.detectVariables();
-      console.log('📂 Sample data loaded');
-    } catch (err) {
-      console.log('ℹ️ sample-data.json not available:', err.message);
-    }
-  }
+  // async function loadSampleData() {
+  //   try {
+  //     const response = await fetch('sample-data.json');
+  //     if (!response.ok) {
+  //       console.log('ℹ️ No sample-data.json found (optional)');
+  //       return;
+  //     }
+  //     const data = await response.json();
+  //     templateEditor.variableData = data;
+  //     templateEditor.detectVariables();
+  //     console.log('📂 Sample data loaded');
+  //   } catch (err) {
+  //     console.log('ℹ️ sample-data.json not available:', err.message);
+  //   }
+  // }
 
-  await loadSampleData();
+  // await loadSampleData();
 });
 
 export default TemplateEditor;
