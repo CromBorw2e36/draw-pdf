@@ -20,9 +20,10 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npm run build:standalone",
+    "build": "vite build && npm run build:standalone && npm run build:full",
     "build:lib": "vite build --mode lib",
     "build:standalone": "vite build --mode standalone",
+    "build:full": "vite build --mode full",
     "preview": "vite preview",
     "prepublishOnly": "npm run build"
   },

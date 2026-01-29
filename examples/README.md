@@ -39,38 +39,51 @@ pdf.preview({ name: 'Test' });
 
 ---
 
-### Print Mode (In PDF từ blueprint)
+### Full Bundle (Recommended)
+
+Dùng bản `full` để có sẵn mọi thứ: **Core + jsPDF + autoTable + CKEditor** trong 1 file duy nhất.
 
 ```javascript
-import DrawPDF from 'drawpdf';
+/* ES Module (Vite/Webpack) */
+import DrawPDF from 'drawpdf/dist/drawpdf.full.js';
 
-// Không cần khởi tạo instance! Dùng static methods:
-const blueprint = JSON.parse(localStorage.getItem('template'));
+// Init CKEditor Design Mode
+const pdf = await DrawPDF.create('#editor');
 
-// Render & Download
-DrawPDF.downloadBlueprint(blueprint, 'output.pdf', { name: 'Nguyễn Văn An' });
-
-// Hoặc lấy Data URL để preview
-const dataUrl = DrawPDF.renderBlueprint(blueprint, { name: 'Test' });
+// Or just print
+const blueprint = DrawPDF.parseHtml(html);
+DrawPDF.downloadBlueprint(blueprint, 'doc.pdf');
 ```
 
----
+```html
+<!-- Browser (Direct Link) -->
+<script type="module">
+  import DrawPDF from './dist/drawpdf.full.js';
+  
+  // Tự động có sẵn window.CKEDITOR
+  // Tự động có sẵn window.jspdf
+  
+  // Design mode
+  DrawPDF.create('#editor');
+</script>
+```
 
-### Browser (UMD)
+### Browser (UMD - Legacy)
+
+Lưu ý: Bản UMD `drawpdf.umd.cjs` chỉ chứa core logic. Bạn phải tự nhúng dependencies:
 
 ```html
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.1/jspdf.plugin.autotable.min.js"></script>
-<script src="dist/drawpdf.umd.cjs"></script>
+<!-- Chỉ cần 1 file duy nhất -->
+<script src="dist/drawpdf.standalone.umd.cjs"></script>
 
 <script>
-  // Print Mode - từ blueprint có sẵn
-  const blueprint = { /* JSON Blueprint */ };
-  
-  // Dùng static methods từ DrawPDF.default
-  const DrawPDF = window.DrawPDF.default;
-  
-  DrawPDF.downloadBlueprint(blueprint, 'output.pdf', { name: 'Test' });
+  (async () => {
+    // DrawPDF sẽ được expose vào window.DrawPDF
+    const DrawPDF = window.DrawPDF.default;
+    
+    // Design Mode (Async)
+    const pdf = await DrawPDF.create('#editor');
+  })();
 </script>
 ```
 

@@ -38,7 +38,7 @@ export default defineConfig(({ mode }) => {
     return {
       build: {
         lib: {
-          entry: resolve(__dirname, 'src/index.js'),
+          entry: resolve(__dirname, 'src/index.full.js'),
           name: 'DrawPDF',
           fileName: 'drawpdf.standalone',
           formats: ['umd']
@@ -50,6 +50,26 @@ export default defineConfig(({ mode }) => {
           output: {
             globals: {}
           }
+        }
+      }
+    };
+  }
+
+  // Full Bundle (ESM) - bundle everything for convenient import
+  if (mode === 'full') {
+    return {
+      build: {
+        lib: {
+          entry: resolve(__dirname, 'src/index.full.js'),
+          name: 'DrawPDF',
+          fileName: 'drawpdf.full',
+          formats: ['es']
+        },
+        outDir: 'dist',
+        emptyOutDir: false,
+        rollupOptions: {
+          // Bundle everything
+          external: []
         }
       }
     };
