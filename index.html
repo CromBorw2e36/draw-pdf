@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Template Builder - CKEditor</title>
+
+  <!-- CKEditor 5 Super Build (includes all plugins) -->
+  <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/super-build/ckeditor.js"></script>
+
+  <!-- jsPDF -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- jspdf-autotable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- html2canvas (required by jsPDF for HTML conversion) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- Vietnamese Fonts for jsPDF (Roboto - default font) -->
+  <script src="/fonts/Roboto-Regular-normal.js"></script>
+  <script src="/fonts/Roboto-Bold-normal.js"></script>
+  <script src="/fonts/Roboto-Italic-normal.js"></script>
+  <script src="/fonts/Roboto-BoldItalic-normal.js"></script>
+  <!-- JsPdfService is loaded via ES modules in main.js -->
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-dark: #1a1a2e;
+      --bg-secondary: #16213e;
+      --bg-paper: #ffffff;
+      --accent: #6366f1;
+      --accent-hover: #8b5cf6;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border: #2d2d4a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-dark);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, var(--bg-secondary), var(--bg-dark));
+      padding: 0.75rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header h1 {
+      font-size: 1.25rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+
+    /* Main Layout */
+    .main {
+      display: flex;
+      height: calc(100vh - 52px);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      overflow-y: auto;
+    }
+
+    .sidebar-section {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 8px;
+      padding: 0.75rem;
+    }
+
+    .sidebar-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      margin-bottom: 0.5rem;
+    }
+
+    .quick-insert {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+
+    .quick-btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.65rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .quick-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .variable-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .variable-name {
+      font-size: 0.7rem;
+      color: var(--accent);
+      font-family: monospace;
+    }
+
+    .variable-input {
+      width: 100%;
+      padding: 0.4rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--text-primary);
+      font-size: 0.8rem;
+    }
+
+    .variable-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    /* Editor Area */
+    .editor-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: #3a3a5a;
+      overflow: hidden;
+    }
+
+    /* CKEditor Toolbar Container */
+    .toolbar-container {
+      background: #f8f9fa;
+      border-bottom: 1px solid #e0e0e0;
+      padding: 8px 16px;
+    }
+
+    /* Document Container */
+    .document-container {
+      flex: 1;
+      overflow: auto;
+      padding: 2rem;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Paper */
+    .paper {
+      width: 210mm;
+      min-height: 297mm;
+      background: white;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+      padding: 0;
+      overflow-x: hidden;
+      overflow-y: visible;
+    }
+
+    /* CKEditor Content Styles */
+    .ck-content {
+      font-family: 'Times New Roman', serif;
+      font-size: 12pt;
+      line-height: 1.6;
+      padding: 20mm 15mm !important;
+      min-height: 257mm;
+      color: #000000;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow-wrap: break-word;
+      word-wrap: break-word;
+      word-break: break-word;
+    }
+
+    .ck-content p {
+      margin-bottom: 0.5em;
+    }
+
+    .ck-content h1 {
+      font-size: 18pt;
+    }
+
+    .ck-content h2 {
+      font-size: 16pt;
+    }
+
+    .ck-content h3 {
+      font-size: 14pt;
+    }
+
+    .ck.ck-editor__editable:not(.ck-editor__nested-editable).ck-focused {
+      border: none !important;
+      box-shadow: none !important;
+    }
+
+    /* Variable highlighting */
+    .variable-highlight {
+      background-color: rgba(99, 102, 241, 0.2);
+      color: #4f46e5;
+      padding: 1px 3px;
+      border-radius: 3px;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 900px;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-body {
+      flex: 1;
+      padding: 1rem;
+      overflow: auto;
+    }
+
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    /* Preview iframe */
+    #pdfPreview {
+      width: 100%;
+      height: 100%;
+      min-height: 500px;
+      border: none;
+      background: #333;
+    }
+
+    /* Loading overlay */
+    .loading {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      display: none;
+    }
+
+    .loading.show {
+      display: flex;
+    }
+
+    .loading-text {
+      color: white;
+      font-size: 1.2rem;
+    }
+
+    /* Info */
+    .info-text {
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Header -->
+  <header class="header">
+    <h1>📄 PDF Template Builder</h1>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="btnNew">➕ New</button>
+      <button class="btn btn-secondary" id="btnLoadJson">📂 Load</button>
+      <button class="btn btn-primary" id="btnSaveJson">💾 Save</button>
+      <button class="btn btn-secondary" id="btnViewJson">📋 View JSON</button>
+      <button class="btn btn-success" id="btnExportPdf">📤 Export PDF</button>
+      <button class="btn btn-danger" id="btnPreview">👁 Preview</button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">📝 Quick Insert Variable</div>
+        <div class="quick-insert" id="quickInsert">
+          <button class="quick-btn" data-var="hoTen">hoTen</button>
+          <button class="quick-btn" data-var="ngaySinh">ngaySinh</button>
+          <button class="quick-btn" data-var="diaChi">diaChi</button>
+          <button class="quick-btn" data-var="soCMND">soCMND</button>
+          <button class="quick-btn" data-var="chucVu">chucVu</button>
+          <button class="quick-btn" data-var="luong">luong</button>
+          <button class="quick-btn" data-var="phongBan">phongBan</button>
+          <button class="quick-btn" data-var="ngayKy">ngayKy</button>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">🔧 Test Data (Fill Variables)</div>
+        <div id="variableList">
+          <p class="info-text">Type {{variableName}} in the editor. Variables will appear here automatically.</p>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">📊 Info</div>
+        <p class="info-text">
+          Words: <span id="wordCount">0</span><br>
+          Variables: <span id="varCount">0</span>
+        </p>
+      </div>
+
+      <div class="sidebar-section">
+        <div class="sidebar-title">💡 Tips</div>
+        <p class="info-text">
+          • Use {{variable}} syntax<br>
+          • Copy/paste from Word works!<br>
+          • Tables supported<br>
+          • Export to PDF with data
+        </p>
+      </div>
+    </aside>
+
+    <!-- Editor -->
+    <section class="editor-area">
+      <div class="toolbar-container" id="toolbarContainer"></div>
+      <div class="document-container">
+        <div class="paper">
+          <div id="editor"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Preview Modal -->
+  <div class="modal" id="previewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📄 PDF Preview</h2>
+        <button class="close-btn" id="closePreview">&times;</button>
+      </div>
+      <div class="modal-body">
+        <iframe id="pdfPreview"></iframe>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="closePreviewBtn">Close</button>
+        <button class="btn btn-success" id="downloadPdf">📥 Download PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JSON Blueprint Modal -->
+  <div class="modal" id="jsonModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>📋 JSON Blueprint</h2>
+        <button class="close-btn" id="closeJsonModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <pre id="jsonOutput"
+          style="background: #1a1a2e; padding: 1rem; border-radius: 8px; overflow: auto; font-size: 0.75rem; max-height: 400px; color: #e0e0e0;"></pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="copyJson">📋 Copy</button>
+        <button class="btn btn-primary" id="downloadJson">💾 Download JSON</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading" id="loading">
+    <span class="loading-text">⏳ Generating PDF...</span>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,182 @@
+{
+  "version": "1.0",
+  "pageSize": {
+    "width": 210,
+    "height": 297,
+    "unit": "mm"
+  },
+  "margins": {
+    "top": 20,
+    "bottom": 20,
+    "left": 15,
+    "right": 15
+  },
+  "pages": [
+    {
+      "pageNumber": 1,
+      "elements": [
+        {
+          "type": "table",
+          "x": 15,
+          "y": 20,
+          "width": 180,
+          "rows": [
+            [
+              {
+                "content": "<figure class=\"image image_resized\" style=\"width:70.51%;\"><img style=\"aspect-ratio:900/900;\" src=\"https://hungduy.vn/wp-content/uploads/2024/11/logo-HungDuy-smal.jpg\" alt=\"Trang-Chu - Công Ty Hùng Duy\" width=\"900\" height=\"900\"></figure>",
+                "isHeader": false
+              },
+              {
+                "content": "<p style=\"text-align:center;\">BANG DANH GIA UNG VIEN</p>",
+                "isHeader": false
+              }
+            ]
+          ],
+          "rowHeight": 8,
+          "style": {
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "headerBg": "#f0f0f0"
+          }
+        },
+        {
+          "type": "richtext",
+          "x": 15,
+          "y": 33,
+          "width": 180,
+          "segments": [
+            {
+              "text": "1.THONG TIN UNG VIEN",
+              "style": {
+                "bold": true,
+                "italic": false,
+                "underline": false,
+                "strikethrough": false,
+                "color": null,
+                "backgroundColor": null,
+                "fontSize": null
+              }
+            }
+          ],
+          "content": "1.THONG TIN UNG VIEN",
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "color": "#000000",
+            "align": "left",
+            "underline": false,
+            "lineHeight": 6.350003999999999
+          }
+        },
+        {
+          "type": "table",
+          "x": 15,
+          "y": 41.350004,
+          "width": 180,
+          "rows": [
+            [
+              {
+                "content": "Ho ten",
+                "isHeader": false
+              },
+              {
+                "content": "&nbsp;",
+                "isHeader": false
+              }
+            ],
+            [
+              {
+                "content": "Ngay thang nam sinh",
+                "isHeader": false
+              },
+              {
+                "content": "&nbsp;",
+                "isHeader": false
+              }
+            ],
+            [
+              {
+                "content": "Trinh do chuyen mon",
+                "isHeader": false
+              },
+              {
+                "content": "&nbsp;",
+                "isHeader": false
+              },
+              {
+                "content": "Gioi tinh",
+                "isHeader": false
+              },
+              {
+                "content": "&nbsp;",
+                "isHeader": false
+              }
+            ],
+            [
+              {
+                "content": "Vi tri/chuc danh ung tuyen",
+                "isHeader": false
+              },
+              {
+                "content": "&nbsp;",
+                "isHeader": false
+              }
+            ],
+            [
+              {
+                "content": "diem bai kiem tra nang luc chuyen mon (neu co)",
+                "isHeader": false
+              },
+              {
+                "content": "&nbsp;",
+                "isHeader": false
+              }
+            ]
+          ],
+          "rowHeight": 8,
+          "style": {
+            "borderColor": "#000000",
+            "borderWidth": 0.5,
+            "headerBg": "#f0f0f0"
+          }
+        },
+        {
+          "type": "richtext",
+          "x": 15,
+          "y": 86.350004,
+          "width": 180,
+          "segments": [
+            {
+              "text": "2.DANH GIA UNG VIEN",
+              "style": {
+                "bold": true,
+                "italic": false,
+                "underline": false,
+                "strikethrough": false,
+                "color": null,
+                "backgroundColor": null,
+                "fontSize": null
+              }
+            }
+          ],
+          "content": "2.DANH GIA UNG VIEN",
+          "style": {
+            "fontSize": 12,
+            "fontWeight": "bold",
+            "fontStyle": "normal",
+            "color": "#000000",
+            "align": "left",
+            "underline": false,
+            "lineHeight": 6.350003999999999
+          }
+        }
+      ]
+    }
+  ],
+  "templateId": "tpl_1769492703206",
+  "name": "Untitled Template",
+  "createdAt": "2026-01-27T05:45:03.206Z",
+  "variables": [],
+  "sourceHtml": "<figure class=\"table\" style=\"width:100%;\"><table class=\"ck-table-resized\"><colgroup><col style=\"width:20.21%;\"><col style=\"width:79.79%;\"></colgroup><tbody><tr><td><figure class=\"image image_resized\" style=\"width:70.51%;\"><img style=\"aspect-ratio:900/900;\" src=\"https://hungduy.vn/wp-content/uploads/2024/11/logo-HungDuy-smal.jpg\" alt=\"Trang-Chu - Công Ty Hùng Duy\" width=\"900\" height=\"900\"></figure></td><td><p style=\"text-align:center;\">BANG DANH GIA UNG VIEN</p></td></tr></tbody></table></figure><p><strong>1.THONG TIN UNG VIEN</strong></p><figure class=\"table\" style=\"width:99.66%;\"><table class=\"ck-table-resized\"><colgroup><col style=\"width:27.57%;\"><col style=\"width:30.75%;\"><col style=\"width:11.24%;\"><col style=\"width:30.44%;\"></colgroup><tbody><tr><td>Ho ten</td><td colspan=\"3\">&nbsp;</td></tr><tr><td>Ngay thang nam sinh</td><td colspan=\"3\">&nbsp;</td></tr><tr><td>Trinh do chuyen mon</td><td>&nbsp;</td><td>Gioi tinh</td><td>&nbsp;</td></tr><tr><td>Vi tri/chuc danh ung tuyen</td><td colspan=\"3\">&nbsp;</td></tr><tr><td>diem bai kiem tra nang luc chuyen mon (neu co)</td><td colspan=\"3\">&nbsp;</td></tr></tbody></table></figure><p><strong>2.DANH GIA UNG VIEN</strong></p><p>&nbsp;</p>"
+}

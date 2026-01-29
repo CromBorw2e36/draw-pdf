@@ -1,0 +1,188 @@
+/* =========================================
+   Canvas Styles - Main Editor Area
+   ========================================= */
+
+/* Canvas Area Container */
+.canvas-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-canvas-bg);
+  overflow: hidden;
+}
+
+/* Canvas Toolbar */
+.canvas-toolbar {
+  height: var(--toolbar-height);
+  background: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  padding: 0 var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.canvas-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  background: var(--color-bg-elevated);
+  padding: var(--spacing-xs);
+  border-radius: var(--radius-md);
+}
+
+.canvas-toolbar__btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.canvas-toolbar__btn:hover {
+  background: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+}
+
+.canvas-toolbar__btn:active {
+  transform: scale(0.95);
+}
+
+.canvas-toolbar__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.canvas-toolbar__zoom {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-primary);
+  min-width: 50px;
+  text-align: center;
+}
+
+/* Canvas Wrapper */
+.canvas-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-lg);
+  overflow: auto;
+  background: 
+    radial-gradient(circle at center, rgba(99, 102, 241, 0.05) 0%, transparent 70%),
+    linear-gradient(90deg, var(--color-canvas-grid) 1px, transparent 1px),
+    linear-gradient(var(--color-canvas-grid) 1px, transparent 1px);
+  background-size: 100% 100%, 20px 20px, 20px 20px;
+}
+
+/* Canvas Container (Page) */
+.canvas-container {
+  position: relative;
+  background: var(--color-canvas-page);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  border-radius: var(--radius-sm);
+  transition: transform var(--transition-normal);
+}
+
+.canvas-container canvas {
+  display: block;
+}
+
+/* Drop Zone Indicator */
+.canvas-container.drag-over {
+  box-shadow: 
+    var(--shadow-lg), 
+    0 0 0 3px var(--color-accent-primary),
+    0 0 30px rgba(99, 102, 241, 0.4);
+}
+
+/* Canvas Pagination */
+.canvas-pagination {
+  height: var(--pagination-height);
+  background: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+  flex-shrink: 0;
+}
+
+.canvas-pagination__btn {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.canvas-pagination__btn:hover {
+  background: var(--color-bg-tertiary);
+  border-color: var(--color-accent-primary);
+  color: var(--color-text-primary);
+}
+
+.canvas-pagination__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.canvas-pagination__btn--add {
+  width: auto;
+  padding: 0 var(--spacing-md);
+  background: var(--color-accent-primary);
+  border-color: var(--color-accent-primary);
+  color: white;
+}
+
+.canvas-pagination__btn--add:hover {
+  background: var(--color-accent-secondary);
+}
+
+.canvas-pagination__info {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.canvas-pagination__info span {
+  color: var(--color-text-primary);
+  font-weight: 600;
+}
+
+/* Selection handles override for Fabric.js */
+.canvas-container .upper-canvas {
+  cursor: default !important;
+}
+
+/* Drag preview element */
+.drag-preview {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.8;
+  transform: translate(-50%, -50%);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--color-accent-primary);
+  color: white;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+}
