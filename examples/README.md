@@ -44,12 +44,14 @@ pdf.preview({ name: 'Test' });
 ```javascript
 import DrawPDF from 'drawpdf';
 
-// Không cần CKEditor! Method chaining:
+// Không cần khởi tạo instance! Dùng static methods:
 const blueprint = JSON.parse(localStorage.getItem('template'));
 
-new DrawPDF()
-  .setData(blueprint)
-  .download('output.pdf', { name: 'Nguyễn Văn An' });
+// Render & Download
+DrawPDF.downloadBlueprint(blueprint, 'output.pdf', { name: 'Nguyễn Văn An' });
+
+// Hoặc lấy Data URL để preview
+const dataUrl = DrawPDF.renderBlueprint(blueprint, { name: 'Test' });
 ```
 
 ---
@@ -65,15 +67,18 @@ new DrawPDF()
   // Print Mode - từ blueprint có sẵn
   const blueprint = { /* JSON Blueprint */ };
   
-  new DrawPDF.default()
-    .setData(blueprint)
-    .download('output.pdf', { name: 'Test' });
+  // Dùng static methods từ DrawPDF.default
+  const DrawPDF = window.DrawPDF.default;
+  
+  DrawPDF.downloadBlueprint(blueprint, 'output.pdf', { name: 'Test' });
 </script>
 ```
 
 ---
 
-### Advanced API
+### Advanced API (Low-level)
+
+Nếu bạn cần kiểm soát chi tiết từng bước (VD: tùy chỉnh jsPDF instance):
 
 ```javascript
 import { CKEditorParser, PDFRenderer } from 'drawpdf';
@@ -81,8 +86,18 @@ import { CKEditorParser, PDFRenderer } from 'drawpdf';
 const parser = new CKEditorParser();
 const renderer = new PDFRenderer();
 
+// 1. Parse manual HTML
 const blueprint = parser.parse('<h1>Hello {{name}}</h1>');
+
+// 2. Render
 renderer.render(blueprint, { name: 'World' });
+
+// 3. Access internal jsPDF
+const doc = renderer.pdf.doc;
+doc.addPage();
+doc.text('Extra page', 10, 10);
+
+// 4. Download
 renderer.download('output.pdf');
 ```
 

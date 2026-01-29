@@ -30,6 +30,29 @@ npm install github:masax/DrawPDF#main
 - `jspdf` ^2.5.1
 - `jspdf-autotable` ^3.8.1
 
+- `jspdf-autotable` ^3.8.1
+
+---
+
+## 🌐 Browser Usage (UMD)
+
+For direct usage in the browser without a bundler, use the standalone build which includes all dependencies (`jspdf`, `jspdf-autotable`).
+
+```html
+<!-- Load the standalone script -->
+<script src="./dist/drawpdf.standalone.umd.cjs"></script>
+
+<script>
+  // Access via global variable 'DrawPDF'
+  const { DrawPDF } = window.DrawPDF;
+
+  // Initialize
+  DrawPDF.create('#editor').then(pdf => {
+    console.log('Ready!');
+  });
+</script>
+```
+
 ---
 
 ## 🚀 Quick Start
@@ -258,8 +281,8 @@ pdf.addTable(
 
 ```bash
 # Clone
-git clone https://github.com/masax/DrawPDF.git
-cd DrawPDF/pdf-builder
+# git clone https://github.com/masax/DrawPDF.git
+# cd DrawPDF/pdf-builder
 
 # Install
 npm install

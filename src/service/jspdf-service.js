@@ -1,6 +1,9 @@
+import { jsPDF } from 'jspdf';
+import 'jspdf-autotable';
+
 class JsPdfService {
   constructor() {
-    this.doc = new jspdf.jsPDF();
+    this.doc = new jsPDF();
     this.currentY = 20; // Vị trí Y hiện tại để tự động xuống dòng
     this.lineHeight = 1; // Khoảng cách giữa các dòng (giảm từ 7 xuống 4.5)
     this.pageHeight = this.doc.internal.pageSize.height;

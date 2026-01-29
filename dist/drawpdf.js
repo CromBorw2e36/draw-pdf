@@ -1,4 +1,6 @@
-class k {
+import { jsPDF as k } from "jspdf";
+import "jspdf-autotable";
+class N {
   constructor() {
     this.inlineTags = ["b", "strong", "i", "em", "u", "s", "strike", "span"];
   }
@@ -183,7 +185,7 @@ const _ = {
 };
 class z {
   constructor() {
-    this.currentY = _.MARGIN_TOP, this.currentPage = 0, this.pages = [{ pageNumber: 1, elements: [] }], this.tokenizer = new k();
+    this.currentY = _.MARGIN_TOP, this.currentPage = 0, this.pages = [{ pageNumber: 1, elements: [] }], this.tokenizer = new N();
   }
   /**
    * Decode HTML entities in text
@@ -801,675 +803,9 @@ class w {
     return Array.from(i);
   }
 }
-class P {
+class v {
   constructor() {
-    this.pdfService = null, this.margins = {
-      left: 15,
-      right: 15,
-      top: 20,
-      bottom: 20
-    }, this.pageWidth = 210, this.contentWidth = this.pageWidth - this.margins.left - this.margins.right;
-  }
-  /**
-   * Content-flow: Calculate x position from layout hints
-   */
-  calculateX(t) {
-    const i = t.indent || 0, e = t.marginLeft || 0;
-    return this.margins.left + i + e;
-  }
-  /**
-   * Render JSON blueprint to PDF using JsPdfService
-   * @param {Object} blueprint - JSON blueprint from CKEditorParser
-   * @param {Object} data - Variable data for replacement
-   * @returns {JsPdfService} PDF service instance
-   */
-  render(t, i = {}) {
-    return this.pdfService = new JsPdfService(), t.margins && (this.margins = { ...this.margins, ...t.margins }, this.contentWidth = this.pageWidth - this.margins.left - this.margins.right), t.pages.forEach((e, r) => {
-      r > 0 && this.pdfService.addNewPage(), this.pdfService.resetPosition(this.margins.top), this.renderPage(e, i);
-    }), this;
-  }
-  /**
-   * Helper to clean content (strip HTML tags + decode entities)
-   */
-  cleanContent(t) {
-    if (!t) return "";
-    let i = String(t);
-    return i = i.replace(/<br\s*\/?>/gi, `
-`), i = i.replace(/<\/p>\s*<p[^>]*>/gi, `
-`), i = i.replace(/<[^>]*>/g, ""), this.pdfService._decodeHtmlEntities(i);
-  }
-  /**
-   * Render a single page
-   */
-  renderPage(t, i) {
-    t.elements.forEach((e) => {
-      switch (e.content && (e.content = this.pdfService._decodeHtmlEntities(e.content)), e.type) {
-        case "text":
-          this.renderText(e, i);
-          break;
-        case "richtext":
-          this.renderRichText(e, i);
-          break;
-        case "heading":
-          this.renderHeading(e, i);
-          break;
-        case "table":
-          this.renderTable(e, i);
-          break;
-        case "image":
-          this.renderImage(e, i);
-          break;
-        case "line":
-          this.renderLine(e);
-          break;
-        case "space":
-          this.pdfService.addSpace(e.height || 10);
-          break;
-        case "evalblock":
-          this.renderEvalBlock(e, i);
-          break;
-        case "codeblock":
-          this.renderCodeBlock(e, i);
-          break;
-      }
-    });
-  }
-  /**
-   * Render rich text element with mixed inline styles (content-flow)
-   * Handles layout markers: ___BR___, ___HR___, ___PAGEBREAK___, ___TAB___
-   */
-  renderRichText(t, i) {
-    const e = t.segments || [], r = t.style || {}, s = e.map((h) => ({
-      text: this.replaceVariables(h.text, i),
-      style: h.style
-    })), n = this.calculateX(t), o = r.lineHeight || 5, a = {
-      fontSize: r.fontSize || 12,
-      color: this.parseColor(r.color),
-      align: r.align || "left",
-      lineHeight: o,
-      x: n,
-      maxWidth: t.width || this.contentWidth
-    };
-    if (!s.some(
-      (h) => h.text && (h.text.includes("___BR___") || h.text.includes("___HR___") || h.text.includes("___PAGEBREAK___"))
-    )) {
-      const h = s.map((g) => ({
-        ...g,
-        text: g.text ? g.text.replace(/___TAB___/g, "    ") : g.text
-      }));
-      this.pdfService.addMixedParagraph(h, a);
-      return;
-    }
-    let c = s.map((h) => h.text || "").join("");
-    c = c.replace(/___TAB___/g, "    ");
-    const d = c.split(/(___BR___|___HR___|___PAGEBREAK___)/);
-    for (const h of d)
-      if (h === "___BR___")
-        this.pdfService.addSpace(this.pdfService.lineHeight);
-      else if (h === "___HR___")
-        this.pdfService.addHorizontalLine();
-      else if (h === "___PAGEBREAK___")
-        this.pdfService.addNewPage();
-      else if (h.trim()) {
-        const g = [{ text: h.trim(), style: {} }];
-        this.pdfService.addMixedParagraph(g, a);
-      }
-  }
-  /**
-   * Render text element using JsPdfService (content-flow)
-   * Handles layout markers: ___BR___, ___HR___, ___PAGEBREAK___, ___TAB___
-   */
-  renderText(t, i) {
-    let e = this.replaceVariables(t.content, i);
-    const r = t.style || {}, s = r.lineHeight || 5, n = {
-      fontSize: r.fontSize || 12,
-      fontStyle: this.mapFontStyle(r),
-      color: this.parseColor(r.color),
-      align: r.align || "left",
-      lineHeight: s
-    }, o = this.calculateX(t);
-    if (e = e.replace(/___TAB___/g, "    "), !e.includes("___BR___") && !e.includes("___HR___") && !e.includes("___PAGEBREAK___")) {
-      this.pdfService.addText(e, o, null, n);
-      return;
-    }
-    const a = e.split(/(___BR___|___HR___|___PAGEBREAK___)/);
-    for (const l of a)
-      l === "___BR___" ? this.pdfService.addSpace(s) : l === "___HR___" ? this.pdfService.addHorizontalLine() : l === "___PAGEBREAK___" ? this.pdfService.addNewPage() : l.trim() && this.pdfService.addText(l.trim(), o, null, n);
-  }
-  /**
-   * Render heading element (content-flow)
-   */
-  renderHeading(t, i) {
-    var s, n, o;
-    const e = this.replaceVariables(t.content, i);
-    switch (t.level || 1) {
-      case 1:
-        this.pdfService.addTitle(e, { align: ((s = t.style) == null ? void 0 : s.align) || "center" });
-        break;
-      case 2:
-        this.pdfService.addSubTitle(e, { align: ((n = t.style) == null ? void 0 : n.align) || "left" });
-        break;
-      default:
-        this.pdfService.addText(e, null, null, {
-          fontSize: 14,
-          fontStyle: "bold",
-          align: ((o = t.style) == null ? void 0 : o.align) || "left"
-        });
-    }
-  }
-  /**
-   * Render table element with styles
-   */
-  renderTable(t, i) {
-    var h, g, u;
-    const e = t.rows || [];
-    if (e.length === 0) return;
-    if (t.dataVar) {
-      const f = t.dataVar.replace(/\{\{|\}\}/g, ""), p = i[f];
-      if (Array.isArray(p)) {
-        this.renderDataTable(t, p);
-        return;
-      }
-    }
-    t.y !== void 0 && this.pdfService.resetPosition(t.y);
-    const r = [], s = t.style || {}, n = (f, p, b) => {
-      if (!f) return { content: "" };
-      const m = f.cellStyle || {}, S = {
-        halign: f.align || "left",
-        valign: m.verticalAlign === "top" ? "top" : m.verticalAlign === "bottom" ? "bottom" : "middle"
-      };
-      if (m.backgroundColor && (S.fillColor = this.parseColorToArray(m.backgroundColor)), m.borderColor && (S.lineColor = this.parseColorToArray(m.borderColor)), m.borderWidth && (S.lineWidth = m.borderWidth), m.padding && (S.cellPadding = m.padding), f.type === "image")
-        return r.push({
-          rowIndex: p,
-          cellIndex: b,
-          src: f.src,
-          width: f.width,
-          height: f.height
-        }), {
-          content: "[IMG]",
-          colSpan: f.colSpan || 1,
-          rowSpan: f.rowSpan || 1,
-          styles: S
-        };
-      const y = typeof f == "object" ? this.replaceVariables(f.content, i) : f;
-      return {
-        content: this.cleanContent(y),
-        colSpan: f.colSpan || 1,
-        rowSpan: f.rowSpan || 1,
-        styles: S
-      };
-    }, o = ((h = e[0]) == null ? void 0 : h.map((f, p) => n(f, 0, p))) || [], a = (g = e[0]) == null ? void 0 : g[0], l = (u = a == null ? void 0 : a.cellStyle) == null ? void 0 : u.backgroundColor, c = e.slice(1).map(
-      (f, p) => f.map((b, m) => n(b, p + 1, m))
-    ), d = {
-      tableWidth: t.width
-    };
-    s.borderWidth !== void 0 && (d.lineWidth = s.borderWidth), s.borderColor && (d.lineColor = this.parseColorToArray(s.borderColor)), s.backgroundColor && (d.fillColor = this.parseColorToArray(s.backgroundColor)), s.align === "center" ? d.tableAlign = "center" : s.align === "right" && (d.tableAlign = "right"), l && (d.headStyles = {
-      fillColor: this.parseColorToArray(l)
-    }), typeof this.pdfService.addTable == "function" ? this.pdfService.addTable(o, c, d) : this.drawTableManually(t, i);
-  }
-  /**
-   * Parse color string to RGB array for jspdf-autotable
-   */
-  parseColorToArray(t) {
-    if (!t) return [0, 0, 0];
-    if (t.startsWith("#")) {
-      const e = t.slice(1), r = parseInt(e.substr(0, 2), 16), s = parseInt(e.substr(2, 2), 16), n = parseInt(e.substr(4, 2), 16);
-      return [r, s, n];
-    }
-    const i = t.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
-    return i ? [parseInt(i[1]), parseInt(i[2]), parseInt(i[3])] : [0, 0, 0];
-  }
-  /**
-   * Render dynamic data table
-   */
-  renderDataTable(t, i) {
-    const e = t.columns || [];
-    if (e.length === 0 || !Array.isArray(i)) return;
-    const r = e.map((n) => n.label || n), s = i.map(
-      (n) => e.map((o) => {
-        const a = o.key || o;
-        return String(n[a] || "");
-      })
-    );
-    typeof this.pdfService.addTable == "function" && this.pdfService.addTable(r, s, t.style || {});
-  }
-  /**
-   * Manual table drawing when addTable is not available
-   */
-  drawTableManually(t, i) {
-    var d;
-    const e = t.rows || [], r = t.x || this.pdfService.margins.left, s = t.width || this.pdfService.pageWidth - r - this.pdfService.margins.right, n = t.rowHeight || 8, o = ((d = e[0]) == null ? void 0 : d.length) || 1, a = s / o, l = this.pdfService.doc;
-    let c = this.pdfService.getCurrentY();
-    l.setLineWidth(0.5), l.setFontSize(10), e.forEach((h, g) => {
-      h.forEach((u, f) => {
-        const p = r + f * a, b = typeof u == "object" ? this.replaceVariables(u.content, i) : this.replaceVariables(String(u), i), m = typeof u == "object" ? u.isHeader : g === 0;
-        m && (l.setFillColor(240, 240, 240), l.rect(p, c, a, n, "F")), l.setDrawColor(0, 0, 0), l.rect(p, c, a, n);
-        try {
-          l.setFont("Roboto", m ? "bold" : "normal");
-        } catch {
-          l.setFont("helvetica", m ? "bold" : "normal");
-        }
-        l.setTextColor(0, 0, 0);
-        const S = b.replace(/<[^>]*>/g, ""), y = c + n / 2 + 2;
-        l.text(S, p + 2, y, { maxWidth: a - 4 });
-      }), c += n;
-    }), this.pdfService.resetPosition(c + 5);
-  }
-  /**
-   * Render image element (content-flow)
-   */
-  renderImage(t, i) {
-    let e = this.replaceVariables(t.src, i);
-    if (e && (e.startsWith("data:") || e.startsWith("http"))) {
-      const r = t.x !== void 0 ? t.x : this.margins.left;
-      this.pdfService.addImage(
-        e,
-        r,
-        null,
-        // Let service handle y (content-flow)
-        t.width || 50,
-        t.height || 50,
-        t.style || {}
-      );
-    }
-  }
-  /**
-   * Render line element (content-flow)
-   */
-  renderLine(t) {
-    if (t.fullWidth) {
-      const i = this.pdfService.getCurrentY();
-      this.pdfService.addLine(
-        this.margins.left,
-        i,
-        this.pageWidth - this.margins.right,
-        i,
-        t.style || {}
-      ), this.pdfService.addSpace(5);
-    } else
-      this.pdfService.addLine(
-        t.x1,
-        t.y1,
-        t.x2,
-        t.y2,
-        t.style || {}
-      );
-  }
-  /**
-   * Replace {{variables}} with data values
-   * Now supports: nested objects, #each loops, #if conditionals
-   */
-  replaceVariables(t, i) {
-    return w.process(t, i);
-  }
-  /**
-   * Process layout markers in text and render appropriately
-   * Handles: ___BR___, ___TAB___, ___HR___, ___PAGEBREAK___
-   * @param {string} text - Text with markers
-   * @param {Object} options - Rendering options
-   * @returns {string} Text with markers replaced (TAB only)
-   */
-  processLayoutMarkers(t, i = {}) {
-    if (!t || typeof t != "string") return t || "";
-    let e = t.replace(/___TAB___/g, "    ");
-    const r = e.includes("___BR___"), s = e.includes("___HR___"), n = e.includes("___PAGEBREAK___");
-    if (!r && !s && !n)
-      return e;
-    const o = e.split(/(___BR___|___HR___|___PAGEBREAK___)/);
-    for (let a = 0; a < o.length; a++) {
-      const l = o[a];
-      l === "___BR___" ? this.pdfService.addSpace(i.lineHeight || 5) : l === "___HR___" ? this.pdfService.addHorizontalLine() : l === "___PAGEBREAK___" ? this.pdfService.addNewPage() : l.trim();
-    }
-    return e.replace(/___BR___|___HR___|___PAGEBREAK___/g, "");
-  }
-  /**
-   * Check if text contains layout markers that need special rendering
-   */
-  hasLayoutMarkers(t) {
-    return t ? t.includes("___BR___") || t.includes("___HR___") || t.includes("___PAGEBREAK___") : !1;
-  }
-  /**
-   * Render text with layout markers support
-   * Splits text by markers and renders each segment appropriately
-   */
-  renderTextWithMarkers(t, i = {}) {
-    if (!t) return;
-    const r = t.replace(/___TAB___/g, "    ").split(/(___BR___|___HR___|___PAGEBREAK___)/), s = i.x || this.margins.left, n = i.fontSize || 12, o = i.lineHeight || n * 0.5;
-    for (const a of r)
-      a === "___BR___" ? this.pdfService.addSpace(o) : a === "___HR___" ? this.pdfService.addHorizontalLine ? this.pdfService.addHorizontalLine() : this.pdfService.addSpace(5) : a === "___PAGEBREAK___" ? this.pdfService.addNewPage() : a.trim() && this.pdfService.addText(a.trim(), s, null, {
-        fontSize: n,
-        maxWidth: i.maxWidth || this.contentWidth,
-        align: i.align || "left",
-        color: i.color
-      });
-  }
-  /**
-   * Map style to font style string
-   */
-  mapFontStyle(t) {
-    return t.fontWeight === "bold" && t.fontStyle === "italic" ? "bolditalic" : t.fontWeight === "bold" ? "bold" : t.fontStyle === "italic" ? "italic" : "normal";
-  }
-  /**
-   * Parse color to RGB array
-   */
-  parseColor(t) {
-    if (!t) return [0, 0, 0];
-    if (Array.isArray(t)) return t;
-    if (typeof t == "string" && t.startsWith("#")) {
-      const i = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(t);
-      if (i)
-        return [
-          parseInt(i[1], 16),
-          parseInt(i[2], 16),
-          parseInt(i[3], 16)
-        ];
-    }
-    if (typeof t == "string" && t.startsWith("rgb")) {
-      const i = t.match(/(\d+),\s*(\d+),\s*(\d+)/);
-      if (i)
-        return [parseInt(i[1]), parseInt(i[2]), parseInt(i[3])];
-    }
-    return [0, 0, 0];
-  }
-  /**
-   * Get PDF as data URL
-   */
-  getDataUrl() {
-    return this.pdfService.generateDataURL();
-  }
-  /**
-   * Download PDF
-   */
-  download(t = "document.pdf") {
-    this.pdfService.savePDF(t);
-  }
-  /**
-   * Get PDF as Blob
-   */
-  getBlob() {
-    return this.pdfService.generateBlob();
-  }
-  /**
-   * Preview PDF in new tab
-   */
-  preview() {
-    this.pdfService.previewPDF();
-  }
-  /**
-   * Render eval block - execute JavaScript code with full PDF access
-   * Code must start with '// eval' to be evaluated
-   * Available in code: pdf (pdfService), data, renderer, helpers
-   */
-  renderEvalBlock(t, i) {
-    let e = t.code || "";
-    e = e.replace(/^\/\/\s*eval\s*/i, ""), e = e.replace(/^\/\*\s*eval\s*\*\/\s*/i, ""), console.log("[PDFRenderer] Evaluating code block with full PDF access...");
-    try {
-      const r = {
-        // Direct PDF service access
-        pdf: this.pdfService,
-        // Data context
-        data: i,
-        // Renderer reference
-        renderer: this,
-        // Helper functions
-        formatNumber: (o) => w.formatNumber(o),
-        formatCurrency: (o) => w.formatCurrency(o),
-        formatDate: (o) => w.formatDate(o),
-        today: () => w.formatDateObject(/* @__PURE__ */ new Date()),
-        now: () => (/* @__PURE__ */ new Date()).toLocaleString("vi-VN"),
-        year: () => (/* @__PURE__ */ new Date()).getFullYear(),
-        sum: (o, a) => o.reduce((l, c) => l + (Number(c[a]) || 0), 0),
-        count: (o) => Array.isArray(o) ? o.length : 0,
-        filter: (o, a) => o.filter(a),
-        map: (o, a) => o.map(a),
-        join: (o, a = ", ") => o.join(a),
-        // Convenience shortcuts
-        addText: (o, a, l, c) => this.pdfService.addText(o, a, l, c),
-        addTitle: (o, a) => this.pdfService.addTitle(o, a),
-        addTable: (o, a, l) => this.pdfService.addTable(o, a, l),
-        addSpace: (o) => this.pdfService.addSpace(o),
-        addLine: () => this.pdfService.addHorizontalLine(),
-        addImage: (o, a, l, c, d) => this.pdfService.addImage(o, a, l, c, d),
-        newPage: () => this.pdfService.addNewPage()
-      }, n = new Function(...Object.keys(r), `
-        "use strict";
-        ${e}
-      `)(...Object.values(r));
-      console.log("[PDFRenderer] Eval completed, result:", n), typeof n == "string" && n.trim() && this.pdfService.addText(n, this.margins.left, null, {
-        fontSize: 12,
-        maxWidth: this.contentWidth
-      });
-    } catch (r) {
-      console.error("[PDFRenderer] Eval error:", r), this.pdfService.addText(`[Eval Error: ${r.message}]`, this.margins.left, null, {
-        fontSize: 10,
-        color: [255, 0, 0]
-      });
-    }
-  }
-  /**
-   * Render code block - display code as formatted text (not evaluated)
-   */
-  renderCodeBlock(t, i) {
-    const e = t.code || "", r = t.language || "text";
-    console.log("[PDFRenderer] Rendering code block:", r, e.length, "chars"), this.pdfService.addText(e, this.margins.left, null, {
-      fontSize: 10,
-      fontStyle: "normal",
-      maxWidth: this.contentWidth
-    });
-  }
-}
-class I {
-  constructor() {
-    this.editor = null, this.parser = new z(), this.renderer = new P(), this.blueprint = null, this._initialized = !1;
-  }
-  /**
-   * Initialize CKEditor into a container element
-   * @param {string|HTMLElement} elementOrSelector - DOM element or CSS selector
-   * @param {Object} options - CKEditor configuration options
-   * @returns {Promise<DrawPDF>} This instance (chainable)
-   */
-  async init(t, i = {}) {
-    var o, a, l, c, d;
-    const e = typeof t == "string" ? document.querySelector(t) : t;
-    if (!e)
-      throw new Error(`DrawPDF: Element not found: ${t}`);
-    const r = ((o = window.CKEDITOR) == null ? void 0 : o.DecoupledEditor) || ((a = window.CKEDITOR) == null ? void 0 : a.ClassicEditor) || window.DecoupledEditor || window.ClassicEditor;
-    if (!r)
-      throw new Error("DrawPDF: CKEditor not loaded. Please include CKEditor script before using DrawPDF.");
-    const n = { ...{
-      toolbar: {
-        items: [
-          "undo",
-          "redo",
-          "|",
-          "heading",
-          "|",
-          "bold",
-          "italic",
-          "underline",
-          "|",
-          "fontFamily",
-          "fontSize",
-          "fontColor",
-          "|",
-          "alignment",
-          "|",
-          "bulletedList",
-          "numberedList",
-          "|",
-          "insertTable",
-          "|",
-          "sourceEditing"
-        ],
-        shouldNotGroupWhenFull: !0
-      },
-      fontSize: {
-        options: [10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36, 42, 48, 72],
-        supportAllValues: !0
-      },
-      language: "vi",
-      removePlugins: [
-        "CKBox",
-        "CKFinder",
-        "EasyImage",
-        "RealTimeCollaborativeComments",
-        "RealTimeCollaborativeTrackChanges",
-        "Comments",
-        "TrackChanges",
-        "RevisionHistory",
-        "AIAssistant",
-        "AI",
-        "MultiLevelList",
-        "RestrictedEditingMode",
-        "StandardEditingMode"
-      ]
-    }, ...i };
-    try {
-      if (this.editor = await r.create(e, n), i.toolbarContainer && ((d = (c = (l = this.editor.ui) == null ? void 0 : l.view) == null ? void 0 : c.toolbar) != null && d.element)) {
-        const h = typeof i.toolbarContainer == "string" ? document.querySelector(i.toolbarContainer) : i.toolbarContainer;
-        h && h.appendChild(this.editor.ui.view.toolbar.element);
-      }
-      this._initialized = !0, console.log("✅ DrawPDF initialized");
-    } catch (h) {
-      throw console.error("DrawPDF init failed:", h), h;
-    }
-    return this;
-  }
-  /**
-   * Get JSON Blueprint from current editor content
-   * Parses HTML → JSON Blueprint and stores internally
-   * @returns {Object} JSON Blueprint
-   */
-  getData() {
-    if (!this._initialized)
-      throw new Error("DrawPDF: Not initialized. Call init() first.");
-    const t = this.editor.getData();
-    return this.blueprint = this.parser.parse(t), this.blueprint.sourceHtml = t, this.blueprint.createdAt = (/* @__PURE__ */ new Date()).toISOString(), this.blueprint;
-  }
-  /**
-   * Set JSON Blueprint for later rendering
-   * @param {Object} blueprint - JSON Blueprint object
-   * @returns {DrawPDF} This instance (chainable)
-   */
-  setData(t) {
-    if (!t || typeof t != "object")
-      throw new Error("DrawPDF: setData expects a JSON Blueprint object.");
-    return this.blueprint = t, this._initialized && t.sourceHtml && this.editor.setData(t.sourceHtml), this;
-  }
-  /**
-   * Render PDF from stored blueprint
-   * @param {Object} data - Variable data for template replacement
-   * @returns {string} PDF as data URL (base64)
-   */
-  render(t = {}) {
-    if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
-      throw new Error("DrawPDF: No blueprint. Call getData() or setData() first.");
-    return this.renderer.render(this.blueprint, t), this.renderer.getDataUrl();
-  }
-  /**
-   * Download PDF from stored blueprint
-   * @param {string} filename - Output filename
-   * @param {Object} data - Variable data for template replacement
-   * @returns {DrawPDF} This instance (chainable)
-   */
-  download(t = "document.pdf", i = {}) {
-    if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
-      throw new Error("DrawPDF: No blueprint. Call getData() or setData() first.");
-    return this.renderer.render(this.blueprint, i), this.renderer.download(t), this;
-  }
-  /**
-   * Get PDF as Blob (for custom handling)
-   * @param {Object} data - Variable data for template replacement
-   * @returns {Blob} PDF blob
-   */
-  getBlob(t = {}) {
-    if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
-      throw new Error("DrawPDF: No blueprint.");
-    return this.renderer.render(this.blueprint, t), this.renderer.getBlob();
-  }
-  /**
-   * Preview PDF in new browser tab
-   * @param {Object} data - Variable data for template replacement
-   */
-  preview(t = {}) {
-    if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
-      throw new Error("DrawPDF: No blueprint.");
-    this.renderer.render(this.blueprint, t), this.renderer.preview();
-  }
-  /**
-   * Get current blueprint without re-parsing
-   * @returns {Object|null} Stored blueprint or null
-   */
-  getBlueprint() {
-    return this.blueprint;
-  }
-  /**
-   * Export blueprint as JSON string
-   * @returns {string} JSON string
-   */
-  exportJson() {
-    if (!this.blueprint)
-      throw new Error("DrawPDF: No blueprint to export.");
-    return JSON.stringify(this.blueprint, null, 2);
-  }
-  /**
-   * Import blueprint from JSON string
-   * @param {string} jsonString - JSON string
-   * @returns {DrawPDF} This instance (chainable)
-   */
-  importJson(t) {
-    const i = JSON.parse(t);
-    return this.setData(i);
-  }
-  /**
-   * Destroy editor instance and cleanup
-   */
-  destroy() {
-    this.editor && (this.editor.destroy(), this.editor = null, this._initialized = !1), this.blueprint = null;
-  }
-  /**
-   * Static factory method - create and initialize in one call
-   * @param {string|HTMLElement} element - DOM element or selector
-   * @param {Object} options - CKEditor options
-   * @returns {Promise<DrawPDF>} Initialized DrawPDF instance
-   */
-  static async create(t, i = {}) {
-    const e = new I();
-    return await e.init(t, i), e;
-  }
-  /**
-   * Static method - parse HTML to blueprint without editor
-   * @param {string} html - HTML content
-   * @returns {Object} JSON Blueprint
-   */
-  static parseHtml(t) {
-    const e = new z().parse(t);
-    return e.sourceHtml = t, e.createdAt = (/* @__PURE__ */ new Date()).toISOString(), e;
-  }
-  /**
-   * Static method - render PDF from blueprint (headless)
-   * @param {Object} blueprint - JSON Blueprint
-   * @param {Object} data - Variable data
-   * @returns {string} PDF as data URL
-   */
-  static renderBlueprint(t, i = {}) {
-    const e = new P();
-    return e.render(t, i), e.getDataUrl();
-  }
-  /**
-   * Static method - download PDF from blueprint (headless)
-   * @param {Object} blueprint - JSON Blueprint
-   * @param {string} filename - Output filename
-   * @param {Object} data - Variable data
-   */
-  static downloadBlueprint(t, i = "document.pdf", e = {}) {
-    const r = new P();
-    r.render(t, e), r.download(i);
-  }
-}
-let N = class {
-  constructor() {
-    this.doc = new jspdf.jsPDF(), this.currentY = 20, this.lineHeight = 1, this.pageHeight = this.doc.internal.pageSize.height, this.pageWidth = this.doc.internal.pageSize.width, this.margins = { left: 15, right: 15, top: 20, bottom: 20 }, this.setupVietnameseFont();
+    this.doc = new k(), this.currentY = 20, this.lineHeight = 1, this.pageHeight = this.doc.internal.pageSize.height, this.pageWidth = this.doc.internal.pageSize.width, this.margins = { left: 15, right: 15, top: 20, bottom: 20 }, this.setupVietnameseFont();
   }
   // Thiết lập font tiếng Việt
   setupVietnameseFont() {
@@ -3340,17 +2676,683 @@ let N = class {
       return `${n.left.trimEnd()}${o} :${s}${n.right.trimStart()}`;
     });
   }
-};
-const O = "2.1.0";
+}
+class P {
+  constructor() {
+    this.pdfService = null, this.margins = {
+      left: 15,
+      right: 15,
+      top: 20,
+      bottom: 20
+    }, this.pageWidth = 210, this.contentWidth = this.pageWidth - this.margins.left - this.margins.right;
+  }
+  /**
+   * Content-flow: Calculate x position from layout hints
+   */
+  calculateX(t) {
+    const i = t.indent || 0, e = t.marginLeft || 0;
+    return this.margins.left + i + e;
+  }
+  /**
+   * Render JSON blueprint to PDF using JsPdfService
+   * @param {Object} blueprint - JSON blueprint from CKEditorParser
+   * @param {Object} data - Variable data for replacement
+   * @returns {JsPdfService} PDF service instance
+   */
+  render(t, i = {}) {
+    return this.pdfService = new v(), t.margins && (this.margins = { ...this.margins, ...t.margins }, this.contentWidth = this.pageWidth - this.margins.left - this.margins.right), t.pages.forEach((e, r) => {
+      r > 0 && this.pdfService.addNewPage(), this.pdfService.resetPosition(this.margins.top), this.renderPage(e, i);
+    }), this;
+  }
+  /**
+   * Helper to clean content (strip HTML tags + decode entities)
+   */
+  cleanContent(t) {
+    if (!t) return "";
+    let i = String(t);
+    return i = i.replace(/<br\s*\/?>/gi, `
+`), i = i.replace(/<\/p>\s*<p[^>]*>/gi, `
+`), i = i.replace(/<[^>]*>/g, ""), this.pdfService._decodeHtmlEntities(i);
+  }
+  /**
+   * Render a single page
+   */
+  renderPage(t, i) {
+    t.elements.forEach((e) => {
+      switch (e.content && (e.content = this.pdfService._decodeHtmlEntities(e.content)), e.type) {
+        case "text":
+          this.renderText(e, i);
+          break;
+        case "richtext":
+          this.renderRichText(e, i);
+          break;
+        case "heading":
+          this.renderHeading(e, i);
+          break;
+        case "table":
+          this.renderTable(e, i);
+          break;
+        case "image":
+          this.renderImage(e, i);
+          break;
+        case "line":
+          this.renderLine(e);
+          break;
+        case "space":
+          this.pdfService.addSpace(e.height || 10);
+          break;
+        case "evalblock":
+          this.renderEvalBlock(e, i);
+          break;
+        case "codeblock":
+          this.renderCodeBlock(e, i);
+          break;
+      }
+    });
+  }
+  /**
+   * Render rich text element with mixed inline styles (content-flow)
+   * Handles layout markers: ___BR___, ___HR___, ___PAGEBREAK___, ___TAB___
+   */
+  renderRichText(t, i) {
+    const e = t.segments || [], r = t.style || {}, s = e.map((h) => ({
+      text: this.replaceVariables(h.text, i),
+      style: h.style
+    })), n = this.calculateX(t), o = r.lineHeight || 5, a = {
+      fontSize: r.fontSize || 12,
+      color: this.parseColor(r.color),
+      align: r.align || "left",
+      lineHeight: o,
+      x: n,
+      maxWidth: t.width || this.contentWidth
+    };
+    if (!s.some(
+      (h) => h.text && (h.text.includes("___BR___") || h.text.includes("___HR___") || h.text.includes("___PAGEBREAK___"))
+    )) {
+      const h = s.map((g) => ({
+        ...g,
+        text: g.text ? g.text.replace(/___TAB___/g, "    ") : g.text
+      }));
+      this.pdfService.addMixedParagraph(h, a);
+      return;
+    }
+    let c = s.map((h) => h.text || "").join("");
+    c = c.replace(/___TAB___/g, "    ");
+    const d = c.split(/(___BR___|___HR___|___PAGEBREAK___)/);
+    for (const h of d)
+      if (h === "___BR___")
+        this.pdfService.addSpace(this.pdfService.lineHeight);
+      else if (h === "___HR___")
+        this.pdfService.addHorizontalLine();
+      else if (h === "___PAGEBREAK___")
+        this.pdfService.addNewPage();
+      else if (h.trim()) {
+        const g = [{ text: h.trim(), style: {} }];
+        this.pdfService.addMixedParagraph(g, a);
+      }
+  }
+  /**
+   * Render text element using JsPdfService (content-flow)
+   * Handles layout markers: ___BR___, ___HR___, ___PAGEBREAK___, ___TAB___
+   */
+  renderText(t, i) {
+    let e = this.replaceVariables(t.content, i);
+    const r = t.style || {}, s = r.lineHeight || 5, n = {
+      fontSize: r.fontSize || 12,
+      fontStyle: this.mapFontStyle(r),
+      color: this.parseColor(r.color),
+      align: r.align || "left",
+      lineHeight: s
+    }, o = this.calculateX(t);
+    if (e = e.replace(/___TAB___/g, "    "), !e.includes("___BR___") && !e.includes("___HR___") && !e.includes("___PAGEBREAK___")) {
+      this.pdfService.addText(e, o, null, n);
+      return;
+    }
+    const a = e.split(/(___BR___|___HR___|___PAGEBREAK___)/);
+    for (const l of a)
+      l === "___BR___" ? this.pdfService.addSpace(s) : l === "___HR___" ? this.pdfService.addHorizontalLine() : l === "___PAGEBREAK___" ? this.pdfService.addNewPage() : l.trim() && this.pdfService.addText(l.trim(), o, null, n);
+  }
+  /**
+   * Render heading element (content-flow)
+   */
+  renderHeading(t, i) {
+    var s, n, o;
+    const e = this.replaceVariables(t.content, i);
+    switch (t.level || 1) {
+      case 1:
+        this.pdfService.addTitle(e, { align: ((s = t.style) == null ? void 0 : s.align) || "center" });
+        break;
+      case 2:
+        this.pdfService.addSubTitle(e, { align: ((n = t.style) == null ? void 0 : n.align) || "left" });
+        break;
+      default:
+        this.pdfService.addText(e, null, null, {
+          fontSize: 14,
+          fontStyle: "bold",
+          align: ((o = t.style) == null ? void 0 : o.align) || "left"
+        });
+    }
+  }
+  /**
+   * Render table element with styles
+   */
+  renderTable(t, i) {
+    var h, g, u;
+    const e = t.rows || [];
+    if (e.length === 0) return;
+    if (t.dataVar) {
+      const f = t.dataVar.replace(/\{\{|\}\}/g, ""), p = i[f];
+      if (Array.isArray(p)) {
+        this.renderDataTable(t, p);
+        return;
+      }
+    }
+    t.y !== void 0 && this.pdfService.resetPosition(t.y);
+    const r = [], s = t.style || {}, n = (f, p, b) => {
+      if (!f) return { content: "" };
+      const m = f.cellStyle || {}, S = {
+        halign: f.align || "left",
+        valign: m.verticalAlign === "top" ? "top" : m.verticalAlign === "bottom" ? "bottom" : "middle"
+      };
+      if (m.backgroundColor && (S.fillColor = this.parseColorToArray(m.backgroundColor)), m.borderColor && (S.lineColor = this.parseColorToArray(m.borderColor)), m.borderWidth && (S.lineWidth = m.borderWidth), m.padding && (S.cellPadding = m.padding), f.type === "image")
+        return r.push({
+          rowIndex: p,
+          cellIndex: b,
+          src: f.src,
+          width: f.width,
+          height: f.height
+        }), {
+          content: "[IMG]",
+          colSpan: f.colSpan || 1,
+          rowSpan: f.rowSpan || 1,
+          styles: S
+        };
+      const y = typeof f == "object" ? this.replaceVariables(f.content, i) : f;
+      return {
+        content: this.cleanContent(y),
+        colSpan: f.colSpan || 1,
+        rowSpan: f.rowSpan || 1,
+        styles: S
+      };
+    }, o = ((h = e[0]) == null ? void 0 : h.map((f, p) => n(f, 0, p))) || [], a = (g = e[0]) == null ? void 0 : g[0], l = (u = a == null ? void 0 : a.cellStyle) == null ? void 0 : u.backgroundColor, c = e.slice(1).map(
+      (f, p) => f.map((b, m) => n(b, p + 1, m))
+    ), d = {
+      tableWidth: t.width
+    };
+    s.borderWidth !== void 0 && (d.lineWidth = s.borderWidth), s.borderColor && (d.lineColor = this.parseColorToArray(s.borderColor)), s.backgroundColor && (d.fillColor = this.parseColorToArray(s.backgroundColor)), s.align === "center" ? d.tableAlign = "center" : s.align === "right" && (d.tableAlign = "right"), l && (d.headStyles = {
+      fillColor: this.parseColorToArray(l)
+    }), typeof this.pdfService.addTable == "function" ? this.pdfService.addTable(o, c, d) : this.drawTableManually(t, i);
+  }
+  /**
+   * Parse color string to RGB array for jspdf-autotable
+   */
+  parseColorToArray(t) {
+    if (!t) return [0, 0, 0];
+    if (t.startsWith("#")) {
+      const e = t.slice(1), r = parseInt(e.substr(0, 2), 16), s = parseInt(e.substr(2, 2), 16), n = parseInt(e.substr(4, 2), 16);
+      return [r, s, n];
+    }
+    const i = t.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
+    return i ? [parseInt(i[1]), parseInt(i[2]), parseInt(i[3])] : [0, 0, 0];
+  }
+  /**
+   * Render dynamic data table
+   */
+  renderDataTable(t, i) {
+    const e = t.columns || [];
+    if (e.length === 0 || !Array.isArray(i)) return;
+    const r = e.map((n) => n.label || n), s = i.map(
+      (n) => e.map((o) => {
+        const a = o.key || o;
+        return String(n[a] || "");
+      })
+    );
+    typeof this.pdfService.addTable == "function" && this.pdfService.addTable(r, s, t.style || {});
+  }
+  /**
+   * Manual table drawing when addTable is not available
+   */
+  drawTableManually(t, i) {
+    var d;
+    const e = t.rows || [], r = t.x || this.pdfService.margins.left, s = t.width || this.pdfService.pageWidth - r - this.pdfService.margins.right, n = t.rowHeight || 8, o = ((d = e[0]) == null ? void 0 : d.length) || 1, a = s / o, l = this.pdfService.doc;
+    let c = this.pdfService.getCurrentY();
+    l.setLineWidth(0.5), l.setFontSize(10), e.forEach((h, g) => {
+      h.forEach((u, f) => {
+        const p = r + f * a, b = typeof u == "object" ? this.replaceVariables(u.content, i) : this.replaceVariables(String(u), i), m = typeof u == "object" ? u.isHeader : g === 0;
+        m && (l.setFillColor(240, 240, 240), l.rect(p, c, a, n, "F")), l.setDrawColor(0, 0, 0), l.rect(p, c, a, n);
+        try {
+          l.setFont("Roboto", m ? "bold" : "normal");
+        } catch {
+          l.setFont("helvetica", m ? "bold" : "normal");
+        }
+        l.setTextColor(0, 0, 0);
+        const S = b.replace(/<[^>]*>/g, ""), y = c + n / 2 + 2;
+        l.text(S, p + 2, y, { maxWidth: a - 4 });
+      }), c += n;
+    }), this.pdfService.resetPosition(c + 5);
+  }
+  /**
+   * Render image element (content-flow)
+   */
+  renderImage(t, i) {
+    let e = this.replaceVariables(t.src, i);
+    if (e && (e.startsWith("data:") || e.startsWith("http"))) {
+      const r = t.x !== void 0 ? t.x : this.margins.left;
+      this.pdfService.addImage(
+        e,
+        r,
+        null,
+        // Let service handle y (content-flow)
+        t.width || 50,
+        t.height || 50,
+        t.style || {}
+      );
+    }
+  }
+  /**
+   * Render line element (content-flow)
+   */
+  renderLine(t) {
+    if (t.fullWidth) {
+      const i = this.pdfService.getCurrentY();
+      this.pdfService.addLine(
+        this.margins.left,
+        i,
+        this.pageWidth - this.margins.right,
+        i,
+        t.style || {}
+      ), this.pdfService.addSpace(5);
+    } else
+      this.pdfService.addLine(
+        t.x1,
+        t.y1,
+        t.x2,
+        t.y2,
+        t.style || {}
+      );
+  }
+  /**
+   * Replace {{variables}} with data values
+   * Now supports: nested objects, #each loops, #if conditionals
+   */
+  replaceVariables(t, i) {
+    return w.process(t, i);
+  }
+  /**
+   * Process layout markers in text and render appropriately
+   * Handles: ___BR___, ___TAB___, ___HR___, ___PAGEBREAK___
+   * @param {string} text - Text with markers
+   * @param {Object} options - Rendering options
+   * @returns {string} Text with markers replaced (TAB only)
+   */
+  processLayoutMarkers(t, i = {}) {
+    if (!t || typeof t != "string") return t || "";
+    let e = t.replace(/___TAB___/g, "    ");
+    const r = e.includes("___BR___"), s = e.includes("___HR___"), n = e.includes("___PAGEBREAK___");
+    if (!r && !s && !n)
+      return e;
+    const o = e.split(/(___BR___|___HR___|___PAGEBREAK___)/);
+    for (let a = 0; a < o.length; a++) {
+      const l = o[a];
+      l === "___BR___" ? this.pdfService.addSpace(i.lineHeight || 5) : l === "___HR___" ? this.pdfService.addHorizontalLine() : l === "___PAGEBREAK___" ? this.pdfService.addNewPage() : l.trim();
+    }
+    return e.replace(/___BR___|___HR___|___PAGEBREAK___/g, "");
+  }
+  /**
+   * Check if text contains layout markers that need special rendering
+   */
+  hasLayoutMarkers(t) {
+    return t ? t.includes("___BR___") || t.includes("___HR___") || t.includes("___PAGEBREAK___") : !1;
+  }
+  /**
+   * Render text with layout markers support
+   * Splits text by markers and renders each segment appropriately
+   */
+  renderTextWithMarkers(t, i = {}) {
+    if (!t) return;
+    const r = t.replace(/___TAB___/g, "    ").split(/(___BR___|___HR___|___PAGEBREAK___)/), s = i.x || this.margins.left, n = i.fontSize || 12, o = i.lineHeight || n * 0.5;
+    for (const a of r)
+      a === "___BR___" ? this.pdfService.addSpace(o) : a === "___HR___" ? this.pdfService.addHorizontalLine ? this.pdfService.addHorizontalLine() : this.pdfService.addSpace(5) : a === "___PAGEBREAK___" ? this.pdfService.addNewPage() : a.trim() && this.pdfService.addText(a.trim(), s, null, {
+        fontSize: n,
+        maxWidth: i.maxWidth || this.contentWidth,
+        align: i.align || "left",
+        color: i.color
+      });
+  }
+  /**
+   * Map style to font style string
+   */
+  mapFontStyle(t) {
+    return t.fontWeight === "bold" && t.fontStyle === "italic" ? "bolditalic" : t.fontWeight === "bold" ? "bold" : t.fontStyle === "italic" ? "italic" : "normal";
+  }
+  /**
+   * Parse color to RGB array
+   */
+  parseColor(t) {
+    if (!t) return [0, 0, 0];
+    if (Array.isArray(t)) return t;
+    if (typeof t == "string" && t.startsWith("#")) {
+      const i = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(t);
+      if (i)
+        return [
+          parseInt(i[1], 16),
+          parseInt(i[2], 16),
+          parseInt(i[3], 16)
+        ];
+    }
+    if (typeof t == "string" && t.startsWith("rgb")) {
+      const i = t.match(/(\d+),\s*(\d+),\s*(\d+)/);
+      if (i)
+        return [parseInt(i[1]), parseInt(i[2]), parseInt(i[3])];
+    }
+    return [0, 0, 0];
+  }
+  /**
+   * Get PDF as data URL
+   */
+  getDataUrl() {
+    return this.pdfService.generateDataURL();
+  }
+  /**
+   * Download PDF
+   */
+  download(t = "document.pdf") {
+    this.pdfService.savePDF(t);
+  }
+  /**
+   * Get PDF as Blob
+   */
+  getBlob() {
+    return this.pdfService.generateBlob();
+  }
+  /**
+   * Preview PDF in new tab
+   */
+  preview() {
+    this.pdfService.previewPDF();
+  }
+  /**
+   * Render eval block - execute JavaScript code with full PDF access
+   * Code must start with '// eval' to be evaluated
+   * Available in code: pdf (pdfService), data, renderer, helpers
+   */
+  renderEvalBlock(t, i) {
+    let e = t.code || "";
+    e = e.replace(/^\/\/\s*eval\s*/i, ""), e = e.replace(/^\/\*\s*eval\s*\*\/\s*/i, ""), console.log("[PDFRenderer] Evaluating code block with full PDF access...");
+    try {
+      const r = {
+        // Direct PDF service access
+        pdf: this.pdfService,
+        // Data context
+        data: i,
+        // Renderer reference
+        renderer: this,
+        // Helper functions
+        formatNumber: (o) => w.formatNumber(o),
+        formatCurrency: (o) => w.formatCurrency(o),
+        formatDate: (o) => w.formatDate(o),
+        today: () => w.formatDateObject(/* @__PURE__ */ new Date()),
+        now: () => (/* @__PURE__ */ new Date()).toLocaleString("vi-VN"),
+        year: () => (/* @__PURE__ */ new Date()).getFullYear(),
+        sum: (o, a) => o.reduce((l, c) => l + (Number(c[a]) || 0), 0),
+        count: (o) => Array.isArray(o) ? o.length : 0,
+        filter: (o, a) => o.filter(a),
+        map: (o, a) => o.map(a),
+        join: (o, a = ", ") => o.join(a),
+        // Convenience shortcuts
+        addText: (o, a, l, c) => this.pdfService.addText(o, a, l, c),
+        addTitle: (o, a) => this.pdfService.addTitle(o, a),
+        addTable: (o, a, l) => this.pdfService.addTable(o, a, l),
+        addSpace: (o) => this.pdfService.addSpace(o),
+        addLine: () => this.pdfService.addHorizontalLine(),
+        addImage: (o, a, l, c, d) => this.pdfService.addImage(o, a, l, c, d),
+        newPage: () => this.pdfService.addNewPage()
+      }, n = new Function(...Object.keys(r), `
+        "use strict";
+        ${e}
+      `)(...Object.values(r));
+      console.log("[PDFRenderer] Eval completed, result:", n), typeof n == "string" && n.trim() && this.pdfService.addText(n, this.margins.left, null, {
+        fontSize: 12,
+        maxWidth: this.contentWidth
+      });
+    } catch (r) {
+      console.error("[PDFRenderer] Eval error:", r), this.pdfService.addText(`[Eval Error: ${r.message}]`, this.margins.left, null, {
+        fontSize: 10,
+        color: [255, 0, 0]
+      });
+    }
+  }
+  /**
+   * Render code block - display code as formatted text (not evaluated)
+   */
+  renderCodeBlock(t, i) {
+    const e = t.code || "", r = t.language || "text";
+    console.log("[PDFRenderer] Rendering code block:", r, e.length, "chars"), this.pdfService.addText(e, this.margins.left, null, {
+      fontSize: 10,
+      fontStyle: "normal",
+      maxWidth: this.contentWidth
+    });
+  }
+}
+class I {
+  constructor() {
+    this.editor = null, this.parser = new z(), this.renderer = new P(), this.blueprint = null, this._initialized = !1;
+  }
+  /**
+   * Initialize CKEditor into a container element
+   * @param {string|HTMLElement} elementOrSelector - DOM element or CSS selector
+   * @param {Object} options - CKEditor configuration options
+   * @returns {Promise<DrawPDF>} This instance (chainable)
+   */
+  async init(t, i = {}) {
+    var o, a, l, c, d;
+    const e = typeof t == "string" ? document.querySelector(t) : t;
+    if (!e)
+      throw new Error(`DrawPDF: Element not found: ${t}`);
+    const r = ((o = window.CKEDITOR) == null ? void 0 : o.DecoupledEditor) || ((a = window.CKEDITOR) == null ? void 0 : a.ClassicEditor) || window.DecoupledEditor || window.ClassicEditor;
+    if (!r)
+      throw new Error("DrawPDF: CKEditor not loaded. Please include CKEditor script before using DrawPDF.");
+    const n = { ...{
+      toolbar: {
+        items: [
+          "undo",
+          "redo",
+          "|",
+          "heading",
+          "|",
+          "bold",
+          "italic",
+          "underline",
+          "|",
+          "fontFamily",
+          "fontSize",
+          "fontColor",
+          "|",
+          "alignment",
+          "|",
+          "bulletedList",
+          "numberedList",
+          "|",
+          "insertTable",
+          "|",
+          "sourceEditing"
+        ],
+        shouldNotGroupWhenFull: !0
+      },
+      fontSize: {
+        options: [10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36, 42, 48, 72],
+        supportAllValues: !0
+      },
+      language: "vi",
+      removePlugins: [
+        "CKBox",
+        "CKFinder",
+        "EasyImage",
+        "RealTimeCollaborativeComments",
+        "RealTimeCollaborativeTrackChanges",
+        "Comments",
+        "TrackChanges",
+        "RevisionHistory",
+        "AIAssistant",
+        "AI",
+        "MultiLevelList",
+        "RestrictedEditingMode",
+        "StandardEditingMode"
+      ]
+    }, ...i };
+    try {
+      if (this.editor = await r.create(e, n), i.toolbarContainer && ((d = (c = (l = this.editor.ui) == null ? void 0 : l.view) == null ? void 0 : c.toolbar) != null && d.element)) {
+        const h = typeof i.toolbarContainer == "string" ? document.querySelector(i.toolbarContainer) : i.toolbarContainer;
+        h && h.appendChild(this.editor.ui.view.toolbar.element);
+      }
+      this._initialized = !0, console.log("✅ DrawPDF initialized");
+    } catch (h) {
+      throw console.error("DrawPDF init failed:", h), h;
+    }
+    return this;
+  }
+  /**
+   * Get JSON Blueprint from current editor content
+   * Parses HTML → JSON Blueprint and stores internally
+   * @returns {Object} JSON Blueprint
+   */
+  getData() {
+    if (!this._initialized)
+      throw new Error("DrawPDF: Not initialized. Call init() first.");
+    const t = this.editor.getData();
+    return this.blueprint = this.parser.parse(t), this.blueprint.sourceHtml = t, this.blueprint.createdAt = (/* @__PURE__ */ new Date()).toISOString(), this.blueprint;
+  }
+  /**
+   * Set JSON Blueprint for later rendering
+   * @param {Object} blueprint - JSON Blueprint object
+   * @returns {DrawPDF} This instance (chainable)
+   */
+  setData(t) {
+    if (!t || typeof t != "object")
+      throw new Error("DrawPDF: setData expects a JSON Blueprint object.");
+    return this.blueprint = t, this._initialized && t.sourceHtml && this.editor.setData(t.sourceHtml), this;
+  }
+  /**
+   * Render PDF from stored blueprint
+   * @param {Object} data - Variable data for template replacement
+   * @returns {string} PDF as data URL (base64)
+   */
+  render(t = {}) {
+    if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
+      throw new Error("DrawPDF: No blueprint. Call getData() or setData() first.");
+    return this.renderer.render(this.blueprint, t), this.renderer.getDataUrl();
+  }
+  /**
+   * Download PDF from stored blueprint
+   * @param {string} filename - Output filename
+   * @param {Object} data - Variable data for template replacement
+   * @returns {DrawPDF} This instance (chainable)
+   */
+  download(t = "document.pdf", i = {}) {
+    if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
+      throw new Error("DrawPDF: No blueprint. Call getData() or setData() first.");
+    return this.renderer.render(this.blueprint, i), this.renderer.download(t), this;
+  }
+  /**
+   * Get PDF as Blob (for custom handling)
+   * @param {Object} data - Variable data for template replacement
+   * @returns {Blob} PDF blob
+   */
+  getBlob(t = {}) {
+    if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
+      throw new Error("DrawPDF: No blueprint.");
+    return this.renderer.render(this.blueprint, t), this.renderer.getBlob();
+  }
+  /**
+   * Preview PDF in new browser tab
+   * @param {Object} data - Variable data for template replacement
+   */
+  preview(t = {}) {
+    if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
+      throw new Error("DrawPDF: No blueprint.");
+    this.renderer.render(this.blueprint, t), this.renderer.preview();
+  }
+  /**
+   * Get current blueprint without re-parsing
+   * @returns {Object|null} Stored blueprint or null
+   */
+  getBlueprint() {
+    return this.blueprint;
+  }
+  /**
+   * Export blueprint as JSON string
+   * @returns {string} JSON string
+   */
+  exportJson() {
+    if (!this.blueprint)
+      throw new Error("DrawPDF: No blueprint to export.");
+    return JSON.stringify(this.blueprint, null, 2);
+  }
+  /**
+   * Import blueprint from JSON string
+   * @param {string} jsonString - JSON string
+   * @returns {DrawPDF} This instance (chainable)
+   */
+  importJson(t) {
+    const i = JSON.parse(t);
+    return this.setData(i);
+  }
+  /**
+   * Destroy editor instance and cleanup
+   */
+  destroy() {
+    this.editor && (this.editor.destroy(), this.editor = null, this._initialized = !1), this.blueprint = null;
+  }
+  /**
+   * Static factory method - create and initialize in one call
+   * @param {string|HTMLElement} element - DOM element or selector
+   * @param {Object} options - CKEditor options
+   * @returns {Promise<DrawPDF>} Initialized DrawPDF instance
+   */
+  static async create(t, i = {}) {
+    const e = new I();
+    return await e.init(t, i), e;
+  }
+  /**
+   * Static method - parse HTML to blueprint without editor
+   * @param {string} html - HTML content
+   * @returns {Object} JSON Blueprint
+   */
+  static parseHtml(t) {
+    const e = new z().parse(t);
+    return e.sourceHtml = t, e.createdAt = (/* @__PURE__ */ new Date()).toISOString(), e;
+  }
+  /**
+   * Static method - render PDF from blueprint (headless)
+   * @param {Object} blueprint - JSON Blueprint
+   * @param {Object} data - Variable data
+   * @returns {string} PDF as data URL
+   */
+  static renderBlueprint(t, i = {}) {
+    const e = new P();
+    return e.render(t, i), e.getDataUrl();
+  }
+  /**
+   * Static method - download PDF from blueprint (headless)
+   * @param {Object} blueprint - JSON Blueprint
+   * @param {string} filename - Output filename
+   * @param {Object} data - Variable data
+   */
+  static downloadBlueprint(t, i = "document.pdf", e = {}) {
+    const r = new P();
+    r.render(t, e), r.download(i);
+  }
+}
+const Y = "2.1.0";
 export {
   z as CKEditorParser,
   I as DrawPDF,
   x as FONTS,
-  N as JsPdfService,
+  v as JsPdfService,
   _ as PAGE,
   P as PDFRenderer,
-  k as RichTextTokenizer,
+  N as RichTextTokenizer,
   w as TemplateEngine,
-  O as VERSION,
+  Y as VERSION,
   I as default
 };
