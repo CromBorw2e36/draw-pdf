@@ -1,4 +1,5 @@
-import { jsPDF } from 'jspdf';
+import 'jspdf';
+const { jsPDF } = window.jspdf;
 import 'jspdf-autotable';
 import { FONT_CONFIG } from '../utils/constants.js';
 
