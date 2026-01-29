@@ -1,6 +1,6 @@
-import { jsPDF as v } from "jspdf";
+import { jsPDF as I } from "jspdf";
 import "jspdf-autotable";
-class D {
+class v {
   constructor() {
     this.inlineTags = ["b", "strong", "i", "em", "u", "s", "strike", "span"];
   }
@@ -56,26 +56,26 @@ class D {
       "&divide;": "÷"
     };
     let e = t;
-    for (const [r, s] of Object.entries(i))
-      e = e.split(r).join(s);
-    return e = e.replace(/&#(\d+);/g, (r, s) => String.fromCharCode(s)), e = e.replace(/&#x([0-9a-fA-F]+);/g, (r, s) => String.fromCharCode(parseInt(s, 16))), e = e.replace(/\u00A0/g, " "), e;
+    for (const [n, s] of Object.entries(i))
+      e = e.split(n).join(s);
+    return e = e.replace(/&#(\d+);/g, (n, s) => String.fromCharCode(s)), e = e.replace(/&#x([0-9a-fA-F]+);/g, (n, s) => String.fromCharCode(parseInt(s, 16))), e = e.replace(/\u00A0/g, " "), e;
   }
   /**
    * Walk the DOM tree and extract text with styles
    */
   walkTree(t, i, e) {
-    const r = t.childNodes;
-    for (let s = 0; s < r.length; s++) {
-      const n = r[s];
-      if (n.nodeType === Node.TEXT_NODE) {
-        let o = n.textContent;
+    const n = t.childNodes;
+    for (let s = 0; s < n.length; s++) {
+      const r = n[s];
+      if (r.nodeType === Node.TEXT_NODE) {
+        let o = r.textContent;
         o = this.decodeHtmlEntities(o), o && e.push({
           text: o,
           style: { ...i }
         });
-      } else if (n.nodeType === Node.ELEMENT_NODE) {
-        const o = this.applyNodeStyle(n, i);
-        this.walkTree(n, o, e);
+      } else if (r.nodeType === Node.ELEMENT_NODE) {
+        const o = this.applyNodeStyle(r, i);
+        this.walkTree(r, o, e);
       }
     }
   }
@@ -113,13 +113,13 @@ class D {
       return t;
     const i = t.match(/rgb\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*\)/i);
     if (i) {
-      const r = parseInt(i[1]), s = parseInt(i[2]), n = parseInt(i[3]);
-      return [r, s, n];
+      const n = parseInt(i[1]), s = parseInt(i[2]), r = parseInt(i[3]);
+      return [n, s, r];
     }
     const e = t.match(/rgba\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*[\d.]+\s*\)/i);
     if (e) {
-      const r = parseInt(e[1]), s = parseInt(e[2]), n = parseInt(e[3]);
-      return [r, s, n];
+      const n = parseInt(e[1]), s = parseInt(e[2]), r = parseInt(e[3]);
+      return [n, s, r];
     }
     return null;
   }
@@ -134,8 +134,8 @@ class D {
     const e = t.match(/(\d+(?:\.\d+)?)\s*pt/i);
     if (e)
       return parseFloat(e[1]);
-    const r = t.match(/^(\d+(?:\.\d+)?)$/);
-    return r ? parseFloat(r[1]) : null;
+    const n = t.match(/^(\d+(?:\.\d+)?)$/);
+    return n ? parseFloat(n[1]) : null;
   }
   /**
    * Merge adjacent segments with identical styles
@@ -144,8 +144,8 @@ class D {
     if (t.length === 0) return t;
     const i = [];
     let e = { ...t[0] };
-    for (let r = 1; r < t.length; r++) {
-      const s = t[r];
+    for (let n = 1; n < t.length; n++) {
+      const s = t[n];
       this.stylesEqual(e.style, s.style) ? e.text += s.text : (e.text && i.push(e), e = { ...s });
     }
     return e.text && i.push(e), i;
@@ -183,9 +183,9 @@ const _ = {
   H2_SIZE: 16,
   H3_SIZE: 14
 };
-class z {
+class k {
   constructor() {
-    this.currentY = _.MARGIN_TOP, this.currentPage = 0, this.pages = [{ pageNumber: 1, elements: [] }], this.tokenizer = new D();
+    this.currentY = _.MARGIN_TOP, this.currentPage = 0, this.pages = [{ pageNumber: 1, elements: [] }], this.tokenizer = new v();
   }
   /**
    * Decode HTML entities in text
@@ -205,9 +205,9 @@ class z {
       "&hellip;": "…"
     };
     let e = t;
-    for (const [r, s] of Object.entries(i))
-      e = e.split(r).join(s);
-    return e = e.replace(/&#(\d+);/g, (r, s) => String.fromCharCode(s)), e = e.replace(/&#x([0-9a-fA-F]+);/g, (r, s) => String.fromCharCode(parseInt(s, 16))), e = e.replace(/\u00A0/g, " "), e;
+    for (const [n, s] of Object.entries(i))
+      e = e.split(n).join(s);
+    return e = e.replace(/&#(\d+);/g, (n, s) => String.fromCharCode(s)), e = e.replace(/&#x([0-9a-fA-F]+);/g, (n, s) => String.fromCharCode(parseInt(s, 16))), e = e.replace(/\u00A0/g, " "), e;
   }
   /**
    * Parse CKEditor HTML to JSON blueprint
@@ -216,9 +216,9 @@ class z {
    */
   parse(t) {
     this.currentY = _.MARGIN_TOP, this.currentPage = 0, this.pages = [{ pageNumber: 1, elements: [] }];
-    const r = new DOMParser().parseFromString(t, "text/html").body.children;
-    for (let s = 0; s < r.length; s++)
-      this.processNode(r[s]);
+    const n = new DOMParser().parseFromString(t, "text/html").body.children;
+    for (let s = 0; s < n.length; s++)
+      this.processNode(n[s]);
     return {
       version: "1.0",
       pageSize: { width: _.WIDTH, height: _.HEIGHT, unit: "mm" },
@@ -235,7 +235,7 @@ class z {
    * Process a DOM node
    */
   processNode(t) {
-    var e, r;
+    var e, n;
     switch ((e = t.tagName) == null ? void 0 : e.toLowerCase()) {
       case "p":
         this.processParagraph(t);
@@ -268,23 +268,23 @@ class z {
         this.processCodeBlock(t);
         break;
       default:
-        (r = t.textContent) != null && r.trim() && this.addTextElement(t.textContent.trim(), {});
+        (n = t.textContent) != null && n.trim() && this.addTextElement(t.textContent.trim(), {});
     }
   }
   /**
    * Process paragraph element
    */
   processParagraph(t) {
-    const i = t.innerHTML, e = this.extractStyles(t), r = t.style.textAlign || "left";
-    this.addTextElement(i, { ...e, align: r });
+    const i = t.innerHTML, e = this.extractStyles(t), n = t.style.textAlign || "left";
+    this.addTextElement(i, { ...e, align: n });
   }
   /**
    * Process heading element
    */
   processHeading(t, i) {
-    const e = t.innerHTML, r = { 1: x.H1_SIZE, 2: x.H2_SIZE, 3: x.H3_SIZE };
+    const e = t.innerHTML, n = { 1: x.H1_SIZE, 2: x.H2_SIZE, 3: x.H3_SIZE };
     this.addTextElement(e, {
-      fontSize: r[i],
+      fontSize: n[i],
       fontWeight: "bold",
       align: t.style.textAlign || "left"
     });
@@ -293,8 +293,8 @@ class z {
    * Process list
    */
   processList(t, i) {
-    t.querySelectorAll("li").forEach((r, s) => {
-      const o = (i === "number" ? `${s + 1}. ` : "• ") + r.innerHTML;
+    t.querySelectorAll("li").forEach((n, s) => {
+      const o = (i === "number" ? `${s + 1}. ` : "• ") + n.innerHTML;
       this.addTextElement(o, { indent: 10 });
     });
   }
@@ -302,7 +302,7 @@ class z {
    * Process table with properties
    */
   processTable(t) {
-    const i = [], e = t.querySelectorAll("tr"), r = {
+    const i = [], e = t.querySelectorAll("tr"), n = {
       // Width: from style or attribute
       width: this.parseWidth(t.style.width || t.getAttribute("width")),
       // Border: from style or attribute
@@ -314,13 +314,13 @@ class z {
       align: this.parseTableAlign(t)
     };
     e.forEach((s) => {
-      const n = [];
+      const r = [];
       s.querySelectorAll("td, th").forEach((a) => {
         const l = a.querySelector("img"), c = parseInt(a.getAttribute("colspan")) || 1, d = parseInt(a.getAttribute("rowspan")) || 1;
         let h = a.style.textAlign || "left";
-        const g = a.querySelector('p[style*="text-align"]');
-        g && g.style.textAlign && (h = g.style.textAlign);
-        const u = {
+        const u = a.querySelector('p[style*="text-align"]');
+        u && u.style.textAlign && (h = u.style.textAlign);
+        const g = {
           backgroundColor: this.parseColor(a.style.backgroundColor),
           borderColor: this.parseColor(a.style.borderColor),
           borderWidth: this.parseBorderWidth(a.style.border || a.style.borderWidth),
@@ -329,7 +329,7 @@ class z {
           width: this.parseWidth(a.style.width || a.getAttribute("width")),
           height: this.parseWidth(a.style.height || a.getAttribute("height"))
         };
-        l ? n.push({
+        l ? r.push({
           type: "image",
           src: l.src || l.getAttribute("src"),
           width: parseInt(l.width) || 50,
@@ -338,21 +338,21 @@ class z {
           rowSpan: d,
           align: h,
           isHeader: a.tagName.toLowerCase() === "th",
-          cellStyle: u
-        }) : n.push({
+          cellStyle: g
+        }) : r.push({
           content: a.innerHTML || " ",
           isHeader: a.tagName.toLowerCase() === "th",
           colSpan: c,
           rowSpan: d,
           align: h,
-          cellStyle: u
+          cellStyle: g
         });
-      }), i.push(n);
+      }), i.push(r);
     }), this.addElement({
       type: "table",
-      width: r.width || _.CONTENT_WIDTH,
+      width: n.width || _.CONTENT_WIDTH,
       rows: i,
-      style: r
+      style: n
     });
   }
   /**
@@ -383,8 +383,8 @@ class z {
     if (t.startsWith("#")) return t;
     const i = t.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
     if (i) {
-      const e = parseInt(i[1]).toString(16).padStart(2, "0"), r = parseInt(i[2]).toString(16).padStart(2, "0"), s = parseInt(i[3]).toString(16).padStart(2, "0");
-      return `#${e}${r}${s}`;
+      const e = parseInt(i[1]).toString(16).padStart(2, "0"), n = parseInt(i[2]).toString(16).padStart(2, "0"), s = parseInt(i[3]).toString(16).padStart(2, "0");
+      return `#${e}${n}${s}`;
     }
     return t;
   }
@@ -407,12 +407,12 @@ class z {
    * Process image
    */
   processImage(t) {
-    const i = t.src || t.getAttribute("src"), e = parseInt(t.width) || 50, r = parseInt(t.height) || 50, s = Math.min(e * 0.264, _.CONTENT_WIDTH), n = r * 0.264;
+    const i = t.src || t.getAttribute("src"), e = parseInt(t.width) || 50, n = parseInt(t.height) || 50, s = Math.min(e * 0.264, _.CONTENT_WIDTH), r = n * 0.264;
     this.addElement({
       type: "image",
       // Content-flow: No x,y - renderer will calculate
       width: s,
-      height: n,
+      height: r,
       src: i,
       align: "left"
       // Default alignment, can be extended
@@ -437,12 +437,12 @@ class z {
     var l, c, d, h;
     const i = {}, e = t.innerHTML;
     (e.includes("<strong>") || e.includes("<b>") || t.style.fontWeight === "bold") && (i.fontWeight = "bold"), (e.includes("<i>") || e.includes("<em>") || t.style.fontStyle === "italic") && (i.fontStyle = "italic"), (e.includes("<u>") || (l = t.style.textDecoration) != null && l.includes("underline")) && (i.underline = !0);
-    const r = e.match(/color:\s*([^;"]+)/);
-    r && (i.color = r[1]);
+    const n = e.match(/color:\s*([^;"]+)/);
+    n && (i.color = n[1]);
     const s = e.match(/font-size:\s*(\d+)/);
     s && (i.fontSize = parseInt(s[1]));
-    const n = (c = t.style.marginLeft) == null ? void 0 : c.match(/(\d+)/);
-    n && (i.marginLeft = parseFloat(n[1]) * 0.264);
+    const r = (c = t.style.marginLeft) == null ? void 0 : c.match(/(\d+)/);
+    r && (i.marginLeft = parseFloat(r[1]) * 0.264);
     const o = (d = t.style.textIndent) == null ? void 0 : d.match(/(\d+)/);
     o && (i.indent = parseFloat(o[1]) * 0.264);
     const a = (h = t.style.paddingLeft) == null ? void 0 : h.match(/(\d+)/);
@@ -453,8 +453,8 @@ class z {
    * No x,y coordinates - renderer will calculate based on layout hints
    */
   addTextElement(t, i) {
-    const e = this.tokenizer.tokenize(t), r = e.map((l) => l.text).join("");
-    if (!r.trim()) {
+    const e = this.tokenizer.tokenize(t), n = e.map((l) => l.text).join("");
+    if (!n.trim()) {
       this.addElement({
         type: "space",
         height: (i.fontSize || x.DEFAULT_SIZE) * x.LINE_HEIGHT * 0.352778
@@ -462,7 +462,7 @@ class z {
       });
       return;
     }
-    const s = i.fontSize || x.DEFAULT_SIZE, n = s * x.LINE_HEIGHT * 0.352778, o = (i.indent || 0) + (i.marginLeft || 0), a = _.CONTENT_WIDTH - o;
+    const s = i.fontSize || x.DEFAULT_SIZE, r = s * x.LINE_HEIGHT * 0.352778, o = (i.indent || 0) + (i.marginLeft || 0), a = _.CONTENT_WIDTH - o;
     this.addElement({
       type: "richtext",
       // Content-flow: No x,y - use layout hints instead
@@ -470,7 +470,7 @@ class z {
       marginLeft: i.marginLeft || 0,
       width: a,
       segments: e,
-      content: r,
+      content: n,
       // Fallback plain text
       style: {
         fontSize: s,
@@ -479,7 +479,7 @@ class z {
         color: i.color || "#000000",
         align: i.align || "left",
         underline: i.underline || !1,
-        lineHeight: n
+        lineHeight: r
       }
     });
   }
@@ -507,13 +507,13 @@ class z {
     const i = t.querySelector("code") || t;
     let e = i.textContent || "";
     e = this.decodeHtmlEntities(e);
-    const r = e.trim().startsWith("// eval") || e.trim().startsWith("/* eval */") || e.trim().startsWith("//eval"), n = (i.className || "").match(/language-(\w+)/), o = n ? n[1] : "javascript", a = {
-      type: r ? "evalblock" : "codeblock",
+    const n = e.trim().startsWith("// eval") || e.trim().startsWith("/* eval */") || e.trim().startsWith("//eval"), r = (i.className || "").match(/language-(\w+)/), o = r ? r[1] : "javascript", a = {
+      type: n ? "evalblock" : "codeblock",
       code: e.trim(),
       language: o,
-      isEval: r
+      isEval: n
     };
-    this.addElement(a), console.log("[CKEditorParser] Code block:", r ? "EVAL" : "DISPLAY", o);
+    this.addElement(a), console.log("[CKEditorParser] Code block:", n ? "EVAL" : "DISPLAY", o);
   }
 }
 class w {
@@ -526,12 +526,12 @@ class w {
   static getNestedValue(t, i) {
     if (!t || !i) return;
     const e = i.trim().split(".");
-    let r = t;
+    let n = t;
     for (const s of e) {
-      if (r == null) return;
-      r = r[s];
+      if (n == null) return;
+      n = n[s];
     }
-    return r;
+    return n;
   }
   /**
    * Evaluate simple condition expression
@@ -541,11 +541,11 @@ class w {
    * @returns {boolean}
    */
   static evaluateCondition(t, i) {
-    const e = t.trim(), r = ["===", "!==", ">=", "<=", ">", "<"];
-    for (const n of r)
-      if (e.includes(n)) {
-        const [o, a] = e.split(n).map((d) => d.trim()), l = this.resolveValue(o, i), c = this.resolveValue(a, i);
-        switch (n) {
+    const e = t.trim(), n = ["===", "!==", ">=", "<=", ">", "<"];
+    for (const r of n)
+      if (e.includes(r)) {
+        const [o, a] = e.split(r).map((d) => d.trim()), l = this.resolveValue(o, i), c = this.resolveValue(a, i);
+        switch (r) {
           case "===":
             return l === c;
           case "!==":
@@ -589,13 +589,13 @@ class w {
    */
   static processIfBlocks(t, i) {
     const e = /\{\{#if\s+([^}]+)\}\}([\s\S]*?)\{\{\/if\}\}/g;
-    return t.replace(e, (r, s, n) => {
-      const o = this.evaluateCondition(s, i), a = n.indexOf("{{else}}");
+    return t.replace(e, (n, s, r) => {
+      const o = this.evaluateCondition(s, i), a = r.indexOf("{{else}}");
       if (a !== -1) {
-        const l = n.substring(0, a), c = n.substring(a + 8);
+        const l = r.substring(0, a), c = r.substring(a + 8);
         return o ? l : c;
       }
-      return o ? n : "";
+      return o ? r : "";
     });
   }
   /**
@@ -610,11 +610,11 @@ class w {
    */
   static processEachBlocks(t, i) {
     const e = /\{\{~?#each\s+([^}~]+)~?\}\}([\s\S]*?)\{\{~?\/each~?\}\}/g;
-    return t.replace(e, (r, s, n) => {
+    return t.replace(e, (n, s, r) => {
       const o = s.trim(), a = this.getNestedValue(i, o);
       if (console.log("[TemplateEngine] #each:", o, "array:", a), !Array.isArray(a) || a.length === 0)
         return console.log("[TemplateEngine] #each: array not found or empty"), "";
-      const l = n.trim();
+      const l = r.trim();
       return a.map((c, d) => {
         const h = {
           ...i,
@@ -627,8 +627,8 @@ class w {
           "@item": c
           // Reference to current item
         };
-        let g = this.processIfBlocks(l, h);
-        return g = this.processFormatHelpers(g, h), g = this.processDateHelpers(g), g = this.replaceVariables(g, h), g = this.processLayoutTags(g), g.trim();
+        let u = this.processIfBlocks(l, h);
+        return u = this.processFormatHelpers(u, h), u = this.processDateHelpers(u), u = this.replaceVariables(u, h), u = this.processLayoutTags(u), u.trim();
       }).join(`
 `);
     });
@@ -651,24 +651,24 @@ class w {
    */
   static processFormatHelpers(t, i) {
     let e = t;
-    return e = e.replace(/\{\{formatNumber\s+([^}]+)\}\}/g, (r, s) => {
-      const n = this.getNestedValue(i, s.trim());
-      return n == null ? r : this.formatNumber(n);
-    }), e = e.replace(/\{\{formatCurrency\s+([^}]+)\}\}/g, (r, s) => {
-      const n = this.getNestedValue(i, s.trim());
-      return n == null ? r : this.formatCurrency(n);
-    }), e = e.replace(/\{\{formatDate\s+([^}]+)\}\}/g, (r, s) => {
-      const n = this.getNestedValue(i, s.trim());
-      return n == null ? r : this.formatDate(n);
-    }), e = e.replace(/\{\{uppercase\s+([^}]+)\}\}/g, (r, s) => {
-      const n = this.getNestedValue(i, s.trim());
-      return n == null ? r : String(n).toUpperCase();
-    }), e = e.replace(/\{\{lowercase\s+([^}]+)\}\}/g, (r, s) => {
-      const n = this.getNestedValue(i, s.trim());
-      return n == null ? r : String(n).toLowerCase();
-    }), e = e.replace(/\{\{capitalize\s+([^}]+)\}\}/g, (r, s) => {
-      const n = this.getNestedValue(i, s.trim());
-      return n == null ? r : String(n).replace(/\b\w/g, (o) => o.toUpperCase());
+    return e = e.replace(/\{\{formatNumber\s+([^}]+)\}\}/g, (n, s) => {
+      const r = this.getNestedValue(i, s.trim());
+      return r == null ? n : this.formatNumber(r);
+    }), e = e.replace(/\{\{formatCurrency\s+([^}]+)\}\}/g, (n, s) => {
+      const r = this.getNestedValue(i, s.trim());
+      return r == null ? n : this.formatCurrency(r);
+    }), e = e.replace(/\{\{formatDate\s+([^}]+)\}\}/g, (n, s) => {
+      const r = this.getNestedValue(i, s.trim());
+      return r == null ? n : this.formatDate(r);
+    }), e = e.replace(/\{\{uppercase\s+([^}]+)\}\}/g, (n, s) => {
+      const r = this.getNestedValue(i, s.trim());
+      return r == null ? n : String(r).toUpperCase();
+    }), e = e.replace(/\{\{lowercase\s+([^}]+)\}\}/g, (n, s) => {
+      const r = this.getNestedValue(i, s.trim());
+      return r == null ? n : String(r).toLowerCase();
+    }), e = e.replace(/\{\{capitalize\s+([^}]+)\}\}/g, (n, s) => {
+      const r = this.getNestedValue(i, s.trim());
+      return r == null ? n : String(r).replace(/\b\w/g, (o) => o.toUpperCase());
     }), e;
   }
   /**
@@ -712,8 +712,8 @@ class w {
    * Format Date object to dd/MM/yyyy
    */
   static formatDateObject(t) {
-    const i = String(t.getDate()).padStart(2, "0"), e = String(t.getMonth() + 1).padStart(2, "0"), r = t.getFullYear();
-    return `${i}/${e}/${r}`;
+    const i = String(t.getDate()).padStart(2, "0"), e = String(t.getMonth() + 1).padStart(2, "0"), n = t.getFullYear();
+    return `${i}/${e}/${n}`;
   }
   /**
    * Replace {{variable}} placeholders with values
@@ -723,8 +723,8 @@ class w {
    * @returns {string}
    */
   static replaceVariables(t, i) {
-    return !t || typeof t != "string" ? t || "" : t.replace(/\{\{([^#\/][^}]*?)\}\}/g, (e, r) => {
-      const s = r.trim();
+    return !t || typeof t != "string" ? t || "" : t.replace(/\{\{([^#\/][^}]*?)\}\}/g, (e, n) => {
+      const s = n.trim();
       if ([
         "br",
         "tab",
@@ -779,9 +779,9 @@ class w {
       "day",
       "time",
       "else"
-    ], r = /\{\{([^#\/][^}]*?)\}\}/g;
+    ], n = /\{\{([^#\/][^}]*?)\}\}/g;
     let s;
-    for (; (s = r.exec(t)) !== null; ) {
+    for (; (s = n.exec(t)) !== null; ) {
       const a = s[1].trim();
       if (!a.startsWith("@") && !e.includes(a.toLowerCase())) {
         if (a.startsWith("formatNumber ") || a.startsWith("formatCurrency ") || a.startsWith("formatDate ") || a.startsWith("uppercase ") || a.startsWith("lowercase ") || a.startsWith("capitalize ")) {
@@ -792,8 +792,8 @@ class w {
         i.add(a);
       }
     }
-    const n = /\{\{#each\s+([^}]+)\}\}/g;
-    for (; (s = n.exec(t)) !== null; )
+    const r = /\{\{#each\s+([^}]+)\}\}/g;
+    for (; (s = r.exec(t)) !== null; )
       i.add(s[1].trim());
     const o = /\{\{#if\s+([^}]+)\}\}/g;
     for (; (s = o.exec(t)) !== null; )
@@ -803,16 +803,52 @@ class w {
     return Array.from(i);
   }
 }
-class N {
-  constructor() {
-    this.doc = new v(), this.currentY = 20, this.lineHeight = 1, this.pageHeight = this.doc.internal.pageSize.height, this.pageWidth = this.doc.internal.pageSize.width, this.margins = { left: 15, right: 15, top: 20, bottom: 20 }, this.setupVietnameseFont();
+const P = {
+  defaultFont: "Roboto",
+  // Primary font for PDF rendering
+  fallback: "helvetica",
+  // Built-in jsPDF fallback font
+  register: []
+  // Custom font files to load (URLs to .js files)
+};
+typeof window < "u" && !window.jspdf && (window.jspdf = { jsPDF: I });
+class O {
+  /**
+   * Create JsPdfService instance
+   * @param {Object} fontConfig - Font configuration
+   * @param {string} fontConfig.defaultFont - Primary font name (default: 'Roboto')
+   * @param {string} fontConfig.fallback - Fallback font name (default: 'helvetica')
+   */
+  constructor(t = {}) {
+    this.fontConfig = { ...P, ...t }, this.defaultFont = this.fontConfig.defaultFont, this.fallbackFont = this.fontConfig.fallback, this.doc = new I(), this.currentY = 20, this.lineHeight = 1, this.pageHeight = this.doc.internal.pageSize.height, this.pageWidth = this.doc.internal.pageSize.width, this.margins = { left: 15, right: 15, top: 20, bottom: 20 }, this._setupDefaultFont();
   }
-  // Thiết lập font tiếng Việt
-  setupVietnameseFont() {
+  /**
+   * Setup default font with fallback logic
+   * @private
+   */
+  _setupDefaultFont() {
     try {
-      this.doc.getFontList().Roboto ? this.doc.setFont("Roboto", "normal") : this.doc.setFont("helvetica", "normal");
+      const t = this.doc.getFontList();
+      t[this.defaultFont] ? this.doc.setFont(this.defaultFont, "normal") : t[this.fallbackFont] ? (console.warn(`Font '${this.defaultFont}' not found, using fallback '${this.fallbackFont}'`), this.doc.setFont(this.fallbackFont, "normal"), this.defaultFont = this.fallbackFont) : (console.warn(`Neither '${this.defaultFont}' nor '${this.fallbackFont}' found, using 'helvetica'`), this.doc.setFont("helvetica", "normal"), this.defaultFont = "helvetica");
     } catch (t) {
-      console.warn("Không thể load font Roboto, sử dụng font mặc định:", t.message), this.doc.setFont("helvetica", "normal");
+      console.warn("Error setting up font, using helvetica:", t.message), this.doc.setFont("helvetica", "normal"), this.defaultFont = "helvetica";
+    }
+  }
+  /**
+   * Set font with automatic fallback
+   * @param {string} fontName - Font name to use (optional, uses defaultFont if not provided)
+   * @param {string} style - Font style: 'normal', 'bold', 'italic', 'bolditalic'
+   */
+  _setFont(t = null, i = "normal") {
+    const e = t || this.defaultFont;
+    try {
+      this.doc.setFont(e, i);
+    } catch {
+      try {
+        this.doc.setFont(this.fallbackFont, i);
+      } catch {
+        this.doc.setFont("helvetica", i);
+      }
     }
   }
   // Kiểm tra và tự động xuống trang
@@ -848,20 +884,20 @@ class N {
       "&sect;": "§",
       "&bull;": "•"
     };
-    for (const [r, s] of Object.entries(e))
-      i = i.split(r).join(s);
-    return i = i.replace(/&#(\d+);/g, (r, s) => {
-      const n = parseInt(s, 10);
-      return n === 160 ? " " : String.fromCharCode(n);
-    }), i = i.replace(/&#x([0-9a-fA-F]+);/g, (r, s) => {
-      const n = parseInt(s, 16);
-      return n === 160 ? " " : String.fromCharCode(n);
+    for (const [n, s] of Object.entries(e))
+      i = i.split(n).join(s);
+    return i = i.replace(/&#(\d+);/g, (n, s) => {
+      const r = parseInt(s, 10);
+      return r === 160 ? " " : String.fromCharCode(r);
+    }), i = i.replace(/&#x([0-9a-fA-F]+);/g, (n, s) => {
+      const r = parseInt(s, 16);
+      return r === 160 ? " " : String.fromCharCode(r);
     }), i = i.replace(/\u00A0/g, " "), i;
   }
   // Wrapper method để vẽ text với auto-decode HTML entities
-  _drawText(t, i, e, r = {}) {
+  _drawText(t, i, e, n = {}) {
     const s = this._decodeHtmlEntities(t);
-    this.doc.text(s, i, e, r);
+    this.doc.text(s, i, e, n);
   }
   // Helper: Convert any color format to RGB array [r, g, b]
   _parseColorToArray(t) {
@@ -872,8 +908,8 @@ class N {
     if (typeof t == "string" && t.startsWith("#")) {
       let i = t.slice(1);
       i.length === 3 && (i = i[0] + i[0] + i[1] + i[1] + i[2] + i[2]);
-      const e = parseInt(i.substring(0, 2), 16) || 0, r = parseInt(i.substring(2, 4), 16) || 0, s = parseInt(i.substring(4, 6), 16) || 0;
-      return [e, r, s];
+      const e = parseInt(i.substring(0, 2), 16) || 0, n = parseInt(i.substring(2, 4), 16) || 0, s = parseInt(i.substring(4, 6), 16) || 0;
+      return [e, n, s];
     }
     if (typeof t == "string") {
       const i = t.match(/rgb[a]?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
@@ -883,68 +919,62 @@ class N {
     return [0, 0, 0];
   }
   // Insert text to PDF với hỗ trợ tiếng Việt và xuống dòng
-  addText(t, i = null, e = null, r = {}) {
+  addText(t, i = null, e = null, n = {}) {
     t = this._decodeHtmlEntities(t);
-    const n = { ...{
+    const r = { ...{
       fontSize: 12,
       fontStyle: "normal",
       color: [0, 0, 0],
       maxWidth: this.pageWidth - this.margins.left - this.margins.right,
       align: "left",
       lineHeight: this.lineHeight
-    }, ...r }, o = i !== null ? i : this.margins.left;
-    e !== null || this.currentY, this.doc.setFontSize(n.fontSize);
-    try {
-      this.doc.setFont("Roboto", n.fontStyle);
-    } catch {
-      this.doc.setFont("helvetica", n.fontStyle);
-    }
-    this.doc.setTextColor(n.color[0], n.color[1], n.color[2]);
-    const a = this.doc.splitTextToSize(t, n.maxWidth), l = a.length * n.lineHeight;
+    }, ...n }, o = i !== null ? i : this.margins.left;
+    e !== null || this.currentY, this.doc.setFontSize(r.fontSize), this._setFont(null, r.fontStyle), this.doc.setTextColor(r.color[0], r.color[1], r.color[2]);
+    const a = this.doc.splitTextToSize(t, r.maxWidth), l = a.length * r.lineHeight;
     this.checkPageBreak(l + 5);
     let c = this.currentY;
-    a.forEach((h, g) => {
-      if (n.align === "center") {
-        const u = this.doc.getTextWidth(h), f = (this.pageWidth - u) / 2;
+    a.forEach((h, u) => {
+      if (r.align === "center") {
+        const g = this.doc.getTextWidth(h), f = (this.pageWidth - g) / 2;
         this._drawText(h, f, c);
-      } else if (n.align === "right") {
-        const u = this.doc.getTextWidth(h), f = this.pageWidth - this.margins.right - u;
+      } else if (r.align === "right") {
+        const g = this.doc.getTextWidth(h), f = this.pageWidth - this.margins.right - g;
         this._drawText(h, f, c);
-      } else n.align === "justify" ? !(g === a.length - 1) && h.trim().length > 0 ? this.drawJustifiedText(h, o, c, n.maxWidth, n) : this._drawText(h, o, c) : this._drawText(h, o, c);
-      c += n.lineHeight;
+      } else r.align === "justify" ? !(u === a.length - 1) && h.trim().length > 0 ? this.drawJustifiedText(h, o, c, r.maxWidth, r) : this._drawText(h, o, c) : this._drawText(h, o, c);
+      c += r.lineHeight;
     });
-    const d = r.spacing !== void 0 ? r.spacing : 1;
+    const d = n.spacing !== void 0 ? n.spacing : 1;
     return this.currentY = c + d, this;
   }
   // Hàm vẽ text canh đều (justify)
-  drawJustifiedText(t, i, e, r, s) {
-    const n = t.trim().split(" ");
-    if (n.length <= 1) {
+  drawJustifiedText(t, i, e, n, s) {
+    const r = t.trim().split(" ");
+    if (r.length <= 1) {
       this._drawText(t, i, e);
       return;
     }
     let o = 0;
-    n.forEach((h) => {
+    r.forEach((h) => {
       o += this.doc.getTextWidth(h);
     });
-    const a = n.length - 1, c = (r - o) / a;
+    const a = r.length - 1, c = (n - o) / a;
     let d = i;
-    n.forEach((h, g) => {
-      this._drawText(h, d, e), d += this.doc.getTextWidth(h), g < n.length - 1 && (d += c);
+    r.forEach((h, u) => {
+      this._drawText(h, d, e), d += this.doc.getTextWidth(h), u < r.length - 1 && (d += c);
     });
   }
   // Thêm bảng với jspdf-autotable
   addTable(t, i, e = {}) {
     if (!this.doc.autoTable)
       return console.warn("jspdf-autotable is not loaded"), this;
-    const r = e.y !== void 0 ? e.y : this.currentY, s = {
-      font: "Roboto",
+    const n = e.y !== void 0 ? e.y : this.currentY, s = {
+      font: this.defaultFont,
       fontSize: 10,
       cellPadding: 3,
       overflow: "linebreak"
     };
     e.lineWidth !== void 0 && (s.lineWidth = e.lineWidth), e.lineColor && (s.lineColor = e.lineColor), e.fillColor && (s.fillColor = e.fillColor);
-    let n = {
+    let r = {
       top: this.margins.top,
       right: this.margins.right,
       bottom: this.margins.bottom,
@@ -952,10 +982,10 @@ class N {
     }, o = e.tableWidth || "auto";
     if (e.tableAlign === "center" && e.tableWidth) {
       const d = (this.pageWidth - this.margins.left - this.margins.right - e.tableWidth) / 2;
-      n.left = this.margins.left + d;
+      r.left = this.margins.left + d;
     } else if (e.tableAlign === "right" && e.tableWidth) {
       const d = this.pageWidth - this.margins.left - this.margins.right - e.tableWidth;
-      n.left = this.margins.left + d;
+      r.left = this.margins.left + d;
     }
     const a = {
       fillColor: !1,
@@ -965,14 +995,14 @@ class N {
       halign: "center",
       ...e.headStyles || {}
     }, l = {
-      startY: r,
+      startY: n,
       head: [t],
       body: i,
       theme: "grid",
       styles: s,
       headStyles: a,
       columnStyles: {},
-      margin: n,
+      margin: r,
       tableWidth: typeof o == "number" ? o : "auto",
       didDrawPage: (c) => {
         this.currentY = c.cursor.y + 5;
@@ -1031,14 +1061,14 @@ class N {
       ...i
     };
     this.doc.setFontSize(e.fontSize), this._drawText("•", this.margins.left, this.currentY);
-    const r = t, s = {
+    const n = t, s = {
       ...e,
       maxWidth: e.maxWidth - 10
     };
-    return this.addText(r, this.margins.left + 8, this.currentY, s), this;
+    return this.addText(n, this.margins.left + 8, this.currentY, s), this;
   }
   // Insert image to PDF với nhiều tính năng
-  addImage(t, i = null, e = null, r = 100, s = 100, n = {}) {
+  addImage(t, i = null, e = null, n = 100, s = 100, r = {}) {
     const o = {
       format: "JPEG",
       align: "left",
@@ -1055,10 +1085,10 @@ class N {
       },
       compression: "MEDIUM",
       rotation: 0,
-      ...n
+      ...r
     };
     let a = i !== null ? i : this.margins.left;
-    e !== null || this.currentY, o.align === "center" ? a = (this.pageWidth - r) / 2 : o.align === "right" && (a = this.pageWidth - this.margins.right - r), this.checkPageBreak(s + 15);
+    e !== null || this.currentY, o.align === "center" ? a = (this.pageWidth - n) / 2 : o.align === "right" && (a = this.pageWidth - this.margins.right - n), this.checkPageBreak(s + 15);
     try {
       let l = o.format;
       if (typeof t == "string" && t.startsWith("data:") && (t.includes("data:image/png") ? l = "PNG" : t.includes("data:image/jpeg") || t.includes("data:image/jpg") ? l = "JPEG" : t.includes("data:image/gif") ? l = "GIF" : t.includes("data:image/webp") && (l = "WEBP")), this.doc.addImage(
@@ -1066,7 +1096,7 @@ class N {
         l,
         a,
         this.currentY,
-        r,
+        n,
         s,
         "",
         // alias (để trống)
@@ -1075,7 +1105,7 @@ class N {
       ), o.border) {
         this.doc.setLineWidth(o.borderOptions.width);
         const c = Array.isArray(o.borderOptions.color) ? o.borderOptions.color : [0, 0, 0];
-        this.doc.setDrawColor(...c), this.doc.rect(a, this.currentY, r, s);
+        this.doc.setDrawColor(...c), this.doc.rect(a, this.currentY, n, s);
       }
       this.currentY += s + 5, o.caption ? this.addText(o.caption, null, null, {
         ...o.captionOptions,
@@ -1091,11 +1121,11 @@ class N {
     return this;
   }
   // Thêm ảnh từ file path
-  async addImageFromPath(t, i = null, e = null, r = 100, s = 100, n = {}) {
+  async addImageFromPath(t, i = null, e = null, n = 100, s = 100, r = {}) {
     try {
       const o = await this.loadImageFromPath(t);
       if (o)
-        return this.addImage(o, i, e, r, s, n);
+        return this.addImage(o, i, e, n, s, r);
       throw new Error(`Không thể load ảnh từ ${t}`);
     } catch (o) {
       console.error("Lỗi khi thêm ảnh từ path:", o), this.addText(`[Không thể load ảnh: ${t}]`, i, e, {
@@ -1106,38 +1136,38 @@ class N {
     return this;
   }
   // Thêm ảnh với auto-resize để fit trong khung
-  addImageFit(t, i = null, e = null, r = 150, s = 150, n = {}) {
+  addImageFit(t, i = null, e = null, n = 150, s = 150, r = {}) {
     return new Promise((o) => {
       const a = new Image();
       a.onload = () => {
         let { width: l, height: c } = this.calculateFitSize(
           a.naturalWidth,
           a.naturalHeight,
-          r,
+          n,
           s
         );
-        this.addImage(t, i, e, l, c, n), o(this);
+        this.addImage(t, i, e, l, c, r), o(this);
       }, a.onerror = () => {
-        console.error("Không thể load ảnh để tính kích thước"), this.addImage(t, i, e, r, s, n), o(this);
+        console.error("Không thể load ảnh để tính kích thước"), this.addImage(t, i, e, n, s, r), o(this);
       }, a.src = t;
     });
   }
   // Tính toán kích thước fit
-  calculateFitSize(t, i, e, r) {
-    const s = e / t, n = r / i, o = Math.min(s, n);
+  calculateFitSize(t, i, e, n) {
+    const s = e / t, r = n / i, o = Math.min(s, r);
     return {
       width: t * o,
       height: i * o
     };
   }
   // Thêm đường kẻ ngang
-  addLine(t = null, i = null, e = null, r = null, s = {}) {
-    const n = t !== null ? t : this.margins.left, o = i !== null ? i : this.currentY, a = e !== null ? e : this.pageWidth - this.margins.right, l = r !== null ? r : o, c = {
+  addLine(t = null, i = null, e = null, n = null, s = {}) {
+    const r = t !== null ? t : this.margins.left, o = i !== null ? i : this.currentY, a = e !== null ? e : this.pageWidth - this.margins.right, l = n !== null ? n : o, c = {
       lineWidth: 0.5,
       color: [0, 0, 0],
       ...s
     };
-    return this.doc.setLineWidth(c.lineWidth), this.doc.setDrawColor(c.color[0], c.color[1], c.color[2]), this.doc.line(n, o, a, l), this.currentY = o + 8, this;
+    return this.doc.setLineWidth(c.lineWidth), this.doc.setDrawColor(c.color[0], c.color[1], c.color[2]), this.doc.line(r, o, a, l), this.currentY = o + 8, this;
   }
   // Thêm trang mới
   addNewPage() {
@@ -1158,8 +1188,8 @@ class N {
       ...t
     };
     this.currentY += i.marginTop, this.checkPageBreak(i.thickness + i.marginBottom);
-    const e = this.margins.left, r = e + i.width;
-    return this.doc.setDrawColor(...i.color), this.doc.setLineWidth(i.thickness), this.doc.line(e, this.currentY, r, this.currentY), this.currentY += i.thickness + i.marginBottom, this;
+    const e = this.margins.left, n = e + i.width;
+    return this.doc.setDrawColor(...i.color), this.doc.setLineWidth(i.thickness), this.doc.line(e, this.currentY, n, this.currentY), this.currentY += i.thickness + i.marginBottom, this;
   }
   // Reset vị trí
   resetPosition(t = null) {
@@ -1180,19 +1210,14 @@ class N {
       // Màu text [R, G, B]
       y: 10,
       ...i
-    }, r = this.doc.internal.getNumberOfPages(), s = this.doc.internal.getCurrentPageInfo().pageNumber, n = this.doc.internal.getCurrentPageInfo().color || [0, 0, 0];
-    for (let o = 1; o <= r; o++) {
-      this.doc.setPage(o), this.doc.setFontSize(e.fontSize), this.doc.setTextColor(e.color[0], e.color[1], e.color[2]);
-      try {
-        this.doc.setFont("Roboto", e.fontStyle);
-      } catch {
-        this.doc.setFont("helvetica", e.fontStyle);
-      }
+    }, n = this.doc.internal.getNumberOfPages(), s = this.doc.internal.getCurrentPageInfo().pageNumber, r = this.doc.internal.getCurrentPageInfo().color || [0, 0, 0];
+    for (let o = 1; o <= n; o++) {
+      this.doc.setPage(o), this.doc.setFontSize(e.fontSize), this.doc.setTextColor(e.color[0], e.color[1], e.color[2]), this._setFont(null, e.fontStyle);
       let a;
       const l = this.doc.getTextWidth(t);
       e.align === "center" ? a = (this.pageWidth - l) / 2 : e.align === "right" ? a = this.pageWidth - this.margins.right - l : a = this.margins.left, this._drawText(t, a, e.y);
     }
-    return this.doc.setTextColor(n[0] || 0, n[1] || 0, n[2] || 0), this.doc.setPage(s), this;
+    return this.doc.setTextColor(r[0] || 0, r[1] || 0, r[2] || 0), this.doc.setPage(s), this;
   }
   // Thêm footer cho tất cả trang
   addFooter(t, i = {}) {
@@ -1204,17 +1229,12 @@ class N {
       color: [0, 0, 0],
       // Thêm màu đen mặc định
       ...i
-    }, r = this.doc.internal.getNumberOfPages(), s = this.doc.internal.getCurrentPageInfo().pageNumber;
-    for (let n = 1; n <= r; n++) {
-      this.doc.setPage(n), this.doc.setFontSize(e.fontSize);
-      try {
-        this.doc.setFont("Roboto", e.fontStyle);
-      } catch {
-        this.doc.setFont("helvetica", e.fontStyle);
-      }
+    }, n = this.doc.internal.getNumberOfPages(), s = this.doc.internal.getCurrentPageInfo().pageNumber;
+    for (let r = 1; r <= n; r++) {
+      this.doc.setPage(r), this.doc.setFontSize(e.fontSize), this._setFont(null, e.fontStyle);
       const o = Array.isArray(e.color) ? e.color : [0, 0, 0];
       this.doc.setTextColor(o[0], o[1], o[2]);
-      const a = t.replace("{pageNumber}", n).replace("{totalPages}", r);
+      const a = t.replace("{pageNumber}", r).replace("{totalPages}", n);
       if (e.align === "center") {
         const l = this.doc.getTextWidth(a), c = (this.pageWidth - l) / 2;
         this._drawText(a, c, e.y);
@@ -1306,30 +1326,30 @@ class N {
   // Upload PDF lên server (hàm tiện ích)
   async uploadPDFToServer(t, i = "document.pdf", e = {}) {
     try {
-      const r = this.exportPDFFile(i);
-      if (!r)
+      const n = this.exportPDFFile(i);
+      if (!n)
         throw new Error("Không thể tạo PDF file");
       const s = new FormData();
-      s.append(e.fieldName || "pdf", r), e.additionalData && Object.keys(e.additionalData).forEach((l) => {
+      s.append(e.fieldName || "pdf", n), e.additionalData && Object.keys(e.additionalData).forEach((l) => {
         s.append(l, e.additionalData[l]);
       });
-      const n = {
+      const r = {
         method: "POST",
         body: s,
         ...e.fetchOptions
       };
       console.log(`Đang upload PDF tới: ${t}`);
-      const o = await fetch(t, n);
+      const o = await fetch(t, r);
       if (!o.ok)
         throw new Error(`HTTP error! status: ${o.status}`);
       const a = await o.json();
       return console.log("Upload thành công:", a), a;
-    } catch (r) {
-      throw console.error("Lỗi khi upload PDF:", r), r;
+    } catch (n) {
+      throw console.error("Lỗi khi upload PDF:", n), n;
     }
   }
   // Thêm chữ ký đẹp mắt với nội dung căn giữa theo khối
-  addSignature(t, i, e = null, r = {}) {
+  addSignature(t, i, e = null, n = {}) {
     const s = {
       align: "right",
       fontSize: 11,
@@ -1339,39 +1359,39 @@ class N {
       signatureHeight: 20,
       blockWidth: 100,
       // Độ rộng khối chữ ký
-      ...r
-    }, n = e || (/* @__PURE__ */ new Date()).toLocaleDateString("vi-VN");
+      ...n
+    }, r = e || (/* @__PURE__ */ new Date()).toLocaleDateString("vi-VN");
     let o;
     s.align === "right" ? o = this.pageWidth - this.margins.right - s.blockWidth : s.align === "center" ? o = (this.pageWidth - s.blockWidth) / 2 : o = this.margins.left;
     const a = o + s.blockWidth / 2;
     this.doc.setFontSize(s.fontSize);
     try {
-      this.doc.setFont("Roboto", "normal");
+      this._setFont(null, "normal");
     } catch {
       this.doc.setFont("helvetica", "normal");
     }
     this.doc.setTextColor(0, 0, 0);
-    const l = this.doc.getTextWidth(n), c = a - l / 2;
-    this._drawText(n, c, this.currentY), this.currentY += s.spacing, this.doc.setFontSize(s.titleFontSize);
+    const l = this.doc.getTextWidth(r), c = a - l / 2;
+    this._drawText(r, c, this.currentY), this.currentY += s.spacing, this.doc.setFontSize(s.titleFontSize);
     try {
-      this.doc.setFont("Roboto", "bold");
+      this._setFont(null, "bold");
     } catch {
       this.doc.setFont("helvetica", "bold");
     }
     const d = this.doc.getTextWidth(i), h = a - d / 2;
     this._drawText(i, h, this.currentY), this.currentY += 5;
-    const g = "(Ký và ghi rõ họ tên)";
+    const u = "(Ký và ghi rõ họ tên)";
     this.doc.setFontSize(9);
     try {
-      this.doc.setFont("Roboto", "italic");
+      this._setFont(null, "italic");
     } catch {
       this.doc.setFont("helvetica", "italic");
     }
     this.doc.setTextColor(100, 100, 100);
-    const u = this.doc.getTextWidth(g), f = a - u / 2;
-    this._drawText(g, f, this.currentY), this.currentY += s.spacing, this.addSpace(s.signatureHeight), this.doc.setFontSize(s.nameFontSize);
+    const g = this.doc.getTextWidth(u), f = a - g / 2;
+    this._drawText(u, f, this.currentY), this.currentY += s.spacing, this.addSpace(s.signatureHeight), this.doc.setFontSize(s.nameFontSize);
     try {
-      this.doc.setFont("Roboto", "bold");
+      this._setFont(null, "bold");
     } catch {
       this.doc.setFont("helvetica", "bold");
     }
@@ -1385,21 +1405,21 @@ class N {
       const i = await fetch(t);
       if (!i.ok) throw new Error(`Không thể load hình từ ${t}`);
       const e = await i.blob();
-      return new Promise((r, s) => {
-        const n = new FileReader();
-        n.onload = function(o) {
-          r(o.target.result);
-        }, n.onerror = function(o) {
+      return new Promise((n, s) => {
+        const r = new FileReader();
+        r.onload = function(o) {
+          n(o.target.result);
+        }, r.onerror = function(o) {
           s(new Error("Lỗi khi đọc file"));
-        }, n.readAsDataURL(e);
+        }, r.readAsDataURL(e);
       });
     } catch (i) {
       return console.warn(`Không thể load hình từ ${t}:`, i.message), null;
     }
   }
   // Thêm chữ ký có hình ảnh với nội dung căn giữa theo khối
-  async addSignatureWithImage(t, i, e, r = null, s = {}) {
-    const n = {
+  async addSignatureWithImage(t, i, e, n = null, s = {}) {
+    const r = {
       align: "right",
       fontSize: 11,
       titleFontSize: 10,
@@ -1411,89 +1431,89 @@ class N {
       blockWidth: 100,
       // Độ rộng khối chữ ký
       ...s
-    }, o = r || (/* @__PURE__ */ new Date()).toLocaleDateString("vi-VN");
+    }, o = n || (/* @__PURE__ */ new Date()).toLocaleDateString("vi-VN");
     let a;
-    n.align === "right" ? a = this.pageWidth - this.margins.right - n.blockWidth : n.align === "center" ? a = (this.pageWidth - n.blockWidth) / 2 : a = this.margins.left;
-    const l = a + n.blockWidth / 2;
-    this.doc.setFontSize(n.fontSize);
+    r.align === "right" ? a = this.pageWidth - this.margins.right - r.blockWidth : r.align === "center" ? a = (this.pageWidth - r.blockWidth) / 2 : a = this.margins.left;
+    const l = a + r.blockWidth / 2;
+    this.doc.setFontSize(r.fontSize);
     try {
-      this.doc.setFont("Roboto", "bold");
+      this._setFont(null, "bold");
     } catch {
       this.doc.setFont("helvetica", "bold");
     }
-    this.doc.setTextColor(0, 0, 0), this.doc.setFontSize(n.dateFontSize);
+    this.doc.setTextColor(0, 0, 0), this.doc.setFontSize(r.dateFontSize);
     const c = this._decodeHtmlEntities(o), d = this.doc.getTextWidth(c), h = l - d / 2;
-    this._drawText(c, h, this.currentY), this.currentY += n.spacing, this.doc.setFontSize(n.titleFontSize);
+    this._drawText(c, h, this.currentY), this.currentY += r.spacing, this.doc.setFontSize(r.titleFontSize);
     try {
-      this.doc.setFont("Roboto", "bold");
+      this._setFont(null, "bold");
     } catch {
       this.doc.setFont("helvetica", "bold");
     }
-    const g = this._decodeHtmlEntities(i), u = this.doc.getTextWidth(g), f = l - u / 2;
-    this._drawText(g, f, this.currentY), this.currentY += 5;
-    const p = n.noteText ?? "(Ký và ghi rõ họ tên)";
+    const u = this._decodeHtmlEntities(i), g = this.doc.getTextWidth(u), f = l - g / 2;
+    this._drawText(u, f, this.currentY), this.currentY += 5;
+    const p = r.noteText ?? "(Ký và ghi rõ họ tên)";
     this.doc.setFontSize(9);
     try {
-      this.doc.setFont("Roboto", "italic");
+      this._setFont(null, "italic");
     } catch {
       this.doc.setFont("helvetica", "italic");
     }
     this.doc.setTextColor(100, 100, 100);
     const b = this._decodeHtmlEntities(p), m = this.doc.getTextWidth(b), S = l - m / 2;
-    this._drawText(b, S, this.currentY), this.currentY += n.spacing, this.addSpace(5);
+    this._drawText(b, S, this.currentY), this.currentY += r.spacing, this.addSpace(5);
     let y = null;
     if (e && (typeof e == "string" ? e.startsWith("data:") ? y = e : y = await this.loadImageFromPath(e) : y = e), y) {
-      const C = l - n.imageWidth / 2;
+      const C = l - r.imageWidth / 2;
       this.addImage(
         y,
         C,
         this.currentY,
-        n.imageWidth,
-        n.imageHeight,
+        r.imageWidth,
+        r.imageHeight,
         {
           format: "JPEG"
         }
       );
-    } else if (n.nameTag && n.nameTag.trim()) {
+    } else if (r.nameTag && r.nameTag.trim()) {
       const C = this.doc.internal.getCurrentPageInfo().color || [0, 0, 0];
       this.doc.setTextColor(255, 255, 255), this.doc.setFontSize(9);
       try {
-        this.doc.setFont("Roboto", "italic");
+        this._setFont(null, "italic");
       } catch {
         this.doc.setFont("helvetica", "italic");
       }
-      const E = this._decodeHtmlEntities(n.nameTag), I = this.doc.getTextWidth(E), L = l - I / 2;
-      this._drawText(E, L, this.currentY + n.imageHeight / 2), this.doc.setTextColor(
+      const z = this._decodeHtmlEntities(r.nameTag), D = this.doc.getTextWidth(z), N = l - D / 2;
+      this._drawText(z, N, this.currentY + r.imageHeight / 2), this.doc.setTextColor(
         C[0] || 0,
         C[1] || 0,
         C[2] || 0
-      ), this.addSpace(n.imageHeight + 10);
+      ), this.addSpace(r.imageHeight + 10);
     } else
-      this.addSpace(n.imageHeight + 10);
-    this.doc.setFontSize(n.nameFontSize);
+      this.addSpace(r.imageHeight + 10);
+    this.doc.setFontSize(r.nameFontSize);
     try {
-      this.doc.setFont("Roboto", "bold");
+      this._setFont(null, "bold");
     } catch {
       this.doc.setFont("helvetica", "bold");
     }
     this.doc.setTextColor(0, 0, 0);
-    const T = this._decodeHtmlEntities(t), W = this.doc.getTextWidth(T), H = l - W / 2;
-    return this._drawText(T, H, this.currentY), this.currentY += 15, this;
+    const T = this._decodeHtmlEntities(t), W = this.doc.getTextWidth(T), L = l - W / 2;
+    return this._drawText(T, L, this.currentY), this.currentY += 15, this;
   }
   // Thêm chữ ký từ file path (phương thức tiện lợi)
-  async addSignatureFromFile(t, i, e, r = null, s = {}) {
-    return await this.addSignatureWithImage(t, i, e, r, s);
+  async addSignatureFromFile(t, i, e, n = null, s = {}) {
+    return await this.addSignatureWithImage(t, i, e, n, s);
   }
   // Thêm chữ ký với nhiều tùy chọn hình ảnh
-  async addSmartSignature(t, i, e = {}, r = null, s = {}) {
+  async addSmartSignature(t, i, e = {}, n = null, s = {}) {
     const {
-      imagePath: n = null,
+      imagePath: r = null,
       imageData: o = null,
       fallbackText: a = null,
       createFallback: l = !0
     } = e;
     let c = null;
-    return n && (c = await this.loadImageFromPath(n)), !c && o && (c = o), !c && l && (c = this.createTextSignature(a || t)), await this.addSignatureWithImage(t, i, c, r, s);
+    return r && (c = await this.loadImageFromPath(r)), !c && o && (c = o), !c && l && (c = this.createTextSignature(a || t)), await this.addSignatureWithImage(t, i, c, n, s);
   }
   /**
    * Thêm chữ ký nháy (chữ ký phụ) - hiển thị trên tất cả các trang
@@ -1518,13 +1538,13 @@ class N {
       margin: 5,
       fontSize: 8,
       showPageNumber: !1
-    }, ...t }, r = ["top-left", "top-right", "bottom-left", "bottom-right"], n = (Array.isArray(e.positions) ? e.positions : [e.positions]).filter((a) => r.includes(a));
-    if (n.length === 0)
+    }, ...t }, n = ["top-left", "top-right", "bottom-left", "bottom-right"], r = (Array.isArray(e.positions) ? e.positions : [e.positions]).filter((a) => n.includes(a));
+    if (r.length === 0)
       return console.warn("No valid positions provided for secondary signature"), this;
     this.secondarySignatures || (this.secondarySignatures = []), this.secondarySignatures.push({
       imageData: e.imageData,
       nameTag: e.nameTag,
-      positions: n,
+      positions: r,
       width: e.width,
       height: e.height,
       margin: e.margin,
@@ -1541,22 +1561,22 @@ class N {
    * @private
    */
   _renderSecondarySignature(t, i = null) {
-    const e = this.doc.internal.pageSize.width, r = this.doc.internal.pageSize.height;
+    const e = this.doc.internal.pageSize.width, n = this.doc.internal.pageSize.height;
     i === null && (i = this.doc.internal.getCurrentPageInfo().pageNumber);
     for (const s of t.positions) {
-      let n, o;
+      let r, o;
       switch (s) {
         case "top-left":
-          n = t.margin, o = t.margin;
+          r = t.margin, o = t.margin;
           break;
         case "top-right":
-          n = e - t.width - t.margin, o = t.margin;
+          r = e - t.width - t.margin, o = t.margin;
           break;
         case "bottom-left":
-          n = t.margin, o = r - t.height - t.margin;
+          r = t.margin, o = n - t.height - t.margin;
           break;
         case "bottom-right":
-          n = e - t.width - t.margin, o = r - t.height - t.margin;
+          r = e - t.width - t.margin, o = n - t.height - t.margin;
           break;
         default:
           continue;
@@ -1566,34 +1586,34 @@ class N {
           this.doc.addImage(
             t.imageData,
             "PNG",
-            n,
+            r,
             o,
             t.width,
             t.height
           );
         } catch (a) {
-          console.warn("Failed to add secondary signature image:", a), this._renderSecondarySignatureNameTag(n, o, t, i);
+          console.warn("Failed to add secondary signature image:", a), this._renderSecondarySignatureNameTag(r, o, t, i);
         }
       else
-        this._renderSecondarySignatureNameTag(n, o, t, i);
+        this._renderSecondarySignatureNameTag(r, o, t, i);
     }
   }
   /**
    * Render nameTag dạng watermark cho chữ ký nháy (internal method)
    * @private
    */
-  _renderSecondarySignatureNameTag(t, i, e, r) {
-    const s = this.doc.getTextColor(), n = this.doc.internal.getFontSize(), o = this.doc.getFont();
+  _renderSecondarySignatureNameTag(t, i, e, n) {
+    const s = this.doc.getTextColor(), r = this.doc.internal.getFontSize(), o = this.doc.getFont();
     this.doc.setTextColor(154, 166, 178), this.doc.setFontSize(e.fontSize);
     try {
-      this.doc.setFont("Roboto", "italic");
+      this._setFont(null, "italic");
     } catch {
       this.doc.setFont("helvetica", "italic");
     }
     let a = e.nameTag;
-    e.showPageNumber && r && (a = `${e.nameTag}_${r}`);
+    e.showPageNumber && n && (a = `${e.nameTag}_${n}`);
     const l = this._decodeHtmlEntities(a), c = this.doc.getTextWidth(l), d = t + (e.width - c), h = i + e.height / 2 + e.fontSize / 2 + 3;
-    this._drawText(l, d, h), this.doc.setTextColor(s), this.doc.setFontSize(n), this.doc.setFont(o.fontName, o.fontStyle);
+    this._drawText(l, d, h), this.doc.setTextColor(s), this.doc.setFontSize(r), this.doc.setFont(o.fontName, o.fontStyle);
   }
   /**
    * Override addPage để tự động thêm chữ ký nháy vào trang mới
@@ -1605,63 +1625,63 @@ class N {
   }
   // Tạo chữ ký text đơn giản
   createTextSignature(t, i = 120, e = 40) {
-    const r = document.createElement("canvas"), s = r.getContext("2d");
-    r.width = i, r.height = e, s.fillStyle = "white", s.fillRect(0, 0, i, e), s.fillStyle = "#1a5490", s.font = 'italic bold 14px cursive, "Times New Roman", serif';
-    const n = this._decodeHtmlEntities(t), o = s.measureText(n).width, a = (i - o) / 2, l = e / 2 + 5;
-    return s.fillText(n, a, l), s.strokeStyle = "#1a5490", s.lineWidth = 1.5, s.beginPath(), s.moveTo(a - 5, l + 8), s.lineTo(a + o + 5, l + 8), s.stroke(), r.toDataURL("image/png");
+    const n = document.createElement("canvas"), s = n.getContext("2d");
+    n.width = i, n.height = e, s.fillStyle = "white", s.fillRect(0, 0, i, e), s.fillStyle = "#1a5490", s.font = 'italic bold 14px cursive, "Times New Roman", serif';
+    const r = this._decodeHtmlEntities(t), o = s.measureText(r).width, a = (i - o) / 2, l = e / 2 + 5;
+    return s.fillText(r, a, l), s.strokeStyle = "#1a5490", s.lineWidth = 1.5, s.beginPath(), s.moveTo(a - 5, l + 8), s.lineTo(a + o + 5, l + 8), s.stroke(), n.toDataURL("image/png");
   }
   // Thêm chữ ký đơn giản với đường gạch
-  addSimpleSignature(t, i, e = null, r = {}) {
+  addSimpleSignature(t, i, e = null, n = {}) {
     const s = {
       fontSize: 11,
       lineWidth: 100,
       spacing: 8,
-      ...r
-    }, n = e || this.margins.left;
-    return this.addText(i, n, null, {
+      ...n
+    }, r = e || this.margins.left;
+    return this.addText(i, r, null, {
       fontSize: s.fontSize,
       fontStyle: "bold"
-    }), this.addSpace(s.spacing), this.doc.setLineWidth(0.5), this.doc.line(n, this.currentY, n + s.lineWidth, this.currentY), this.addSpace(5), this.addText(t, n, null, {
+    }), this.addSpace(s.spacing), this.doc.setLineWidth(0.5), this.doc.line(r, this.currentY, r + s.lineWidth, this.currentY), this.addSpace(5), this.addText(t, r, null, {
       fontSize: s.fontSize - 1
     }), this.addSpace(15), this;
   }
   // Tạo bố cục chữ ký hai cột với nội dung căn giữa theo khối
   addDualSignature(t, i) {
-    const r = this.margins.left, s = this.pageWidth / 2 + 10, n = r + 90 / 2, o = s + 90 / 2, a = this.currentY;
+    const n = this.margins.left, s = this.pageWidth / 2 + 10, r = n + 90 / 2, o = s + 90 / 2, a = this.currentY;
     this.currentY = a;
     const l = t.date || "";
-    this.renderCenteredText(l, n, this.currentY, 11, "normal"), this.currentY += 8, this.renderCenteredText(t.title, n, this.currentY, 10, "bold"), this.currentY += 5;
+    this.renderCenteredText(l, r, this.currentY, 11, "normal"), this.currentY += 8, this.renderCenteredText(t.title, r, this.currentY, 10, "bold"), this.currentY += 5;
     const c = t.note || "(Ký và ghi rõ họ tên)";
-    if (this.renderCenteredText(c, n, this.currentY, 9, "italic", [100, 100, 100]), this.currentY += 25, t.signaturePath && t.signaturePath.trim())
+    if (this.renderCenteredText(c, r, this.currentY, 9, "italic", [100, 100, 100]), this.currentY += 25, t.signaturePath && t.signaturePath.trim())
       try {
         this.doc.addImage(
           t.signaturePath,
           "PNG",
-          n - 15,
+          r - 15,
           this.currentY - 20,
           30,
           15
         );
-      } catch (u) {
-        console.warn("Không thể thêm chữ ký trái:", u);
+      } catch (g) {
+        console.warn("Không thể thêm chữ ký trái:", g);
       }
     else if (t.nameTag && t.nameTag.trim()) {
-      const u = this.doc.internal.getCurrentPageInfo().color || [0, 0, 0];
+      const g = this.doc.internal.getCurrentPageInfo().color || [0, 0, 0];
       this.doc.setTextColor(255, 255, 255);
       const f = this._decodeHtmlEntities(t.nameTag);
-      this._drawText(f, n - this.doc.getTextWidth(f) / 2, this.currentY - 15), this.doc.setTextColor(
-        u[0] || 0,
-        u[1] || 0,
-        u[2] || 0
+      this._drawText(f, r - this.doc.getTextWidth(f) / 2, this.currentY - 15), this.doc.setTextColor(
+        g[0] || 0,
+        g[1] || 0,
+        g[2] || 0
       );
     }
-    this.renderCenteredText(t.name, n, this.currentY, 11, "bold");
+    this.renderCenteredText(t.name, r, this.currentY, 11, "bold");
     const d = this.currentY;
     this.currentY = a;
     const h = i.date || "";
     this.renderCenteredText(h, o, this.currentY, 11, "normal"), this.currentY += 8, this.renderCenteredText(i.title, o, this.currentY, 10, "bold"), this.currentY += 5;
-    const g = i.note || "(Ký và ghi rõ họ tên)";
-    if (this.renderCenteredText(g, o, this.currentY, 9, "italic", [100, 100, 100]), this.currentY += 25, i.signaturePath && i.signaturePath.trim())
+    const u = i.note || "(Ký và ghi rõ họ tên)";
+    if (this.renderCenteredText(u, o, this.currentY, 9, "italic", [100, 100, 100]), this.currentY += 25, i.signaturePath && i.signaturePath.trim())
       try {
         this.doc.addImage(
           i.signaturePath,
@@ -1671,23 +1691,23 @@ class N {
           30,
           15
         );
-      } catch (u) {
-        console.warn("Không thể thêm chữ ký phải:", u);
+      } catch (g) {
+        console.warn("Không thể thêm chữ ký phải:", g);
       }
     else if (i.nameTag && i.nameTag.trim()) {
-      const u = this.doc.internal.getCurrentPageInfo().color || [0, 0, 0];
+      const g = this.doc.internal.getCurrentPageInfo().color || [0, 0, 0];
       this.doc.setTextColor(255, 255, 255);
       const f = this._decodeHtmlEntities(i.nameTag);
       this._drawText(f, o - this.doc.getTextWidth(f) / 2, this.currentY - 15), this.doc.setTextColor(
-        u[0] || 0,
-        u[1] || 0,
-        u[2] || 0
+        g[0] || 0,
+        g[1] || 0,
+        g[2] || 0
       );
     }
     return this.renderCenteredText(i.name, o, this.currentY, 11, "bold"), this.currentY = Math.max(d, this.currentY) + 10, this;
   }
   // Hàm helper để render text căn giữa (hỗ trợ cả text và mixed text)
-  renderCenteredText(t, i, e, r = 11, s = "normal", n = [0, 0, 0]) {
+  renderCenteredText(t, i, e, n = 11, s = "normal", r = [0, 0, 0]) {
     if (Array.isArray(t)) {
       const o = this.currentY;
       this.currentY = e;
@@ -1695,46 +1715,22 @@ class N {
       t.forEach((c) => {
         let d = typeof c == "string" ? c : c.text;
         d = this._decodeHtmlEntities(d);
-        const h = typeof c == "object" && c.fontSize ? c.fontSize : r, g = typeof c == "object" && c.style ? c.style : s;
-        this.doc.setFontSize(h);
-        try {
-          this.doc.setFont("Roboto", g);
-        } catch {
-          this.doc.setFont("helvetica", g);
-        }
-        a += this.doc.getTextWidth(d);
+        const h = typeof c == "object" && c.fontSize ? c.fontSize : n, u = typeof c == "object" && c.style ? c.style : s;
+        this.doc.setFontSize(h), this._setFont(null, u), a += this.doc.getTextWidth(d);
       });
       let l = i - a / 2;
       t.forEach((c) => {
-        const d = typeof c == "string" ? c : c.text, h = typeof c == "object" && c.fontSize ? c.fontSize : r, g = typeof c == "object" && c.style ? c.style : s, u = typeof c == "object" && c.color ? c.color : n;
-        this.doc.setFontSize(h);
-        try {
-          this.doc.setFont("Roboto", g);
-        } catch {
-          this.doc.setFont("helvetica", g);
-        }
-        this.doc.setTextColor(u[0], u[1], u[2]), this._drawText(d, l, e), l += this.doc.getTextWidth(d);
+        const d = typeof c == "string" ? c : c.text, h = typeof c == "object" && c.fontSize ? c.fontSize : n, u = typeof c == "object" && c.style ? c.style : s, g = typeof c == "object" && c.color ? c.color : r;
+        this.doc.setFontSize(h), this._setFont(null, u), this.doc.setTextColor(g[0], g[1], g[2]), this._drawText(d, l, e), l += this.doc.getTextWidth(d);
       }), this.currentY = o;
     } else if (typeof t == "object" && t.text) {
-      const o = t.text, a = t.fontSize || r, l = t.style || s, c = t.color || n;
-      this.doc.setFontSize(a);
-      try {
-        this.doc.setFont("Roboto", l);
-      } catch {
-        this.doc.setFont("helvetica", l);
-      }
-      this.doc.setTextColor(c[0], c[1], c[2]);
+      const o = t.text, a = t.fontSize || n, l = t.style || s, c = t.color || r;
+      this.doc.setFontSize(a), this._setFont(null, l), this.doc.setTextColor(c[0], c[1], c[2]);
       const d = this._decodeHtmlEntities(o), h = this.doc.getTextWidth(d);
       this._drawText(d, i - h / 2, e);
     } else {
       let o = t.toString();
-      o = this._decodeHtmlEntities(o), this.doc.setFontSize(r);
-      try {
-        this.doc.setFont("Roboto", s);
-      } catch {
-        this.doc.setFont("helvetica", s);
-      }
-      this.doc.setTextColor(n[0], n[1], n[2]);
+      o = this._decodeHtmlEntities(o), this.doc.setFontSize(n), this._setFont(null, s), this.doc.setTextColor(r[0], r[1], r[2]);
       const a = this.doc.getTextWidth(o);
       this._drawText(o, i - a / 2, e);
     }
@@ -1742,7 +1738,7 @@ class N {
   // Thêm leader dots (dấu chấm dẫn)
   addLeaderDots(t, i, e = {}) {
     t = this._decodeHtmlEntities(t), i = this._decodeHtmlEntities(i);
-    const r = {
+    const n = {
       fontSize: 11,
       fontStyle: "normal",
       color: [0, 0, 0],
@@ -1758,23 +1754,18 @@ class N {
       lineHeight: 6,
       ...e
     };
-    this.doc.setFontSize(r.fontSize);
-    try {
-      this.doc.setFont("Roboto", r.fontStyle);
-    } catch {
-      this.doc.setFont("helvetica", r.fontStyle);
-    }
-    const s = Array.isArray(r.color) ? r.color : [0, 0, 0];
+    this.doc.setFontSize(n.fontSize), this._setFont(null, n.fontStyle);
+    const s = Array.isArray(n.color) ? n.color : [0, 0, 0];
     this.doc.setTextColor(...s);
-    const n = this.doc.getTextWidth(t), o = this.doc.getTextWidth(i), a = this.doc.getTextWidth(r.dotChar), l = this.margins.left, c = this.pageWidth - this.margins.right - o, d = l + n + r.leftPadding, h = c - r.rightPadding, g = h - d, u = Math.max(
-      r.minDots,
-      Math.floor(g / (a + r.dotSpacing))
+    const r = this.doc.getTextWidth(t), o = this.doc.getTextWidth(i), a = this.doc.getTextWidth(n.dotChar), l = this.margins.left, c = this.pageWidth - this.margins.right - o, d = l + r + n.leftPadding, h = c - n.rightPadding, u = h - d, g = Math.max(
+      n.minDots,
+      Math.floor(u / (a + n.dotSpacing))
     );
-    this.checkPageBreak(r.lineHeight + 3), this._drawText(t, l, this.currentY);
+    this.checkPageBreak(n.lineHeight + 3), this._drawText(t, l, this.currentY);
     let f = d;
-    for (let p = 0; p < u; p++)
-      f + a <= h && (this._drawText(r.dotChar, f, this.currentY), f += a + r.dotSpacing);
-    return this._drawText(i, c, this.currentY), this.currentY += r.lineHeight, this;
+    for (let p = 0; p < g; p++)
+      f + a <= h && (this._drawText(n.dotChar, f, this.currentY), f += a + n.dotSpacing);
+    return this._drawText(i, c, this.currentY), this.currentY += n.lineHeight, this;
   }
   // Thêm table of contents với leader dots
   addTableOfContents(t, i = {}) {
@@ -1797,11 +1788,11 @@ class N {
       },
       ...i
     };
-    return e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(10)), t.forEach((r) => {
-      let s = typeof r == "string" ? r : r.title;
+    return e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(10)), t.forEach((n) => {
+      let s = typeof n == "string" ? n : n.title;
       s = this._decodeHtmlEntities(s);
-      const n = typeof r == "object" ? r.page : "", a = typeof r == "object" && r.isSubItem ? e.subItemOptions : e.itemOptions, l = a.indent || 0, c = " ".repeat(l / 3) + s;
-      this.addLeaderDots(c, n.toString(), {
+      const r = typeof n == "object" ? n.page : "", a = typeof n == "object" && n.isSubItem ? e.subItemOptions : e.itemOptions, l = a.indent || 0, c = " ".repeat(l / 3) + s;
+      this.addLeaderDots(c, r.toString(), {
         ...a,
         leftPadding: 5,
         rightPadding: 5
@@ -1824,8 +1815,8 @@ class N {
       currency: "VNĐ",
       ...i
     };
-    return e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(10)), t.forEach((r) => {
-      const s = r.name || r.title, n = r.price || r.cost || 0, o = this._decodeHtmlEntities(s), a = this.formatPrice(n, e.currency), l = this._decodeHtmlEntities(a);
+    return e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(10)), t.forEach((n) => {
+      const s = n.name || n.title, r = n.price || n.cost || 0, o = this._decodeHtmlEntities(s), a = this.formatPrice(r, e.currency), l = this._decodeHtmlEntities(a);
       this.addLeaderDots(o, l, {
         ...e.itemOptions,
         leftPadding: 8,
@@ -1855,9 +1846,9 @@ class N {
       currency: "VNĐ",
       ...i
     };
-    return e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(15)), t.forEach((r) => {
-      this.addText(r.name, null, null, e.sectionOptions), this.addSpace(8), r.items.forEach((s) => {
-        const n = `${s.name}${s.description ? ` - ${s.description}` : ""}`, o = this.formatPrice(s.price, e.currency), a = this._decodeHtmlEntities(n), l = this._decodeHtmlEntities(o);
+    return e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(15)), t.forEach((n) => {
+      this.addText(n.name, null, null, e.sectionOptions), this.addSpace(8), n.items.forEach((s) => {
+        const r = `${s.name}${s.description ? ` - ${s.description}` : ""}`, o = this.formatPrice(s.price, e.currency), a = this._decodeHtmlEntities(r), l = this._decodeHtmlEntities(o);
         this.addLeaderDots(a, l, {
           ...e.itemOptions,
           leftPadding: 10,
@@ -1886,9 +1877,9 @@ class N {
       ...i
     };
     if (e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(10)), e.columns === 1)
-      t.forEach((r) => {
-        const s = this._decodeHtmlEntities(r.term), n = this._decodeHtmlEntities(r.pages.join(", "));
-        this.addLeaderDots(s, n, {
+      t.forEach((n) => {
+        const s = this._decodeHtmlEntities(n.term), r = this._decodeHtmlEntities(n.pages.join(", "));
+        this.addLeaderDots(s, r, {
           ...e.itemOptions,
           leftPadding: 5,
           rightPadding: 5,
@@ -1896,19 +1887,19 @@ class N {
         });
       });
     else {
-      const r = Math.ceil(t.length / e.columns), s = (this.pageWidth - this.margins.left - this.margins.right) / e.columns;
-      for (let n = 0; n < e.columns; n++) {
-        const o = n * r, a = Math.min(o + r, t.length), l = t.slice(o, a), c = this.currentY, d = this.margins.left + n * s;
-        n > 0 && (this.currentY = c), l.forEach((h) => {
-          const g = this._decodeHtmlEntities(h.term), u = this._decodeHtmlEntities(h.pages.join(", ")), f = this.doc.getTextWidth(g), p = this.doc.getTextWidth(u);
+      const n = Math.ceil(t.length / e.columns), s = (this.pageWidth - this.margins.left - this.margins.right) / e.columns;
+      for (let r = 0; r < e.columns; r++) {
+        const o = r * n, a = Math.min(o + n, t.length), l = t.slice(o, a), c = this.currentY, d = this.margins.left + r * s;
+        r > 0 && (this.currentY = c), l.forEach((h) => {
+          const u = this._decodeHtmlEntities(h.term), g = this._decodeHtmlEntities(h.pages.join(", ")), f = this.doc.getTextWidth(u), p = this.doc.getTextWidth(g);
           this.doc.setFontSize(e.itemOptions.fontSize);
           const b = this.doc.getTextWidth("."), m = s - f - p - 15, S = Math.max(3, Math.floor(m / (b + 2)));
-          this._drawText(g, d, this.currentY);
+          this._drawText(u, d, this.currentY);
           let y = d + f + 5;
           for (let W = 0; W < S; W++)
             this._drawText(".", y, this.currentY), y += b + 2;
           const T = d + s - p - 5;
-          this._drawText(u, T, this.currentY), this.currentY += 5;
+          this._drawText(g, T, this.currentY), this.currentY += 5;
         });
       }
     }
@@ -1957,7 +1948,7 @@ class N {
         fontStyle: "italic",
         color: [150, 150, 150]
       }
-    }, r = {
+    }, n = {
       ...e,
       ...i,
       labelOptions: {
@@ -1970,78 +1961,63 @@ class N {
       }
     };
     let s;
-    if (this.currentY, r.align === "center" ? s = (this.pageWidth - r.lineLength) / 2 : r.align === "right" ? s = this.pageWidth - this.margins.right - r.lineLength : s = this.margins.left, t && r.labelPosition !== "none") {
-      this.doc.setFontSize(r.labelOptions.fontSize);
-      try {
-        this.doc.setFont("Roboto", r.labelOptions.fontStyle);
-      } catch {
-        this.doc.setFont("helvetica", r.labelOptions.fontStyle);
-      }
-      const a = Array.isArray(r.labelOptions.color) ? r.labelOptions.color : [0, 0, 0];
+    if (this.currentY, n.align === "center" ? s = (this.pageWidth - n.lineLength) / 2 : n.align === "right" ? s = this.pageWidth - this.margins.right - n.lineLength : s = this.margins.left, t && n.labelPosition !== "none") {
+      this.doc.setFontSize(n.labelOptions.fontSize), this._setFont(null, n.labelOptions.fontStyle);
+      const a = Array.isArray(n.labelOptions.color) ? n.labelOptions.color : [0, 0, 0];
       this.doc.setTextColor(...a);
       const l = this.doc.getTextWidth(t);
-      if (r.labelPosition === "above") {
-        const c = r.align === "center" ? (this.pageWidth - l) / 2 : r.align === "right" ? this.pageWidth - this.margins.right - l : this.margins.left;
-        this._drawText(t, c, this.currentY), this.currentY += r.labelOptions.spacing;
-      } else r.labelPosition === "left" && (this._drawText(t, this.margins.left, this.currentY), s = this.margins.left + l + r.labelOptions.spacing, r.lineLength = Math.min(
-        r.lineLength,
+      if (n.labelPosition === "above") {
+        const c = n.align === "center" ? (this.pageWidth - l) / 2 : n.align === "right" ? this.pageWidth - this.margins.right - l : this.margins.left;
+        this._drawText(t, c, this.currentY), this.currentY += n.labelOptions.spacing;
+      } else n.labelPosition === "left" && (this._drawText(t, this.margins.left, this.currentY), s = this.margins.left + l + n.labelOptions.spacing, n.lineLength = Math.min(
+        n.lineLength,
         this.pageWidth - this.margins.right - s
       ));
     }
-    const n = (r.lineCount - 1) * r.lineSpacing + 10;
-    this.checkPageBreak(n), this.doc.setLineWidth(r.lineWidth);
-    const o = Array.isArray(r.lineColor) ? r.lineColor : [0, 0, 0];
+    const r = (n.lineCount - 1) * n.lineSpacing + 10;
+    this.checkPageBreak(r), this.doc.setLineWidth(n.lineWidth);
+    const o = Array.isArray(n.lineColor) ? n.lineColor : [0, 0, 0];
     this.doc.setDrawColor(...o);
-    for (let a = 0; a < r.lineCount; a++) {
-      const l = this.currentY + a * r.lineSpacing;
-      if (r.lineStyle === "dots") {
-        this.doc.setFontSize(r.labelOptions.fontSize);
+    for (let a = 0; a < n.lineCount; a++) {
+      const l = this.currentY + a * n.lineSpacing;
+      if (n.lineStyle === "dots") {
+        this.doc.setFontSize(n.labelOptions.fontSize);
         try {
-          this.doc.setFont("Roboto", "normal");
+          this._setFont(null, "normal");
         } catch {
           this.doc.setFont("helvetica", "normal");
         }
-        const c = Array.isArray(r.lineColor) ? r.lineColor : [0, 0, 0];
+        const c = Array.isArray(n.lineColor) ? n.lineColor : [0, 0, 0];
         this.doc.setTextColor(...c);
-        const d = this.doc.getTextWidth(r.dotChar), h = Math.floor(r.lineLength / (d + r.dotSpacing));
-        for (let g = 0; g < h; g++) {
-          const u = s + g * (d + r.dotSpacing);
-          u + d <= s + r.lineLength && this._drawText(r.dotChar, u, l);
+        const d = this.doc.getTextWidth(n.dotChar), h = Math.floor(n.lineLength / (d + n.dotSpacing));
+        for (let u = 0; u < h; u++) {
+          const g = s + u * (d + n.dotSpacing);
+          g + d <= s + n.lineLength && this._drawText(n.dotChar, g, l);
         }
       } else
-        r.lineStyle === "dashed" ? this.doc.setLineDashPattern([3, 2], 0) : r.lineStyle === "dotted" ? this.doc.setLineDashPattern([1, 2], 0) : this.doc.setLineDashPattern([], 0), this.doc.line(s, l, s + r.lineLength, l);
-      if (r.showPlaceholder && r.placeholderText) {
-        this.doc.setFontSize(r.placeholderOptions.fontSize);
-        try {
-          this.doc.setFont("Roboto", r.placeholderOptions.fontStyle);
-        } catch {
-          this.doc.setFont("helvetica", r.placeholderOptions.fontStyle);
-        }
-        const c = Array.isArray(r.placeholderOptions.color) ? r.placeholderOptions.color : [150, 150, 150];
+        n.lineStyle === "dashed" ? this.doc.setLineDashPattern([3, 2], 0) : n.lineStyle === "dotted" ? this.doc.setLineDashPattern([1, 2], 0) : this.doc.setLineDashPattern([], 0), this.doc.line(s, l, s + n.lineLength, l);
+      if (n.showPlaceholder && n.placeholderText) {
+        this.doc.setFontSize(n.placeholderOptions.fontSize), this._setFont(null, n.placeholderOptions.fontStyle);
+        const c = Array.isArray(n.placeholderOptions.color) ? n.placeholderOptions.color : [150, 150, 150];
         this.doc.setTextColor(...c);
         const d = l - 2;
-        this._drawText(r.placeholderText, s + 5, d);
+        this._drawText(n.placeholderText, s + 5, d);
       }
     }
-    if (this.doc.setLineDashPattern([], 0), t && r.labelPosition === "right") {
-      this.doc.setFontSize(r.labelOptions.fontSize);
-      try {
-        this.doc.setFont("Roboto", r.labelOptions.fontStyle);
-      } catch {
-        this.doc.setFont("helvetica", r.labelOptions.fontStyle);
-      }
-      const a = Array.isArray(r.labelOptions.color) ? r.labelOptions.color : [0, 0, 0];
+    if (this.doc.setLineDashPattern([], 0), t && n.labelPosition === "right") {
+      this.doc.setFontSize(n.labelOptions.fontSize), this._setFont(null, n.labelOptions.fontStyle);
+      const a = Array.isArray(n.labelOptions.color) ? n.labelOptions.color : [0, 0, 0];
       this.doc.setTextColor(...a);
-      const l = s + r.lineLength + r.labelOptions.spacing;
+      const l = s + n.lineLength + n.labelOptions.spacing;
       this._drawText(t, l, this.currentY);
     }
-    if (t && r.labelPosition === "below") {
-      const a = this.currentY + (r.lineCount - 1) * r.lineSpacing;
-      this.currentY = a + r.labelOptions.spacing;
-      const l = this.doc.getTextWidth(t), c = r.align === "center" ? (this.pageWidth - l) / 2 : r.align === "right" ? this.pageWidth - this.margins.right - l : this.margins.left;
+    if (t && n.labelPosition === "below") {
+      const a = this.currentY + (n.lineCount - 1) * n.lineSpacing;
+      this.currentY = a + n.labelOptions.spacing;
+      const l = this.doc.getTextWidth(t), c = n.align === "center" ? (this.pageWidth - l) / 2 : n.align === "right" ? this.pageWidth - this.margins.right - l : this.margins.left;
       this._drawText(t, c, this.currentY);
     }
-    return this.currentY += (r.lineCount - 1) * r.lineSpacing + 10, this;
+    return this.currentY += (n.lineCount - 1) * n.lineSpacing + 10, this;
   }
   // Tạo form fill-in nhanh
   addFillInForm(t, i = {}) {
@@ -2058,18 +2034,18 @@ class N {
       ...i
     };
     if (e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(8)), e.columns === 1)
-      t.forEach((r) => {
+      t.forEach((n) => {
         const s = {
           lineLength: 150,
           labelPosition: "left",
-          ...r.options
+          ...n.options
         };
-        this.addFillInLine(r.label || "", s), this.addSpace(e.fieldSpacing - 10);
+        this.addFillInLine(n.label || "", s), this.addSpace(e.fieldSpacing - 10);
       });
     else {
-      const r = Math.ceil(t.length / e.columns), s = (this.pageWidth - this.margins.left - this.margins.right) / e.columns;
-      for (let n = 0; n < t.length; n += r) {
-        const o = t.slice(n, n + r), a = Math.floor(n / r), l = this.currentY;
+      const n = Math.ceil(t.length / e.columns), s = (this.pageWidth - this.margins.left - this.margins.right) / e.columns;
+      for (let r = 0; r < t.length; r += n) {
+        const o = t.slice(r, r + n), a = Math.floor(r / n), l = this.currentY;
         o.forEach((c, d) => {
           a > 0 && (this.currentY = l + d * e.fieldSpacing);
           const h = {
@@ -2077,8 +2053,8 @@ class N {
             labelPosition: "above",
             align: "left",
             ...c.options
-          }, g = this.margins.left + a * s, u = this.margins.left;
-          this.margins.left = g, this.addFillInLine(c.label || "", h), this.margins.left = u, a === 0 && this.addSpace(e.fieldSpacing - 10);
+          }, u = this.margins.left + a * s, g = this.margins.left;
+          this.margins.left = u, this.addFillInLine(c.label || "", h), this.margins.left = g, a === 0 && this.addSpace(e.fieldSpacing - 10);
         });
       }
     }
@@ -2099,17 +2075,17 @@ class N {
       ...i
     };
     if (e.layout === "horizontal") {
-      const r = t.length * (e.signatureWidth + e.spacing) - e.spacing;
-      let s = (this.pageWidth - r) / 2;
-      t.forEach((n, o) => {
+      const n = t.length * (e.signatureWidth + e.spacing) - e.spacing;
+      let s = (this.pageWidth - n) / 2;
+      t.forEach((r, o) => {
         const a = s + o * (e.signatureWidth + e.spacing), l = this.margins.left;
         this.margins.left = a, e.showDate && this.addFillInLine(e.dateLabel, {
           lineLength: e.dateWidth,
           labelPosition: "left",
           align: "left"
-        }), n.title && this.addText(
-          n.title,
-          a + (e.signatureWidth - this.doc.getTextWidth(n.title)) / 2,
+        }), r.title && this.addText(
+          r.title,
+          a + (e.signatureWidth - this.doc.getTextWidth(r.title)) / 2,
           null,
           {
             fontSize: 10,
@@ -2126,8 +2102,8 @@ class N {
         }), this.margins.left = l;
       });
     } else
-      t.forEach((r) => {
-        r.title && this.addText(r.title, null, null, {
+      t.forEach((n) => {
+        n.title && this.addText(n.title, null, null, {
           fontSize: 12,
           fontStyle: "bold",
           align: "center"
@@ -2168,14 +2144,14 @@ class N {
         dotSpacing: 2
       },
       ...i
-    }, r = t.map((s) => ({
+    }, n = t.map((s) => ({
       ...s,
       options: {
         ...e.fieldDefaults,
         ...s.options
       }
     }));
-    return this.addFillInForm(r, e);
+    return this.addFillInForm(n, e);
   }
   // Thêm signature với dotted lines
   addDottedSignature(t = [], i = {}) {
@@ -2184,38 +2160,38 @@ class N {
       dotChar: ".",
       dotSpacing: 2,
       ...i
-    }, r = this.addFillInLine.bind(this);
-    this.addFillInLine = (n, o = {}) => r(n, {
+    }, n = this.addFillInLine.bind(this);
+    this.addFillInLine = (r, o = {}) => n(r, {
       lineStyle: "dots",
       dotChar: ".",
       dotSpacing: 2,
       ...o
     });
     const s = this.addSignatureFillIn(t, e);
-    return this.addFillInLine = r, s;
+    return this.addFillInLine = n, s;
   }
   // Thêm custom dotted pattern
-  addCustomDottedLine(t = "", i = ".", e = 2, r = 100, s = {}) {
+  addCustomDottedLine(t = "", i = ".", e = 2, n = 100, s = {}) {
     return this.addFillInLine(t, {
       lineStyle: "dots",
       dotChar: i,
       dotSpacing: e,
-      lineLength: r,
+      lineLength: n,
       ...s
     });
   }
   // Thêm text với định dạng hỗn hợp (bold, italic trong cùng dòng)
   addMixedText(t, i = {}) {
-    const r = { ...{
+    const n = { ...{
       fontSize: 12,
       color: [0, 0, 0],
       maxWidth: this.pageWidth - this.margins.left - this.margins.right,
       align: "left",
       lineHeight: this.lineHeight
     }, ...i };
-    r.lineHeight = parseFloat(r.lineHeight) || 5, r.fontSize = parseFloat(r.fontSize) || 12, r.maxWidth = parseFloat(r.maxWidth) || this.pageWidth - this.margins.left - this.margins.right;
-    let s = r.x || this.margins.left, n = this.currentY, o = [], a = 0;
-    return this.checkPageBreak(r.lineHeight + 10), n = this.currentY, t.forEach((l, c) => {
+    n.lineHeight = parseFloat(n.lineHeight) || 5, n.fontSize = parseFloat(n.fontSize) || 12, n.maxWidth = parseFloat(n.maxWidth) || this.pageWidth - this.margins.left - this.margins.right;
+    let s = n.x || this.margins.left, r = this.currentY, o = [], a = 0;
+    return this.checkPageBreak(n.lineHeight + 10), r = this.currentY, t.forEach((l, c) => {
       let d = typeof l == "string" ? l : l.text;
       d = this._decodeHtmlEntities(d);
       let h = "normal";
@@ -2227,104 +2203,80 @@ class N {
           p.bold && p.italic ? h = "bolditalic" : p.bold ? h = "bold" : p.italic ? h = "italic" : h = "normal";
         }
       }
-      const g = typeof l == "object" && l.color ? l.color : typeof l == "object" && l.style && l.style.color ? l.style.color : r.color;
-      let u = typeof l == "object" && l.fontSize ? l.fontSize : typeof l == "object" && l.style && l.style.fontSize ? l.style.fontSize : r.fontSize;
-      u = parseFloat(u) || r.fontSize || 12, this.doc.setFontSize(u);
-      try {
-        this.doc.setFont("Roboto", h);
-      } catch {
-        this.doc.setFont("helvetica", h);
-      }
-      if (!d) return;
+      const u = typeof l == "object" && l.color ? l.color : typeof l == "object" && l.style && l.style.color ? l.style.color : n.color;
+      let g = typeof l == "object" && l.fontSize ? l.fontSize : typeof l == "object" && l.style && l.style.fontSize ? l.style.fontSize : n.fontSize;
+      if (g = parseFloat(g) || n.fontSize || 12, this.doc.setFontSize(g), this._setFont(null, h), !d) return;
       const f = String(d).split(" ");
       f.forEach((p, b) => {
         const m = b < f.length - 1 ? p + " " : p, S = this.doc.getTextWidth(m);
-        if (a + S > r.maxWidth && o.length > 0) {
-          this.renderMixedLine(o, s, n, r, !1), n += r.lineHeight;
+        if (a + S > n.maxWidth && o.length > 0) {
+          this.renderMixedLine(o, s, r, n, !1), r += n.lineHeight;
           const W = this.currentY;
-          this.checkPageBreak(r.lineHeight + 5), this.currentY < W && (n = this.currentY), s = r.x || this.margins.left, o = [], a = 0;
+          this.checkPageBreak(n.lineHeight + 5), this.currentY < W && (r = this.currentY), s = n.x || this.margins.left, o = [], a = 0;
         }
         const y = typeof l == "object" && l.style && typeof l.style == "object" ? l.style.underline : !1, T = typeof l == "object" && l.style && typeof l.style == "object" ? l.style.strikethrough : !1;
         o.push({
           text: m,
           style: h,
-          color: this._parseColorToArray(g),
-          fontSize: u,
+          color: this._parseColorToArray(u),
+          fontSize: g,
           width: S,
           underline: y,
           strikethrough: T
         }), a += S;
       });
-    }), o.length > 0 && (this.renderMixedLine(o, s, n, r, !0), n += r.lineHeight), r.spacing !== void 0 && r.spacing, this.currentY = n, this;
+    }), o.length > 0 && (this.renderMixedLine(o, s, r, n, !0), r += n.lineHeight), n.spacing !== void 0 && n.spacing, this.currentY = r, this;
   }
   // Helper function để render một dòng mixed text
-  renderMixedLine(t, i, e, r, s = !1) {
+  renderMixedLine(t, i, e, n, s = !1) {
     if (!t || t.length === 0) return;
-    let n = i;
-    if (r.align === "center") {
+    let r = i;
+    if (n.align === "center") {
       const o = t.reduce((a, l) => a + l.width, 0);
-      n = (this.pageWidth - o) / 2;
-    } else if (r.align === "right") {
+      r = (this.pageWidth - o) / 2;
+    } else if (n.align === "right") {
       const o = t.reduce((a, l) => a + l.width, 0);
-      n = this.pageWidth - this.margins.right - o;
-    } else if (r.align === "justify" && !s && t.length > 1) {
-      this.renderJustifiedMixedLine(t, i, e, r);
+      r = this.pageWidth - this.margins.right - o;
+    } else if (n.align === "justify" && !s && t.length > 1) {
+      this.renderJustifiedMixedLine(t, i, e, n);
       return;
     }
     t.forEach((o) => {
-      this.doc.setFontSize(o.fontSize);
-      try {
-        this.doc.setFont("Roboto", o.style);
-      } catch {
-        this.doc.setFont("helvetica", o.style);
-      }
-      if (this.doc.setTextColor(o.color[0], o.color[1], o.color[2]), this._drawText(o.text, n, e), o.underline) {
+      if (this.doc.setFontSize(o.fontSize), this._setFont(null, o.style), this.doc.setTextColor(o.color[0], o.color[1], o.color[2]), this._drawText(o.text, r, e), o.underline) {
         const a = this.doc.getTextWidth(o.text.trimEnd()), l = e + 1;
-        this.doc.setDrawColor(o.color[0], o.color[1], o.color[2]), this.doc.setLineWidth(0.3), this.doc.line(n, l, n + a, l);
+        this.doc.setDrawColor(o.color[0], o.color[1], o.color[2]), this.doc.setLineWidth(0.3), this.doc.line(r, l, r + a, l);
       }
       if (o.strikethrough) {
         const a = this.doc.getTextWidth(o.text.trimEnd()), l = e - o.fontSize * 0.12;
-        this.doc.setDrawColor(o.color[0], o.color[1], o.color[2]), this.doc.setLineWidth(0.3), this.doc.line(n, l, n + a, l);
+        this.doc.setDrawColor(o.color[0], o.color[1], o.color[2]), this.doc.setLineWidth(0.3), this.doc.line(r, l, r + a, l);
       }
-      n += o.width;
+      r += o.width;
     });
   }
   // Hàm vẽ mixed text canh đều
-  renderJustifiedMixedLine(t, i, e, r) {
+  renderJustifiedMixedLine(t, i, e, n) {
     if (t.length <= 1) {
-      this.renderMixedLine(t, i, e, { ...r, align: "left" });
+      this.renderMixedLine(t, i, e, { ...n, align: "left" });
       return;
     }
     let s = 0;
     t.forEach((c) => {
-      this.doc.setFontSize(c.fontSize);
-      try {
-        this.doc.setFont("Roboto", c.style);
-      } catch {
-        this.doc.setFont("helvetica", c.style);
-      }
-      s += this.doc.getTextWidth(c.text.trimEnd());
+      this.doc.setFontSize(c.fontSize), this._setFont(null, c.style), s += this.doc.getTextWidth(c.text.trimEnd());
     });
-    const n = t.length - 1, a = (r.maxWidth - s) / n;
+    const r = t.length - 1, a = (n.maxWidth - s) / r;
     let l = i;
     t.forEach((c, d) => {
-      this.doc.setFontSize(c.fontSize);
-      try {
-        this.doc.setFont("Roboto", c.style);
-      } catch {
-        this.doc.setFont("helvetica", c.style);
-      }
-      this.doc.setTextColor(c.color[0], c.color[1], c.color[2]);
-      const h = c.text.trimEnd(), g = this.doc.getTextWidth(h);
+      this.doc.setFontSize(c.fontSize), this._setFont(null, c.style), this.doc.setTextColor(c.color[0], c.color[1], c.color[2]);
+      const h = c.text.trimEnd(), u = this.doc.getTextWidth(h);
       if (this._drawText(h, l, e), c.underline) {
-        const u = e + 1;
-        this.doc.setDrawColor(c.color[0], c.color[1], c.color[2]), this.doc.setLineWidth(0.3), this.doc.line(l, u, l + g, u);
+        const g = e + 1;
+        this.doc.setDrawColor(c.color[0], c.color[1], c.color[2]), this.doc.setLineWidth(0.3), this.doc.line(l, g, l + u, g);
       }
       if (c.strikethrough) {
-        const u = e - c.fontSize * 0.12;
-        this.doc.setDrawColor(c.color[0], c.color[1], c.color[2]), this.doc.setLineWidth(0.3), this.doc.line(l, u, l + g, u);
+        const g = e - c.fontSize * 0.12;
+        this.doc.setDrawColor(c.color[0], c.color[1], c.color[2]), this.doc.setLineWidth(0.3), this.doc.line(l, g, l + u, g);
       }
-      l += g, d < t.length - 1 && (l += a);
+      l += u, d < t.length - 1 && (l += a);
     });
   }
   // Thêm paragraph với định dạng hỗn hợp
@@ -2342,9 +2294,9 @@ class N {
     return !Array.isArray(t) || t.length === 0 ? (console.warn("addMixedParagraph: textParts phải là array không rỗng"), this) : (this.addMixedText(t, e), this.currentY += e.spacing, this);
   }
   // Helper functions cho mixed text
-  createTextPart(t, i = "normal", e = null, r = null) {
+  createTextPart(t, i = "normal", e = null, n = null) {
     const s = { text: t, style: i };
-    return e && (s.color = Array.isArray(e) ? e : [0, 0, 0]), r && (s.fontSize = r), s;
+    return e && (s.color = Array.isArray(e) ? e : [0, 0, 0]), n && (s.fontSize = n), s;
   }
   // Tạo bold text part
   bold(t, i = null, e = null) {
@@ -2363,8 +2315,8 @@ class N {
     return this.createTextPart(t, "normal", i, e);
   }
   // Tạo colored text part
-  colored(t, i, e = "normal", r = null) {
-    return this.createTextPart(t, e, i, r);
+  colored(t, i, e = "normal", n = null) {
+    return this.createTextPart(t, e, i, n);
   }
   // Thêm paragraph với helper functions
   addStyledParagraph(t, i = {}) {
@@ -2402,31 +2354,26 @@ class N {
       this.lineHeight,
       Math.ceil(e.fontSize * e.lineSpacing)
     )), e.maxWidth || (e.maxWidth = this.pageWidth - this.margins.left - this.margins.right - e.indent), this.currentNumberByStyle || (this.currentNumberByStyle = {}), this.currentNumberByStyle[e.numberStyle] || (this.currentNumberByStyle[e.numberStyle] = e.startNumber);
-    const r = this.currentNumberByStyle[e.numberStyle];
+    const n = this.currentNumberByStyle[e.numberStyle];
     let s = "";
     switch (e.numberStyle) {
       case "decimal":
-        s = r.toString();
+        s = n.toString();
         break;
       case "roman":
-        s = this.toRomanNumeral(r);
+        s = this.toRomanNumeral(n);
         break;
       case "alpha":
-        s = this.toAlphaNumeral(r);
+        s = this.toAlphaNumeral(n);
         break;
       case "bullet":
         s = "•";
         break;
       default:
-        s = r.toString();
+        s = n.toString();
     }
-    const n = e.numberFormat.replace("{number}", s);
-    this.doc.setFontSize(e.fontSize);
-    try {
-      this.doc.setFont("Roboto", e.fontStyle);
-    } catch {
-      this.doc.setFont("helvetica", e.fontStyle);
-    }
+    const r = e.numberFormat.replace("{number}", s);
+    this.doc.setFontSize(e.fontSize), this._setFont(null, e.fontStyle);
     const o = Array.isArray(e.color) ? e.color : [0, 0, 0];
     this.doc.setTextColor(...o);
     const a = this.doc.splitTextToSize(t, e.maxWidth);
@@ -2435,41 +2382,41 @@ class N {
       this.checkPageBreak(h + 10);
     }
     let l = this.margins.left, c = this.margins.left + e.indent, d = this.currentY;
-    return a.forEach((h, g) => {
-      if (a.length > 5 && e.skipPageBreakCheck !== !0 && (this.checkPageBreak(3 + e.lineHeight + 5), d = this.currentY), g === 0 && e.showIndex) {
+    return a.forEach((h, u) => {
+      if (a.length > 5 && e.skipPageBreakCheck !== !0 && (this.checkPageBreak(3 + e.lineHeight + 5), d = this.currentY), u === 0 && e.showIndex) {
         if (e.align === "center") {
-          const u = this.doc.getTextWidth(n + " " + h), f = (this.pageWidth - u) / 2;
-          l = f, c = f + this.doc.getTextWidth(n) + 5;
+          const g = this.doc.getTextWidth(r + " " + h), f = (this.pageWidth - g) / 2;
+          l = f, c = f + this.doc.getTextWidth(r) + 5;
         } else if (e.align === "right") {
-          const u = this.doc.getTextWidth(n + " " + h), f = this.pageWidth - this.margins.right - u;
-          l = f, c = f + this.doc.getTextWidth(n) + 5;
+          const g = this.doc.getTextWidth(r + " " + h), f = this.pageWidth - this.margins.right - g;
+          l = f, c = f + this.doc.getTextWidth(r) + 5;
         } else
           l = this.margins.left, c = this.margins.left + e.indent;
-        this._drawText(n, l, d);
+        this._drawText(r, l, d);
       }
       if (e.align === "center")
-        if (g === 0 && e.showIndex)
+        if (u === 0 && e.showIndex)
           this._drawText(h, c, d);
         else {
-          const u = this.doc.getTextWidth(h), f = (this.pageWidth - u) / 2;
+          const g = this.doc.getTextWidth(h), f = (this.pageWidth - g) / 2;
           this._drawText(h, f, d);
         }
       else if (e.align === "right")
-        if (g === 0 && e.showIndex)
+        if (u === 0 && e.showIndex)
           this._drawText(h, c, d);
         else {
-          const u = this.doc.getTextWidth(h), f = this.pageWidth - this.margins.right - u;
+          const g = this.doc.getTextWidth(h), f = this.pageWidth - this.margins.right - g;
           this._drawText(h, f, d);
         }
       else if (e.align === "justify") {
-        const u = g === a.length - 1;
-        g === 0 ? (c = this.margins.left + e.indent, !u && h.trim().length > 0 ? this.drawJustifiedText(
+        const g = u === a.length - 1;
+        u === 0 ? (c = this.margins.left + e.indent, !g && h.trim().length > 0 ? this.drawJustifiedText(
           h,
           c,
           d,
           e.maxWidth,
           e
-        ) : this._drawText(h, c, d)) : (c = this.margins.left + e.indent, !u && h.trim().length > 0 ? this.drawJustifiedText(
+        ) : this._drawText(h, c, d)) : (c = this.margins.left + e.indent, !g && h.trim().length > 0 ? this.drawJustifiedText(
           h,
           c,
           d,
@@ -2477,7 +2424,7 @@ class N {
           e
         ) : this._drawText(h, c, d));
       } else
-        g === 0 ? c = this.margins.left + e.indent : c = this.margins.left + e.indent, this._drawText(h, c, d);
+        u === 0 ? c = this.margins.left + e.indent : c = this.margins.left + e.indent, this._drawText(h, c, d);
       d += 3 + e.lineHeight;
     }), this.currentY = d, this.currentNumberByStyle[e.numberStyle]++, this;
   }
@@ -2511,13 +2458,13 @@ class N {
       // Reset số đếm khi bắt đầu list mới
       ...i
     };
-    return e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(5)), e.resetNumbers && this.resetNumbering(e.itemOptions.numberStyle, 1), t.forEach((r, s) => {
-      const n = typeof r == "string" ? r : r.text, o = typeof r == "object" ? { ...e.itemOptions, ...r.options } : e.itemOptions;
+    return e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(5)), e.resetNumbers && this.resetNumbering(e.itemOptions.numberStyle, 1), t.forEach((n, s) => {
+      const r = typeof n == "string" ? n : n.text, o = typeof n == "object" ? { ...e.itemOptions, ...n.options } : e.itemOptions;
       this.doc.setFontSize(o.fontSize || 11);
-      const a = o.maxWidth || this.pageWidth - this.margins.left - this.margins.right - (o.indent || 20), c = this.doc.splitTextToSize(n, a).length * ((o.lineHeight || this.lineHeight) + 3) + (e.spacing || 0.5) + 10;
+      const a = o.maxWidth || this.pageWidth - this.margins.left - this.margins.right - (o.indent || 20), c = this.doc.splitTextToSize(r, a).length * ((o.lineHeight || this.lineHeight) + 3) + (e.spacing || 0.5) + 10;
       this.checkPageBreak(c);
       const d = { ...o, skipPageBreakCheck: !0 };
-      this.addNumberedText(n, d), s < t.length - 1 && this.addSpace(e.spacing);
+      this.addNumberedText(r, d), s < t.length - 1 && this.addSpace(e.spacing);
     }), this;
   }
   // Thêm danh sách có nhiều cấp độ (nested list)
@@ -2551,19 +2498,19 @@ class N {
       ...i
     };
     this.resetNumbering("decimal", 1), this.resetNumbering("alpha", 1), this.resetNumbering("roman", 1);
-    const r = (s, n = 1) => {
-      const o = `level${Math.min(n, 4)}`, a = e[o];
+    const n = (s, r = 1) => {
+      const o = `level${Math.min(r, 4)}`, a = e[o];
       s.forEach((l, c) => {
         if (typeof l == "string")
           this.addNumberedText(l, a);
         else if (l.text) {
           const d = { ...a, ...l.options };
-          this.addNumberedText(l.text, d), l.subItems && Array.isArray(l.subItems) && (this.addSpace(e.spacing), r(l.subItems, n + 1));
+          this.addNumberedText(l.text, d), l.subItems && Array.isArray(l.subItems) && (this.addSpace(e.spacing), n(l.subItems, r + 1));
         }
         c < s.length - 1 && this.addSpace(e.spacing);
       });
     };
-    return r(t), this;
+    return n(t), this;
   }
   // Convert số thành Roman numeral
   toRomanNumeral(t) {
@@ -2583,9 +2530,9 @@ class N {
       ["I", 1]
     ];
     let e = "";
-    for (let [r, s] of i) {
-      const n = Math.floor(t / s);
-      e += r.repeat(n), t -= s * n;
+    for (let [n, s] of i) {
+      const r = Math.floor(t / s);
+      e += n.repeat(r), t -= s * r;
     }
     return e.toLowerCase();
   }
@@ -2630,26 +2577,26 @@ class N {
       ...i
     };
     e.title && (this.addText(e.title, null, null, e.titleOptions), this.addSpace(10)), this.resetNumbering("h1", 1), this.resetNumbering("h2", 1), this.resetNumbering("h3", 1);
-    const r = (s, n = 1, o = []) => {
+    const n = (s, r = 1, o = []) => {
       s.forEach((a) => {
         const l = typeof a == "string" ? a : a.title, c = typeof a == "object" ? a.page : "", d = typeof a == "object" ? a.subItems : null;
-        let h = `h${Math.min(n, 3)}`, g = e[`${h}Options`], u = this.currentNumberByStyle[h] || 1, f = u.toString();
-        g.numberFormat.includes("{parent}") && o.length > 0 && (f = f + "." + o[o.length - 1]), g.numberFormat.includes("{grandparent}") && o.length > 1 && (f = f + "." + o[o.length - 2]);
-        const p = g.numberFormat.replace("{number}", u).replace("{parent}", o[o.length - 1] || "").replace("{grandparent}", o[o.length - 2] || "");
+        let h = `h${Math.min(r, 3)}`, u = e[`${h}Options`], g = this.currentNumberByStyle[h] || 1, f = g.toString();
+        u.numberFormat.includes("{parent}") && o.length > 0 && (f = f + "." + o[o.length - 1]), u.numberFormat.includes("{grandparent}") && o.length > 1 && (f = f + "." + o[o.length - 2]);
+        const p = u.numberFormat.replace("{number}", g).replace("{parent}", o[o.length - 1] || "").replace("{grandparent}", o[o.length - 2] || "");
         if (e.showPageNumbers && c ? this.addLeaderDots(p + " " + l, c.toString(), {
-          fontSize: g.fontSize,
-          fontStyle: g.fontStyle,
-          leftPadding: g.indent
-        }) : this.addText(p + " " + l, this.margins.left + g.indent, null, {
-          fontSize: g.fontSize,
-          fontStyle: g.fontStyle
-        }), this.currentNumberByStyle || (this.currentNumberByStyle = {}), this.currentNumberByStyle[h] = u + 1, d && Array.isArray(d)) {
-          const b = [...o, u];
-          this.resetNumbering(`h${n + 1}`, 1), r(d, n + 1, b);
+          fontSize: u.fontSize,
+          fontStyle: u.fontStyle,
+          leftPadding: u.indent
+        }) : this.addText(p + " " + l, this.margins.left + u.indent, null, {
+          fontSize: u.fontSize,
+          fontStyle: u.fontStyle
+        }), this.currentNumberByStyle || (this.currentNumberByStyle = {}), this.currentNumberByStyle[h] = g + 1, d && Array.isArray(d)) {
+          const b = [...o, g];
+          this.resetNumbering(`h${r + 1}`, 1), n(d, r + 1, b);
         }
       });
     };
-    return r(t), this;
+    return n(t), this;
   }
   // Lấy thông tin trang
   getPageInfo() {
@@ -2667,19 +2614,25 @@ class N {
    * @returns {string[]} danh sách dòng đã căn đều
    */
   alignColons(t, i = 1) {
-    const e = t.map((n) => {
-      const [o, a] = n.split(":");
+    const e = t.map((r) => {
+      const [o, a] = r.split(":");
       return { left: o ?? "", right: a ?? "" };
-    }), r = Math.max(...e.map((n) => n.left.trimEnd().length)), s = " ".repeat(i);
-    return e.map((n) => {
-      const o = " ".repeat(r - n.left.trimEnd().length);
-      return `${n.left.trimEnd()}${o} :${s}${n.right.trimStart()}`;
+    }), n = Math.max(...e.map((r) => r.left.trimEnd().length)), s = " ".repeat(i);
+    return e.map((r) => {
+      const o = " ".repeat(n - r.left.trimEnd().length);
+      return `${r.left.trimEnd()}${o} :${s}${r.right.trimStart()}`;
     });
   }
 }
-class P {
-  constructor() {
-    this.pdfService = null, this.margins = {
+class E {
+  /**
+   * Create PDFRenderer instance
+   * @param {Object} fontConfig - Font configuration (optional)
+   * @param {string} fontConfig.defaultFont - Primary font name
+   * @param {string} fontConfig.fallback - Fallback font name
+   */
+  constructor(t = {}) {
+    this.fontConfig = { ...P, ...t }, this.pdfService = null, this.margins = {
       left: 15,
       right: 15,
       top: 20,
@@ -2700,8 +2653,8 @@ class P {
    * @returns {JsPdfService} PDF service instance
    */
   render(t, i = {}) {
-    return this.pdfService = new N(), t.margins && (this.margins = { ...this.margins, ...t.margins }, this.contentWidth = this.pageWidth - this.margins.left - this.margins.right), t.pages.forEach((e, r) => {
-      r > 0 && this.pdfService.addNewPage(), this.pdfService.resetPosition(this.margins.top), this.renderPage(e, i);
+    return this.pdfService = new O(this.fontConfig), t.margins && (this.margins = { ...this.margins, ...t.margins }, this.contentWidth = this.pageWidth - this.margins.left - this.margins.right), t.pages.forEach((e, n) => {
+      n > 0 && this.pdfService.addNewPage(), this.pdfService.resetPosition(this.margins.top), this.renderPage(e, i);
     }), this;
   }
   /**
@@ -2755,23 +2708,23 @@ class P {
    * Handles layout markers: ___BR___, ___HR___, ___PAGEBREAK___, ___TAB___
    */
   renderRichText(t, i) {
-    const e = t.segments || [], r = t.style || {}, s = e.map((h) => ({
+    const e = t.segments || [], n = t.style || {}, s = e.map((h) => ({
       text: this.replaceVariables(h.text, i),
       style: h.style
-    })), n = this.calculateX(t), o = r.lineHeight || 5, a = {
-      fontSize: r.fontSize || 12,
-      color: this.parseColor(r.color),
-      align: r.align || "left",
+    })), r = this.calculateX(t), o = n.lineHeight || 5, a = {
+      fontSize: n.fontSize || 12,
+      color: this.parseColor(n.color),
+      align: n.align || "left",
       lineHeight: o,
-      x: n,
+      x: r,
       maxWidth: t.width || this.contentWidth
     };
     if (!s.some(
       (h) => h.text && (h.text.includes("___BR___") || h.text.includes("___HR___") || h.text.includes("___PAGEBREAK___"))
     )) {
-      const h = s.map((g) => ({
-        ...g,
-        text: g.text ? g.text.replace(/___TAB___/g, "    ") : g.text
+      const h = s.map((u) => ({
+        ...u,
+        text: u.text ? u.text.replace(/___TAB___/g, "    ") : u.text
       }));
       this.pdfService.addMixedParagraph(h, a);
       return;
@@ -2787,8 +2740,8 @@ class P {
       else if (h === "___PAGEBREAK___")
         this.pdfService.addNewPage();
       else if (h.trim()) {
-        const g = [{ text: h.trim(), style: {} }];
-        this.pdfService.addMixedParagraph(g, a);
+        const u = [{ text: h.trim(), style: {} }];
+        this.pdfService.addMixedParagraph(u, a);
       }
   }
   /**
@@ -2797,33 +2750,33 @@ class P {
    */
   renderText(t, i) {
     let e = this.replaceVariables(t.content, i);
-    const r = t.style || {}, s = r.lineHeight || 5, n = {
-      fontSize: r.fontSize || 12,
-      fontStyle: this.mapFontStyle(r),
-      color: this.parseColor(r.color),
-      align: r.align || "left",
+    const n = t.style || {}, s = n.lineHeight || 5, r = {
+      fontSize: n.fontSize || 12,
+      fontStyle: this.mapFontStyle(n),
+      color: this.parseColor(n.color),
+      align: n.align || "left",
       lineHeight: s
     }, o = this.calculateX(t);
     if (e = e.replace(/___TAB___/g, "    "), !e.includes("___BR___") && !e.includes("___HR___") && !e.includes("___PAGEBREAK___")) {
-      this.pdfService.addText(e, o, null, n);
+      this.pdfService.addText(e, o, null, r);
       return;
     }
     const a = e.split(/(___BR___|___HR___|___PAGEBREAK___)/);
     for (const l of a)
-      l === "___BR___" ? this.pdfService.addSpace(s) : l === "___HR___" ? this.pdfService.addHorizontalLine() : l === "___PAGEBREAK___" ? this.pdfService.addNewPage() : l.trim() && this.pdfService.addText(l.trim(), o, null, n);
+      l === "___BR___" ? this.pdfService.addSpace(s) : l === "___HR___" ? this.pdfService.addHorizontalLine() : l === "___PAGEBREAK___" ? this.pdfService.addNewPage() : l.trim() && this.pdfService.addText(l.trim(), o, null, r);
   }
   /**
    * Render heading element (content-flow)
    */
   renderHeading(t, i) {
-    var s, n, o;
+    var s, r, o;
     const e = this.replaceVariables(t.content, i);
     switch (t.level || 1) {
       case 1:
         this.pdfService.addTitle(e, { align: ((s = t.style) == null ? void 0 : s.align) || "center" });
         break;
       case 2:
-        this.pdfService.addSubTitle(e, { align: ((n = t.style) == null ? void 0 : n.align) || "left" });
+        this.pdfService.addSubTitle(e, { align: ((r = t.style) == null ? void 0 : r.align) || "left" });
         break;
       default:
         this.pdfService.addText(e, null, null, {
@@ -2837,7 +2790,7 @@ class P {
    * Render table element with styles
    */
   renderTable(t, i) {
-    var h, g, u;
+    var h, u, g;
     const e = t.rows || [];
     if (e.length === 0) return;
     if (t.dataVar) {
@@ -2848,14 +2801,14 @@ class P {
       }
     }
     t.y !== void 0 && this.pdfService.resetPosition(t.y);
-    const r = [], s = t.style || {}, n = (f, p, b) => {
+    const n = [], s = t.style || {}, r = (f, p, b) => {
       if (!f) return { content: "" };
       const m = f.cellStyle || {}, S = {
         halign: f.align || "left",
         valign: m.verticalAlign === "top" ? "top" : m.verticalAlign === "bottom" ? "bottom" : "middle"
       };
       if (m.backgroundColor && (S.fillColor = this.parseColorToArray(m.backgroundColor)), m.borderColor && (S.lineColor = this.parseColorToArray(m.borderColor)), m.borderWidth && (S.lineWidth = m.borderWidth), m.padding && (S.cellPadding = m.padding), f.type === "image")
-        return r.push({
+        return n.push({
           rowIndex: p,
           cellIndex: b,
           src: f.src,
@@ -2874,8 +2827,8 @@ class P {
         rowSpan: f.rowSpan || 1,
         styles: S
       };
-    }, o = ((h = e[0]) == null ? void 0 : h.map((f, p) => n(f, 0, p))) || [], a = (g = e[0]) == null ? void 0 : g[0], l = (u = a == null ? void 0 : a.cellStyle) == null ? void 0 : u.backgroundColor, c = e.slice(1).map(
-      (f, p) => f.map((b, m) => n(b, p + 1, m))
+    }, o = ((h = e[0]) == null ? void 0 : h.map((f, p) => r(f, 0, p))) || [], a = (u = e[0]) == null ? void 0 : u[0], l = (g = a == null ? void 0 : a.cellStyle) == null ? void 0 : g.backgroundColor, c = e.slice(1).map(
+      (f, p) => f.map((b, m) => r(b, p + 1, m))
     ), d = {
       tableWidth: t.width
     };
@@ -2889,8 +2842,8 @@ class P {
   parseColorToArray(t) {
     if (!t) return [0, 0, 0];
     if (t.startsWith("#")) {
-      const e = t.slice(1), r = parseInt(e.substr(0, 2), 16), s = parseInt(e.substr(2, 2), 16), n = parseInt(e.substr(4, 2), 16);
-      return [r, s, n];
+      const e = t.slice(1), n = parseInt(e.substr(0, 2), 16), s = parseInt(e.substr(2, 2), 16), r = parseInt(e.substr(4, 2), 16);
+      return [n, s, r];
     }
     const i = t.match(/rgb\((\d+),\s*(\d+),\s*(\d+)\)/);
     return i ? [parseInt(i[1]), parseInt(i[2]), parseInt(i[3])] : [0, 0, 0];
@@ -2901,34 +2854,34 @@ class P {
   renderDataTable(t, i) {
     const e = t.columns || [];
     if (e.length === 0 || !Array.isArray(i)) return;
-    const r = e.map((n) => n.label || n), s = i.map(
-      (n) => e.map((o) => {
+    const n = e.map((r) => r.label || r), s = i.map(
+      (r) => e.map((o) => {
         const a = o.key || o;
-        return String(n[a] || "");
+        return String(r[a] || "");
       })
     );
-    typeof this.pdfService.addTable == "function" && this.pdfService.addTable(r, s, t.style || {});
+    typeof this.pdfService.addTable == "function" && this.pdfService.addTable(n, s, t.style || {});
   }
   /**
    * Manual table drawing when addTable is not available
    */
   drawTableManually(t, i) {
     var d;
-    const e = t.rows || [], r = t.x || this.pdfService.margins.left, s = t.width || this.pdfService.pageWidth - r - this.pdfService.margins.right, n = t.rowHeight || 8, o = ((d = e[0]) == null ? void 0 : d.length) || 1, a = s / o, l = this.pdfService.doc;
+    const e = t.rows || [], n = t.x || this.pdfService.margins.left, s = t.width || this.pdfService.pageWidth - n - this.pdfService.margins.right, r = t.rowHeight || 8, o = ((d = e[0]) == null ? void 0 : d.length) || 1, a = s / o, l = this.pdfService.doc;
     let c = this.pdfService.getCurrentY();
-    l.setLineWidth(0.5), l.setFontSize(10), e.forEach((h, g) => {
-      h.forEach((u, f) => {
-        const p = r + f * a, b = typeof u == "object" ? this.replaceVariables(u.content, i) : this.replaceVariables(String(u), i), m = typeof u == "object" ? u.isHeader : g === 0;
-        m && (l.setFillColor(240, 240, 240), l.rect(p, c, a, n, "F")), l.setDrawColor(0, 0, 0), l.rect(p, c, a, n);
+    l.setLineWidth(0.5), l.setFontSize(10), e.forEach((h, u) => {
+      h.forEach((g, f) => {
+        const p = n + f * a, b = typeof g == "object" ? this.replaceVariables(g.content, i) : this.replaceVariables(String(g), i), m = typeof g == "object" ? g.isHeader : u === 0;
+        m && (l.setFillColor(240, 240, 240), l.rect(p, c, a, r, "F")), l.setDrawColor(0, 0, 0), l.rect(p, c, a, r);
         try {
-          l.setFont("Roboto", m ? "bold" : "normal");
+          l.setFont(this.fontConfig.defaultFont, m ? "bold" : "normal");
         } catch {
-          l.setFont("helvetica", m ? "bold" : "normal");
+          l.setFont(this.fontConfig.fallback || "helvetica", m ? "bold" : "normal");
         }
         l.setTextColor(0, 0, 0);
-        const S = b.replace(/<[^>]*>/g, ""), y = c + n / 2 + 2;
+        const S = b.replace(/<[^>]*>/g, ""), y = c + r / 2 + 2;
         l.text(S, p + 2, y, { maxWidth: a - 4 });
-      }), c += n;
+      }), c += r;
     }), this.pdfService.resetPosition(c + 5);
   }
   /**
@@ -2937,10 +2890,10 @@ class P {
   renderImage(t, i) {
     let e = this.replaceVariables(t.src, i);
     if (e && (e.startsWith("data:") || e.startsWith("http"))) {
-      const r = t.x !== void 0 ? t.x : this.margins.left;
+      const n = t.x !== void 0 ? t.x : this.margins.left;
       this.pdfService.addImage(
         e,
-        r,
+        n,
         null,
         // Let service handle y (content-flow)
         t.width || 50,
@@ -2988,8 +2941,8 @@ class P {
   processLayoutMarkers(t, i = {}) {
     if (!t || typeof t != "string") return t || "";
     let e = t.replace(/___TAB___/g, "    ");
-    const r = e.includes("___BR___"), s = e.includes("___HR___"), n = e.includes("___PAGEBREAK___");
-    if (!r && !s && !n)
+    const n = e.includes("___BR___"), s = e.includes("___HR___"), r = e.includes("___PAGEBREAK___");
+    if (!n && !s && !r)
       return e;
     const o = e.split(/(___BR___|___HR___|___PAGEBREAK___)/);
     for (let a = 0; a < o.length; a++) {
@@ -3010,10 +2963,10 @@ class P {
    */
   renderTextWithMarkers(t, i = {}) {
     if (!t) return;
-    const r = t.replace(/___TAB___/g, "    ").split(/(___BR___|___HR___|___PAGEBREAK___)/), s = i.x || this.margins.left, n = i.fontSize || 12, o = i.lineHeight || n * 0.5;
-    for (const a of r)
+    const n = t.replace(/___TAB___/g, "    ").split(/(___BR___|___HR___|___PAGEBREAK___)/), s = i.x || this.margins.left, r = i.fontSize || 12, o = i.lineHeight || r * 0.5;
+    for (const a of n)
       a === "___BR___" ? this.pdfService.addSpace(o) : a === "___HR___" ? this.pdfService.addHorizontalLine ? this.pdfService.addHorizontalLine() : this.pdfService.addSpace(5) : a === "___PAGEBREAK___" ? this.pdfService.addNewPage() : a.trim() && this.pdfService.addText(a.trim(), s, null, {
-        fontSize: n,
+        fontSize: r,
         maxWidth: i.maxWidth || this.contentWidth,
         align: i.align || "left",
         color: i.color
@@ -3080,7 +3033,7 @@ class P {
     let e = t.code || "";
     e = e.replace(/^\/\/\s*eval\s*/i, ""), e = e.replace(/^\/\*\s*eval\s*\*\/\s*/i, ""), console.log("[PDFRenderer] Evaluating code block with full PDF access...");
     try {
-      const r = {
+      const n = {
         // Direct PDF service access
         pdf: this.pdfService,
         // Data context
@@ -3107,16 +3060,16 @@ class P {
         addLine: () => this.pdfService.addHorizontalLine(),
         addImage: (o, a, l, c, d) => this.pdfService.addImage(o, a, l, c, d),
         newPage: () => this.pdfService.addNewPage()
-      }, n = new Function(...Object.keys(r), `
+      }, r = new Function(...Object.keys(n), `
         "use strict";
         ${e}
-      `)(...Object.values(r));
-      console.log("[PDFRenderer] Eval completed, result:", n), typeof n == "string" && n.trim() && this.pdfService.addText(n, this.margins.left, null, {
+      `)(...Object.values(n));
+      console.log("[PDFRenderer] Eval completed, result:", r), typeof r == "string" && r.trim() && this.pdfService.addText(r, this.margins.left, null, {
         fontSize: 12,
         maxWidth: this.contentWidth
       });
-    } catch (r) {
-      console.error("[PDFRenderer] Eval error:", r), this.pdfService.addText(`[Eval Error: ${r.message}]`, this.margins.left, null, {
+    } catch (n) {
+      console.error("[PDFRenderer] Eval error:", n), this.pdfService.addText(`[Eval Error: ${n.message}]`, this.margins.left, null, {
         fontSize: 10,
         color: [255, 0, 0]
       });
@@ -3126,17 +3079,17 @@ class P {
    * Render code block - display code as formatted text (not evaluated)
    */
   renderCodeBlock(t, i) {
-    const e = t.code || "", r = t.language || "text";
-    console.log("[PDFRenderer] Rendering code block:", r, e.length, "chars"), this.pdfService.addText(e, this.margins.left, null, {
+    const e = t.code || "", n = t.language || "text";
+    console.log("[PDFRenderer] Rendering code block:", n, e.length, "chars"), this.pdfService.addText(e, this.margins.left, null, {
       fontSize: 10,
       fontStyle: "normal",
       maxWidth: this.contentWidth
     });
   }
 }
-class k {
+class H {
   constructor() {
-    this.editor = null, this.parser = new z(), this.renderer = new P(), this.blueprint = null, this._initialized = !1;
+    this.editor = null, this.parser = new k(), this.renderer = null, this.blueprint = null, this._initialized = !1, this.fontConfig = { ...P };
   }
   /**
    * Initialize CKEditor into a container element
@@ -3145,21 +3098,24 @@ class k {
    * @returns {Promise<DrawPDF>} This instance (chainable)
    */
   async init(t, i = {}) {
-    var o, a, l, c, d;
+    var l, c, d, h, u;
     const e = typeof t == "string" ? document.querySelector(t) : t;
     if (!e)
       throw new Error(`DrawPDF: Element not found: ${t}`);
-    const r = ((o = window.CKEDITOR) == null ? void 0 : o.DecoupledEditor) || ((a = window.CKEDITOR) == null ? void 0 : a.ClassicEditor) || window.DecoupledEditor || window.ClassicEditor;
-    if (!r)
+    const n = ((l = window.CKEDITOR) == null ? void 0 : l.DecoupledEditor) || ((c = window.CKEDITOR) == null ? void 0 : c.ClassicEditor) || window.DecoupledEditor || window.ClassicEditor;
+    if (!n)
       throw new Error("DrawPDF: CKEditor not loaded. Please include CKEditor script before using DrawPDF.");
-    const n = { ...{
+    const s = {
       toolbar: {
         items: [
+          // History
           "undo",
           "redo",
           "|",
+          // Find
           "findAndReplace",
           "|",
+          // Formatting
           "heading",
           "|",
           "bold",
@@ -3171,12 +3127,14 @@ class k {
           "code",
           "removeFormat",
           "|",
+          // Font
           "fontFamily",
           "fontSize",
           "fontColor",
           "fontBackgroundColor",
           "highlight",
           "|",
+          // Alignment & Lists
           "alignment",
           "|",
           "bulletedList",
@@ -3186,6 +3144,7 @@ class k {
           "outdent",
           "indent",
           "|",
+          // Insert
           "link",
           "uploadImage",
           "insertTable",
@@ -3194,9 +3153,7 @@ class k {
           "|",
           "horizontalLine",
           "pageBreak",
-          "specialCharacters",
-          "|",
-          "sourceEditing"
+          "specialCharacters"
         ],
         shouldNotGroupWhenFull: !0
       },
@@ -3212,7 +3169,7 @@ class k {
         ]
       },
       fontSize: {
-        options: [10, 11, 12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36, 42, 48, 72],
+        options: [12, 13, 14, 16, 18, 20, 22, 24, 26, 28, 32, 36, 42, 48, 72],
         supportAllValues: !0
       },
       fontFamily: {
@@ -3267,8 +3224,13 @@ class k {
         addTargetToExternalLinks: !0,
         defaultProtocol: "https://"
       },
+      placeholder: `Soạn thảo văn bản ở đây...
+
+Sử dụng {{tênBiến}} để chèn biến.`,
       language: "vi",
+      // Remove plugins that might cause issues
       removePlugins: [
+        // Premium plugins (require license)
         "CKBox",
         "CKFinder",
         "EasyImage",
@@ -3290,25 +3252,61 @@ class k {
         "TableOfContents",
         "PasteFromOfficeEnhanced",
         "CaseChange",
+        // AI features (require license)
         "AIAssistant",
         "AI",
+        // Multi-level list (require license)
         "MultiLevelList",
+        // Restricted editing (causes read-only mode)
         "RestrictedEditingMode",
         "StandardEditingMode"
       ]
-    }, ...i };
+    }, { fonts: r, ...o } = i, a = { ...s, ...o };
+    r && (this.fontConfig = { ...P, ...r }), this.fontConfig.register && this.fontConfig.register.length > 0 && await this._loadFontFiles(this.fontConfig.register), this.renderer = new E(this.fontConfig);
     try {
-      if (this.editor = await r.create(e, n), (d = (c = (l = this.editor.ui) == null ? void 0 : l.view) == null ? void 0 : c.toolbar) != null && d.element)
+      if (this.editor = await n.create(e, a), (u = (h = (d = this.editor.ui) == null ? void 0 : d.view) == null ? void 0 : h.toolbar) != null && u.element)
         if (i.toolbarContainer) {
-          const h = typeof i.toolbarContainer == "string" ? document.querySelector(i.toolbarContainer) : i.toolbarContainer;
-          h && h.appendChild(this.editor.ui.view.toolbar.element);
+          const g = typeof i.toolbarContainer == "string" ? document.querySelector(i.toolbarContainer) : i.toolbarContainer;
+          g && g.appendChild(this.editor.ui.view.toolbar.element);
         } else
           e instanceof HTMLElement && e.parentNode && e.parentNode.insertBefore(this.editor.ui.view.toolbar.element, e);
-      this._initialized = !0, console.log("✅ DrawPDF initialized");
-    } catch (h) {
-      throw console.error("DrawPDF init failed:", h), h;
+      this._initialized = !0, console.log("✅ DrawPDF initialized with font:", this.fontConfig.defaultFont);
+    } catch (g) {
+      throw console.error("DrawPDF init failed:", g), g;
     }
     return this;
+  }
+  /**
+   * Load custom font files (JS modules)
+   * @param {string[]} fontUrls - Array of font file URLs
+   * @private
+   */
+  async _loadFontFiles(t) {
+    for (const i of t)
+      try {
+        await this._loadFontScript(i), console.log(`✅ Font loaded: ${i}`);
+      } catch (e) {
+        console.warn(`⚠️ Failed to load font: ${i}`, e.message);
+      }
+  }
+  /**
+   * Load a single font script file
+   * @param {string} url - URL to font JS file
+   * @private
+   */
+  _loadFontScript(t) {
+    return new Promise((i, e) => {
+      const n = document.createElement("script");
+      n.src = t, n.onload = i, n.onerror = () => e(new Error(`Failed to load font script: ${t}`)), document.head.appendChild(n);
+    });
+  }
+  /**
+   * Register a custom font dynamically
+   * @param {string} fontUrl - URL to the font JS file (pre-converted from TTF)
+   * @returns {Promise<DrawPDF>} This instance (chainable)
+   */
+  async registerFont(t) {
+    return await this._loadFontScript(t), console.log(`✅ Font registered: ${t}`), this;
   }
   /**
    * Get JSON Blueprint from current editor content
@@ -3409,7 +3407,7 @@ class k {
    * @returns {Promise<DrawPDF>} Initialized DrawPDF instance
    */
   static async create(t, i = {}) {
-    const e = new k();
+    const e = new H();
     return await e.init(t, i), e;
   }
   /**
@@ -3418,7 +3416,7 @@ class k {
    * @returns {Object} JSON Blueprint
    */
   static parseHtml(t) {
-    const e = new z().parse(t);
+    const e = new k().parse(t);
     return e.sourceHtml = t, e.createdAt = (/* @__PURE__ */ new Date()).toISOString(), e;
   }
   /**
@@ -3428,7 +3426,7 @@ class k {
    * @returns {string} PDF as data URL
    */
   static renderBlueprint(t, i = {}) {
-    const e = new P();
+    const e = new E();
     return e.render(t, i), e.getDataUrl();
   }
   /**
@@ -3438,20 +3436,21 @@ class k {
    * @param {Object} data - Variable data
    */
   static downloadBlueprint(t, i = "document.pdf", e = {}) {
-    const r = new P();
-    r.render(t, e), r.download(i);
+    const n = new E();
+    n.render(t, e), n.download(i);
   }
 }
-const Y = "2.1.0";
+const B = "2.1.0";
 export {
-  z as CKEditorParser,
-  k as DrawPDF,
+  k as CKEditorParser,
+  H as DrawPDF,
   x as FONTS,
-  N as JsPdfService,
+  P as FONT_CONFIG,
+  O as JsPdfService,
   _ as PAGE,
-  P as PDFRenderer,
-  D as RichTextTokenizer,
+  E as PDFRenderer,
+  v as RichTextTokenizer,
   w as TemplateEngine,
-  Y as VERSION,
-  k as default
+  B as VERSION,
+  H as default
 };

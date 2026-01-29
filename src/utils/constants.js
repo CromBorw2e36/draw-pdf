@@ -66,6 +66,13 @@ export const DEFAULT_STYLES = {
   }
 };
 
+// Font configuration defaults
+export const FONT_CONFIG = {
+  defaultFont: 'Roboto',      // Primary font for PDF rendering
+  fallback: 'helvetica',      // Built-in jsPDF fallback font
+  register: []                // Custom font files to load (URLs to .js files)
+};
+
 // Zoom settings
 export const ZOOM = {
   MIN: 0.25,

@@ -24,6 +24,9 @@ export { default as JsPdfService } from './service/jspdf-service.js';
 // Utils - Template engine with variables, loops, conditionals
 export { TemplateEngine } from './utils/TemplateEngine.js';
 
+// Constants - Font configuration defaults
+export { FONT_CONFIG } from './utils/constants.js';
+
 // Re-export for convenience
 export { DrawPDF };
 export const VERSION = '2.1.0';

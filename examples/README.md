@@ -39,6 +39,28 @@ pdf.preview({ name: 'Test' });
 
 ---
 
+### Font Configuration (Custom Fonts)
+
+```javascript
+import DrawPDF from 'drawpdf';
+
+// Use custom font
+const pdf = await DrawPDF.create('#editor', {
+  fonts: {
+    defaultFont: 'MyFont',           // Primary font
+    fallback: 'helvetica',           // Fallback
+    register: ['/fonts/MyFont.js']   // Font files
+  }
+});
+
+// Dynamic registration
+await pdf.registerFont('/fonts/AnotherFont.js');
+```
+
+**Note:** Font files must be pre-converted from TTF using [jsPDF Font Converter](https://rawgit.com/MrRio/jsPDF/master/fontconverter/fontconverter.html).
+
+---
+
 ### Full Bundle (Recommended)
 
 Dùng bản `full` để có sẵn mọi thứ: **Core + jsPDF + autoTable + CKEditor** trong 1 file duy nhất.

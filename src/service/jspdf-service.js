@@ -1,8 +1,26 @@
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
+import { FONT_CONFIG } from '../utils/constants.js';
+
+// Ensure window.jspdf exists for font file compatibility
+// Font .js files use window.jspdf.jsPDF.API to register themselves
+if (typeof window !== 'undefined' && !window.jspdf) {
+  window.jspdf = { jsPDF };
+}
 
 class JsPdfService {
-  constructor() {
+  /**
+   * Create JsPdfService instance
+   * @param {Object} fontConfig - Font configuration
+   * @param {string} fontConfig.defaultFont - Primary font name (default: 'Roboto')
+   * @param {string} fontConfig.fallback - Fallback font name (default: 'helvetica')
+   */
+  constructor(fontConfig = {}) {
+    // Merge with default font config
+    this.fontConfig = { ...FONT_CONFIG, ...fontConfig };
+    this.defaultFont = this.fontConfig.defaultFont;
+    this.fallbackFont = this.fontConfig.fallback;
+
     this.doc = new jsPDF();
     this.currentY = 20; // Vị trí Y hiện tại để tự động xuống dòng
     this.lineHeight = 1; // Khoảng cách giữa các dòng (giảm từ 7 xuống 4.5)
@@ -10,24 +28,51 @@ class JsPdfService {
     this.pageWidth = this.doc.internal.pageSize.width;
     this.margins = { left: 15, right: 15, top: 20, bottom: 20 };
 
-    // Thiết lập font tiếng Việt mặc định
-    this.setupVietnameseFont();
+    // Setup default font
+    this._setupDefaultFont();
   }
 
-  // Thiết lập font tiếng Việt
-  setupVietnameseFont() {
-    // Kiểm tra và sử dụng font Roboto nếu có (được load từ file .js)
+  /**
+   * Setup default font with fallback logic
+   * @private
+   */
+  _setupDefaultFont() {
     try {
       const fonts = this.doc.getFontList();
-      if (fonts['Roboto']) {
-        this.doc.setFont('Roboto', 'normal');
-      }
-      else {
+      if (fonts[this.defaultFont]) {
+        this.doc.setFont(this.defaultFont, 'normal');
+      } else if (fonts[this.fallbackFont]) {
+        console.warn(`Font '${this.defaultFont}' not found, using fallback '${this.fallbackFont}'`);
+        this.doc.setFont(this.fallbackFont, 'normal');
+        // Update defaultFont to the actual font being used
+        this.defaultFont = this.fallbackFont;
+      } else {
+        console.warn(`Neither '${this.defaultFont}' nor '${this.fallbackFont}' found, using 'helvetica'`);
         this.doc.setFont('helvetica', 'normal');
+        this.defaultFont = 'helvetica';
       }
     } catch (error) {
-      console.warn('Không thể load font Roboto, sử dụng font mặc định:', error.message);
+      console.warn('Error setting up font, using helvetica:', error.message);
       this.doc.setFont('helvetica', 'normal');
+      this.defaultFont = 'helvetica';
+    }
+  }
+
+  /**
+   * Set font with automatic fallback
+   * @param {string} fontName - Font name to use (optional, uses defaultFont if not provided)
+   * @param {string} style - Font style: 'normal', 'bold', 'italic', 'bolditalic'
+   */
+  _setFont(fontName = null, style = 'normal') {
+    const targetFont = fontName || this.defaultFont;
+    try {
+      this.doc.setFont(targetFont, style);
+    } catch {
+      try {
+        this.doc.setFont(this.fallbackFont, style);
+      } catch {
+        this.doc.setFont('helvetica', style);
+      }
     }
   }
 
@@ -159,11 +204,7 @@ class JsPdfService {
 
     // Thiết lập font và màu
     this.doc.setFontSize(config.fontSize);
-    try {
-      this.doc.setFont("Roboto", config.fontStyle);
-    } catch {
-      this.doc.setFont("helvetica", config.fontStyle);
-    }
+    this._setFont(null, config.fontStyle);
     this.doc.setTextColor(config.color[0], config.color[1], config.color[2]);
 
     // Chia text thành các dòng với độ rộng tối đa
@@ -251,7 +292,7 @@ class JsPdfService {
 
     // Build styles from options
     const tableStyles = {
-      font: 'Roboto',
+      font: this.defaultFont,
       fontSize: 10,
       cellPadding: 3,
       overflow: 'linebreak'
@@ -649,11 +690,7 @@ class JsPdfService {
       // Thiết lập màu text
       this.doc.setTextColor(headerOptions.color[0], headerOptions.color[1], headerOptions.color[2]);
 
-      try {
-        this.doc.setFont("Roboto", headerOptions.fontStyle);
-      } catch {
-        this.doc.setFont("helvetica", headerOptions.fontStyle);
-      }
+      this._setFont(null, headerOptions.fontStyle);
 
       let xPos;
       const textWidth = this.doc.getTextWidth(text);
@@ -696,11 +733,7 @@ class JsPdfService {
     for (let i = 1; i <= totalPages; i++) {
       this.doc.setPage(i);
       this.doc.setFontSize(footerOptions.fontSize);
-      try {
-        this.doc.setFont("Roboto", footerOptions.fontStyle);
-      } catch {
-        this.doc.setFont("helvetica", footerOptions.fontStyle);
-      }
+      this._setFont(null, footerOptions.fontStyle);
 
       // Thêm thiết lập màu
       const footerColor = Array.isArray(footerOptions.color) ? footerOptions.color : [0, 0, 0];
@@ -898,7 +931,7 @@ class JsPdfService {
     // Ngày tháng - căn giữa trong khối
     this.doc.setFontSize(signatureOptions.fontSize);
     try {
-      this.doc.setFont("Roboto", "normal");
+      this._setFont(null, "normal");
     } catch {
       this.doc.setFont("helvetica", "normal");
     }
@@ -912,7 +945,7 @@ class JsPdfService {
     // Tiêu đề chức vụ - căn giữa trong khối
     this.doc.setFontSize(signatureOptions.titleFontSize);
     try {
-      this.doc.setFont("Roboto", "bold");
+      this._setFont(null, "bold");
     } catch {
       this.doc.setFont("helvetica", "bold");
     }
@@ -926,7 +959,7 @@ class JsPdfService {
     const noteText = "(Ký và ghi rõ họ tên)";
     this.doc.setFontSize(9);
     try {
-      this.doc.setFont("Roboto", "italic");
+      this._setFont(null, "italic");
     } catch {
       this.doc.setFont("helvetica", "italic");
     }
@@ -943,7 +976,7 @@ class JsPdfService {
     // Tên người ký - căn giữa trong khối
     this.doc.setFontSize(signatureOptions.nameFontSize);
     try {
-      this.doc.setFont("Roboto", "bold");
+      this._setFont(null, "bold");
     } catch {
       this.doc.setFont("helvetica", "bold");
     }
@@ -1013,7 +1046,7 @@ class JsPdfService {
     // Ngày tháng - căn giữa trong khối
     this.doc.setFontSize(signatureOptions.fontSize);
     try {
-      this.doc.setFont("Roboto", "bold");
+      this._setFont(null, "bold");
     } catch {
       this.doc.setFont("helvetica", "bold");
     }
@@ -1029,7 +1062,7 @@ class JsPdfService {
     // Tiêu đề chức vụ - căn giữa trong khối
     this.doc.setFontSize(signatureOptions.titleFontSize);
     try {
-      this.doc.setFont("Roboto", "bold");
+      this._setFont(null, "bold");
     } catch {
       this.doc.setFont("helvetica", "bold");
     }
@@ -1044,7 +1077,7 @@ class JsPdfService {
     const noteText = signatureOptions.noteText ?? "(Ký và ghi rõ họ tên)";
     this.doc.setFontSize(9);
     try {
-      this.doc.setFont("Roboto", "italic");
+      this._setFont(null, "italic");
     } catch {
       this.doc.setFont("helvetica", "italic");
     }
@@ -1097,7 +1130,7 @@ class JsPdfService {
       this.doc.setTextColor(255, 255, 255); // Màu trắng (chìm)
       this.doc.setFontSize(9);
       try {
-        this.doc.setFont("Roboto", "italic");
+        this._setFont(null, "italic");
       } catch {
         this.doc.setFont("helvetica", "italic");
       }
@@ -1119,7 +1152,7 @@ class JsPdfService {
     // Tên người ký - căn giữa trong khối
     this.doc.setFontSize(signatureOptions.nameFontSize);
     try {
-      this.doc.setFont("Roboto", "bold");
+      this._setFont(null, "bold");
     } catch {
       this.doc.setFont("helvetica", "bold");
     }
@@ -1308,7 +1341,7 @@ class JsPdfService {
     this.doc.setFontSize(config.fontSize);
 
     try {
-      this.doc.setFont("Roboto", "italic");
+      this._setFont(null, "italic");
     } catch {
       this.doc.setFont("helvetica", "italic");
     }
@@ -1547,11 +1580,7 @@ class JsPdfService {
         const partStyle = typeof part === "object" && part.style ? part.style : fontStyle;
 
         this.doc.setFontSize(partFontSize);
-        try {
-          this.doc.setFont("Roboto", partStyle);
-        } catch {
-          this.doc.setFont("helvetica", partStyle);
-        }
+        this._setFont(null, partStyle);
         totalWidth += this.doc.getTextWidth(text);
       });
 
@@ -1564,11 +1593,7 @@ class JsPdfService {
         const partColor = typeof part === "object" && part.color ? part.color : color;
 
         this.doc.setFontSize(partFontSize);
-        try {
-          this.doc.setFont("Roboto", partStyle);
-        } catch {
-          this.doc.setFont("helvetica", partStyle);
-        }
+        this._setFont(null, partStyle);
         this.doc.setTextColor(partColor[0], partColor[1], partColor[2]);
 
         this._drawText(text, currentX, y);
@@ -1584,11 +1609,7 @@ class JsPdfService {
       const partColor = content.color || color;
 
       this.doc.setFontSize(partFontSize);
-      try {
-        this.doc.setFont("Roboto", partStyle);
-      } catch {
-        this.doc.setFont("helvetica", partStyle);
-      }
+      this._setFont(null, partStyle);
       this.doc.setTextColor(partColor[0], partColor[1], partColor[2]);
 
       // Decode trước khi tính width và draw
@@ -1601,11 +1622,7 @@ class JsPdfService {
       text = this._decodeHtmlEntities(text); // Decode
 
       this.doc.setFontSize(fontSize);
-      try {
-        this.doc.setFont("Roboto", fontStyle);
-      } catch {
-        this.doc.setFont("helvetica", fontStyle);
-      }
+      this._setFont(null, fontStyle);
       this.doc.setTextColor(color[0], color[1], color[2]);
 
       const textWidth = this.doc.getTextWidth(text);
@@ -1634,11 +1651,7 @@ class JsPdfService {
 
     // Thiết lập font
     this.doc.setFontSize(leaderOptions.fontSize);
-    try {
-      this.doc.setFont("Roboto", leaderOptions.fontStyle);
-    } catch {
-      this.doc.setFont("helvetica", leaderOptions.fontStyle);
-    }
+    this._setFont(null, leaderOptions.fontStyle);
     const leaderColor = Array.isArray(leaderOptions.color) ? leaderOptions.color : [0, 0, 0];
     this.doc.setTextColor(...leaderColor);
 
@@ -1991,11 +2004,7 @@ class JsPdfService {
     // Xử lý label
     if (label && fillOptions.labelPosition !== "none") {
       this.doc.setFontSize(fillOptions.labelOptions.fontSize);
-      try {
-        this.doc.setFont("Roboto", fillOptions.labelOptions.fontStyle);
-      } catch {
-        this.doc.setFont("helvetica", fillOptions.labelOptions.fontStyle);
-      }
+      this._setFont(null, fillOptions.labelOptions.fontStyle);
       const labelColor = Array.isArray(fillOptions.labelOptions.color)
         ? fillOptions.labelOptions.color
         : [0, 0, 0];
@@ -2044,7 +2053,7 @@ class JsPdfService {
         // Vẽ bằng dấu chấm
         this.doc.setFontSize(fillOptions.labelOptions.fontSize);
         try {
-          this.doc.setFont("Roboto", "normal");
+          this._setFont(null, "normal");
         } catch {
           this.doc.setFont("helvetica", "normal");
         }
@@ -2076,11 +2085,7 @@ class JsPdfService {
       // Thêm placeholder text nếu có
       if (fillOptions.showPlaceholder && fillOptions.placeholderText) {
         this.doc.setFontSize(fillOptions.placeholderOptions.fontSize);
-        try {
-          this.doc.setFont("Roboto", fillOptions.placeholderOptions.fontStyle);
-        } catch {
-          this.doc.setFont("helvetica", fillOptions.placeholderOptions.fontStyle);
-        }
+        this._setFont(null, fillOptions.placeholderOptions.fontStyle);
         const placeholderColor = Array.isArray(fillOptions.placeholderOptions.color)
           ? fillOptions.placeholderOptions.color
           : [150, 150, 150];
@@ -2097,11 +2102,7 @@ class JsPdfService {
     // Xử lý label bên phải (sau khi vẽ line)
     if (label && fillOptions.labelPosition === "right") {
       this.doc.setFontSize(fillOptions.labelOptions.fontSize);
-      try {
-        this.doc.setFont("Roboto", fillOptions.labelOptions.fontStyle);
-      } catch {
-        this.doc.setFont("helvetica", fillOptions.labelOptions.fontStyle);
-      }
+      this._setFont(null, fillOptions.labelOptions.fontStyle);
       const rightLabelColor = Array.isArray(fillOptions.labelOptions.color)
         ? fillOptions.labelOptions.color
         : [0, 0, 0];
@@ -2447,11 +2448,7 @@ class JsPdfService {
 
       // Thiết lập font để tính toán kích thước
       this.doc.setFontSize(fontSize);
-      try {
-        this.doc.setFont("Roboto", style);
-      } catch {
-        this.doc.setFont("helvetica", style);
-      }
+      this._setFont(null, style);
 
       // Tách text thành từng từ (với null check)
       if (!text) return; // Skip empty parts
@@ -2533,11 +2530,7 @@ class JsPdfService {
     words.forEach((word) => {
       // Thiết lập font và màu cho từng từ
       this.doc.setFontSize(word.fontSize);
-      try {
-        this.doc.setFont("Roboto", word.style);
-      } catch {
-        this.doc.setFont("helvetica", word.style);
-      }
+      this._setFont(null, word.style);
       this.doc.setTextColor(word.color[0], word.color[1], word.color[2]);
 
       // Vẽ text
@@ -2578,11 +2571,7 @@ class JsPdfService {
     words.forEach((word) => {
       // Tạm thời thiết lập font để tính độ rộng chính xác
       this.doc.setFontSize(word.fontSize);
-      try {
-        this.doc.setFont("Roboto", word.style);
-      } catch {
-        this.doc.setFont("helvetica", word.style);
-      }
+      this._setFont(null, word.style);
       totalWordsWidth += this.doc.getTextWidth(word.text.trimEnd());
     });
 
@@ -2596,11 +2585,7 @@ class JsPdfService {
     words.forEach((word, index) => {
       // Thiết lập font và màu
       this.doc.setFontSize(word.fontSize);
-      try {
-        this.doc.setFont("Roboto", word.style);
-      } catch {
-        this.doc.setFont("helvetica", word.style);
-      }
+      this._setFont(null, word.style);
       this.doc.setTextColor(word.color[0], word.color[1], word.color[2]);
 
       // Vẽ text
@@ -2774,11 +2759,7 @@ class JsPdfService {
 
     // Thiết lập font
     this.doc.setFontSize(numberOptions.fontSize);
-    try {
-      this.doc.setFont("Roboto", numberOptions.fontStyle);
-    } catch {
-      this.doc.setFont("helvetica", numberOptions.fontStyle);
-    }
+    this._setFont(null, numberOptions.fontStyle);
     const textColor = Array.isArray(numberOptions.color) ? numberOptions.color : [0, 0, 0];
     this.doc.setTextColor(...textColor);
 

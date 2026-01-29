@@ -229,10 +229,20 @@
         <span class="keyword">import</span> DrawPDF <span class="keyword">from</span> <span
           class="string">'drawpdf'</span>;
 
-        <span class="comment">// 1. Parse HTML to JSON Blueprint</span>
+        <span class="comment">// 1. Initialize with custom font (optional)</span>
+        <span class="keyword">const</span> pdf = <span class="keyword">await</span> DrawPDF.<span
+          class="function">create</span>('#editor', {
+        fonts: {
+        defaultFont: <span class="string">'Roboto'</span>, <span class="comment">// or your custom font</span>
+        fallback: <span class="string">'helvetica'</span>,
+        register: [] <span class="comment">// custom font .js files</span>
+        }
+        });
+
+        <span class="comment">// 2. Parse HTML to JSON Blueprint</span>
         <span class="keyword">const</span> blueprint = DrawPDF.<span class="function">parseHtml</span>(htmlContent);
 
-        <span class="comment">// 2. Render & Download with data</span>
+        <span class="comment">// 3. Render & Download with data</span>
         DrawPDF.<span class="function">downloadBlueprint</span>(blueprint, <span class="string">'document.pdf'</span>,
         templateData);
       </div>

@@ -30,7 +30,40 @@ npm install github:masax/DrawPDF#main
 - `jspdf` ^2.5.1
 - `jspdf-autotable` ^3.8.1
 
-- `jspdf-autotable` ^3.8.1
+---
+
+## 🔤 Font Configuration
+
+### Default Behavior
+By default, DrawPDF uses **Roboto** font (Vietnamese support built-in) with **helvetica** as fallback.
+
+### Custom Font Configuration
+```javascript
+import DrawPDF from 'drawpdf';
+
+const pdf = await DrawPDF.create('#editor', {
+  fonts: {
+    defaultFont: 'MyCustomFont',     // Primary font name
+    fallback: 'helvetica',           // Fallback if font not found
+    register: [                       // Pre-converted font files (.js)
+      '/fonts/MyCustomFont-Regular.js',
+      '/fonts/MyCustomFont-Bold.js'
+    ]
+  }
+});
+```
+
+### Dynamic Font Registration
+```javascript
+// Register font at runtime
+await pdf.registerFont('/fonts/AnotherFont.js');
+```
+
+### Creating Custom Font Files
+1. Download TTF font from [Font Squirrel](https://www.fontsquirrel.com/)
+2. Convert using [jsPDF Font Converter](https://rawgit.com/MrRio/jsPDF/master/fontconverter/fontconverter.html)
+3. Place the `.js` file in your project
+4. Register via `fonts.register` array
 
 ---
 

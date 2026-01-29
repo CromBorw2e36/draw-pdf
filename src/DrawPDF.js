@@ -8,19 +8,26 @@
  * - render(data) - Render to PDF, returns data URL
  * - download(filename, data) - Download PDF file
  * 
+ * Font Configuration:
+ * - options.fonts.defaultFont - Primary font name (default: 'Roboto')
+ * - options.fonts.fallback - Fallback font name (default: 'helvetica')
+ * - options.fonts.register - Array of font file URLs to load
+ * 
  * @module drawpdf
  */
 
 import CKEditorParser from './parser/CKEditorParser.js';
 import PDFRenderer from './renderer/PDFRenderer.js';
+import { FONT_CONFIG } from './utils/constants.js';
 
 class DrawPDF {
     constructor() {
         this.editor = null;
         this.parser = new CKEditorParser();
-        this.renderer = new PDFRenderer();
+        this.renderer = null;  // Will be created with font config in init()
         this.blueprint = null;  // JSON Blueprint storage
         this._initialized = false;
+        this.fontConfig = { ...FONT_CONFIG };  // Default font config
     }
 
     /**
@@ -153,8 +160,22 @@ class DrawPDF {
             ]
         };
 
-        // Merge user options
-        const config = { ...defaultConfig, ...options };
+        // Merge user options (excluding fonts config which is handled separately)
+        const { fonts: fontsConfig, ...editorOptions } = options;
+        const config = { ...defaultConfig, ...editorOptions };
+
+        // Handle font configuration
+        if (fontsConfig) {
+            this.fontConfig = { ...FONT_CONFIG, ...fontsConfig };
+        }
+
+        // Load custom font files if specified
+        if (this.fontConfig.register && this.fontConfig.register.length > 0) {
+            await this._loadFontFiles(this.fontConfig.register);
+        }
+
+        // Create renderer with font configuration
+        this.renderer = new PDFRenderer(this.fontConfig);
 
         try {
             this.editor = await EditorClass.create(element, config);
@@ -178,12 +199,54 @@ class DrawPDF {
             }
 
             this._initialized = true;
-            console.log('✅ DrawPDF initialized');
+            console.log('✅ DrawPDF initialized with font:', this.fontConfig.defaultFont);
         } catch (error) {
             console.error('DrawPDF init failed:', error);
             throw error;
         }
 
+        return this;
+    }
+
+    /**
+     * Load custom font files (JS modules)
+     * @param {string[]} fontUrls - Array of font file URLs
+     * @private
+     */
+    async _loadFontFiles(fontUrls) {
+        for (const url of fontUrls) {
+            try {
+                await this._loadFontScript(url);
+                console.log(`✅ Font loaded: ${url}`);
+            } catch (error) {
+                console.warn(`⚠️ Failed to load font: ${url}`, error.message);
+            }
+        }
+    }
+
+    /**
+     * Load a single font script file
+     * @param {string} url - URL to font JS file
+     * @private
+     */
+    _loadFontScript(url) {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = url;
+            script.onload = resolve;
+            script.onerror = () => reject(new Error(`Failed to load font script: ${url}`));
+            document.head.appendChild(script);
+        });
+    }
+
+    /**
+     * Register a custom font dynamically
+     * @param {string} fontUrl - URL to the font JS file (pre-converted from TTF)
+     * @returns {Promise<DrawPDF>} This instance (chainable)
+     */
+    async registerFont(fontUrl) {
+        await this._loadFontScript(fontUrl);
+        console.log(`✅ Font registered: ${fontUrl}`);
         return this;
     }
 

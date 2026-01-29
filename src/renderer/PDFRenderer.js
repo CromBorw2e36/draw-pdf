@@ -5,9 +5,17 @@
 
 import { TemplateEngine } from '../utils/TemplateEngine.js';
 import JsPdfService from '../service/jspdf-service.js';
+import { FONT_CONFIG } from '../utils/constants.js';
 
 class PDFRenderer {
-  constructor() {
+  /**
+   * Create PDFRenderer instance
+   * @param {Object} fontConfig - Font configuration (optional)
+   * @param {string} fontConfig.defaultFont - Primary font name
+   * @param {string} fontConfig.fallback - Fallback font name
+   */
+  constructor(fontConfig = {}) {
+    this.fontConfig = { ...FONT_CONFIG, ...fontConfig };
     this.pdfService = null;
     // Content-flow: Store margins for position calculation
     this.margins = {
@@ -36,8 +44,8 @@ class PDFRenderer {
    * @returns {JsPdfService} PDF service instance
    */
   render(blueprint, data = {}) {
-    // Create new JsPdfService instance
-    this.pdfService = new JsPdfService();
+    // Create new JsPdfService instance with font configuration
+    this.pdfService = new JsPdfService(this.fontConfig);
 
     // Update margins from blueprint if available
     if (blueprint.margins) {
@@ -485,9 +493,9 @@ class PDFRenderer {
 
         // Cell text
         try {
-          doc.setFont('Roboto', isHeader ? 'bold' : 'normal');
+          doc.setFont(this.fontConfig.defaultFont, isHeader ? 'bold' : 'normal');
         } catch {
-          doc.setFont('helvetica', isHeader ? 'bold' : 'normal');
+          doc.setFont(this.fontConfig.fallback || 'helvetica', isHeader ? 'bold' : 'normal');
         }
         doc.setTextColor(0, 0, 0);
 
