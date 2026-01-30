@@ -773,11 +773,11 @@ class PDFRenderer {
         today: () => TemplateEngine.formatDateObject(new Date()),
         now: () => new Date().toLocaleString('vi-VN'),
         year: () => new Date().getFullYear(),
-        sum: (arr, key) => arr.reduce((s, i) => s + (Number(i[key]) || 0), 0),
+        sum: (arr, key) => Array.isArray(arr) ? arr.reduce((s, i) => s + (Number(i[key]) || 0), 0) : 0,
         count: (arr) => Array.isArray(arr) ? arr.length : 0,
-        filter: (arr, fn) => arr.filter(fn),
-        map: (arr, fn) => arr.map(fn),
-        join: (arr, sep = ', ') => arr.join(sep),
+        filter: (arr, fn) => Array.isArray(arr) ? arr.filter(fn) : [],
+        map: (arr, fn) => Array.isArray(arr) ? arr.map(fn) : [],
+        join: (arr, sep = ', ') => Array.isArray(arr) ? arr.join(sep) : '',
 
         // Convenience shortcuts
         addText: (text, x, y, opts) => this.pdfService.addText(text, x, y, opts),

@@ -1,4 +1,4 @@
-import { jsPDF as I } from "jspdf";
+import "jspdf";
 import "jspdf-autotable";
 class v {
   constructor() {
@@ -688,15 +688,17 @@ class w {
    * Format number with thousand separators (Vietnamese style: 1.000.000)
    */
   static formatNumber(t) {
+    if (t == null || t === "") return "";
     const i = parseFloat(t);
-    return isNaN(i) ? String(t) : i.toLocaleString("vi-VN");
+    return isNaN(i) ? "" : i.toLocaleString("vi-VN");
   }
   /**
    * Format as Vietnamese currency (25.000.000đ)
    */
   static formatCurrency(t) {
+    if (t == null || t === "") return "";
     const i = parseFloat(t);
-    return isNaN(i) ? String(t) : i.toLocaleString("vi-VN") + "đ";
+    return isNaN(i) ? "" : i.toLocaleString("vi-VN") + "đ";
   }
   /**
    * Format date string or object to dd/MM/yyyy
@@ -810,9 +812,9 @@ const P = {
   // Built-in jsPDF fallback font
   register: []
   // Custom font files to load (URLs to .js files)
-};
+}, { jsPDF: I } = window.jspdf;
 typeof window < "u" && !window.jspdf && (window.jspdf = { jsPDF: I });
-class O {
+class A {
   /**
    * Create JsPdfService instance
    * @param {Object} fontConfig - Font configuration
@@ -2653,7 +2655,7 @@ class E {
    * @returns {JsPdfService} PDF service instance
    */
   render(t, i = {}) {
-    return this.pdfService = new O(this.fontConfig), t.margins && (this.margins = { ...this.margins, ...t.margins }, this.contentWidth = this.pageWidth - this.margins.left - this.margins.right), t.pages.forEach((e, n) => {
+    return this.pdfService = new A(this.fontConfig), t.margins && (this.margins = { ...this.margins, ...t.margins }, this.contentWidth = this.pageWidth - this.margins.left - this.margins.right), t.pages.forEach((e, n) => {
       n > 0 && this.pdfService.addNewPage(), this.pdfService.resetPosition(this.margins.top), this.renderPage(e, i);
     }), this;
   }
@@ -3047,11 +3049,11 @@ class E {
         today: () => w.formatDateObject(/* @__PURE__ */ new Date()),
         now: () => (/* @__PURE__ */ new Date()).toLocaleString("vi-VN"),
         year: () => (/* @__PURE__ */ new Date()).getFullYear(),
-        sum: (o, a) => o.reduce((l, c) => l + (Number(c[a]) || 0), 0),
+        sum: (o, a) => Array.isArray(o) ? o.reduce((l, c) => l + (Number(c[a]) || 0), 0) : 0,
         count: (o) => Array.isArray(o) ? o.length : 0,
-        filter: (o, a) => o.filter(a),
-        map: (o, a) => o.map(a),
-        join: (o, a = ", ") => o.join(a),
+        filter: (o, a) => Array.isArray(o) ? o.filter(a) : [],
+        map: (o, a) => Array.isArray(o) ? o.map(a) : [],
+        join: (o, a = ", ") => Array.isArray(o) ? o.join(a) : "",
         // Convenience shortcuts
         addText: (o, a, l, c) => this.pdfService.addText(o, a, l, c),
         addTitle: (o, a) => this.pdfService.addTitle(o, a),
@@ -3446,7 +3448,7 @@ export {
   H as DrawPDF,
   x as FONTS,
   P as FONT_CONFIG,
-  O as JsPdfService,
+  A as JsPdfService,
   _ as PAGE,
   E as PDFRenderer,
   v as RichTextTokenizer,

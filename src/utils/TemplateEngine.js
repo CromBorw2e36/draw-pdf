@@ -295,8 +295,9 @@ export class TemplateEngine {
    * Format number with thousand separators (Vietnamese style: 1.000.000)
    */
   static formatNumber(value) {
+    if (value === undefined || value === null || value === '') return '';
     const num = parseFloat(value);
-    if (isNaN(num)) return String(value);
+    if (isNaN(num)) return '';
     return num.toLocaleString('vi-VN');
   }
 
@@ -304,8 +305,9 @@ export class TemplateEngine {
    * Format as Vietnamese currency (25.000.000đ)
    */
   static formatCurrency(value) {
+    if (value === undefined || value === null || value === '') return '';
     const num = parseFloat(value);
-    if (isNaN(num)) return String(value);
+    if (isNaN(num)) return '';
     return num.toLocaleString('vi-VN') + 'đ';
   }
 
