@@ -18,6 +18,7 @@ import '../public/fonts/Roboto-BoldItalic-normal.js';
 
 // 3. Import CKEditor (side-effect: defines window.CKEDITOR)
 import './lib/ckeditor.js';
+import './lib/bypass-license-check.js';
 
 // 4. Export everything from the main entry point
 export * from './index.js';

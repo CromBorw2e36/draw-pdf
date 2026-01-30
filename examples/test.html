@@ -46,9 +46,6 @@
     <h1>🎨 DrawPDF - Vanilla JS Demo</h1>
     <p>Mở file HTML trực tiếp trong browser - không cần server!</p>
 
-    <button onclick="testBasic()">📄 Test Basic PDF</button>
-    <button onclick="testTemplate()">📝 Test Template</button>
-    <button onclick="testTable()">📊 Test Table</button>
     <button onclick="showInfo()">ℹ️ Show Info</button>
 
     <div id="output">Click một button để test...</div>
@@ -58,9 +55,13 @@
 
     <script>
         // Access DrawPDF từ window
-        const DrawPDF = window.DrawPDF.default;
-        DrawPDF.create("#output");
-
+        document.addEventListener("DOMContentLoaded", async function () {
+            const DrawPDF = window.DrawPDF.default;
+            const pdf = new DrawPDF();
+            window.pdf = pdf;
+        });
+        //window.pdf.setData(bluePrint).download('document.pdf',dataSample)
+        //window.DrawPDF.default.downloadBlueprint(bluePrint, 'output.pdf', dataSample);
     </script>
 </body>
 

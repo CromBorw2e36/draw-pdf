@@ -112,44 +112,105 @@ pdf.preview({ name: 'Test', salary: 25000000 });
 
 ---
 
-### Print Mode (In PDF từ blueprint có sẵn)
+### Print Mode (In PDF từ blueprint có sẵn) ⭐
+
+**Đây là use case phổ biến nhất:** Bạn đã có file `blueprint.json` và chỉ cần in ra PDF!
 
 ```javascript
 import DrawPDF from 'drawpdf';
 
-// Không cần CKEditor! Dùng method chaining:
+// 📂 Cách 1: Load blueprint từ file/localStorage
 const blueprint = JSON.parse(localStorage.getItem('myTemplate'));
+// hoặc: const blueprint = await fetch('/templates/invoice.json').then(r => r.json());
 
+// 🖨️ In ngay! Không cần CKEditor
 new DrawPDF()
   .setData(blueprint)
-  .download('output.pdf', { name: 'Nguyễn Văn An', salary: 25000000 });
+  .download('document.pdf', { 
+    name: 'Nguyễn Văn An', 
+    salary: 25000000,
+    items: [
+      { name: 'Sản phẩm A', price: 100000 },
+      { name: 'Sản phẩm B', price: 200000 }
+    ]
+  });
 ```
 
-Hoặc dùng static method:
+**Hoặc dùng Static Method (1 dòng):**
 
 ```javascript
 DrawPDF.downloadBlueprint(blueprint, 'output.pdf', { name: 'Test' });
 ```
 
+**Các cách xuất khác:**
+
+```javascript
+const pdf = new DrawPDF().setData(blueprint);
+
+// Render và lấy data URL (để preview trong iframe)
+const dataUrl = pdf.render(data);
+document.getElementById('preview').src = dataUrl;
+
+// Lấy Blob (để upload lên server)
+const blob = pdf.getBlob(data);
+await fetch('/api/upload', { method: 'POST', body: blob });
+
+// Mở preview trong tab mới
+pdf.preview(data);
+```
+
 ---
 
-## 📦 NPM Publish Guide
+## 📚 API Reference - DrawPDF Class
 
-```bash
-# 1. Login npm (chỉ cần lần đầu)
-npm login
+### Instance Methods (Main API)
 
-# 2. Build library
-npm run build
+| Method | Description | Returns |
+|--------|-------------|---------|
+| `init(element, options)` | Khởi tạo CKEditor vào element | `Promise<DrawPDF>` |
+| `getData()` | Parse HTML từ editor → JSON Blueprint | `Object` (Blueprint) |
+| `setData(blueprint)` | Load blueprint có sẵn để render | `DrawPDF` (chainable) |
+| `render(data)` | Render PDF từ blueprint | `string` (data URL) |
+| `download(filename, data)` | Tải PDF xuống | `DrawPDF` (chainable) |
+| `preview(data)` | Mở PDF trong tab mới | `void` |
+| `getBlob(data)` | Lấy Blob để upload | `Blob` |
+| `getBlueprint()` | Lấy blueprint hiện tại (không parse lại) | `Object` or `null` |
+| `exportJson()` | Xuất blueprint dạng JSON string | `string` |
+| `importJson(jsonString)` | Import blueprint từ JSON string | `DrawPDF` (chainable) |
+| `registerFont(url)` | Đăng ký font tùy chỉnh | `Promise<DrawPDF>` |
+| `destroy()` | Hủy editor instance | `void` |
 
-# 3. Kiểm tra files sẽ publish
-npm pack --dry-run
+### Static Methods (Headless - Không cần CKEditor)
 
-# 4. Publish lên npm
-npm publish
+| Method | Description |
+|--------|-------------|
+| `DrawPDF.create(element, options)` | Factory method: `new DrawPDF().init()` |
+| `DrawPDF.parseHtml(html)` | Parse HTML → Blueprint |
+| `DrawPDF.renderBlueprint(blueprint, data)` | Render blueprint → data URL |
+| `DrawPDF.downloadBlueprint(blueprint, filename, data)` | Download PDF ngay từ blueprint |
 
-# 5. Hoặc publish với tag
-npm publish --tag beta
+### Workflow Comparison
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  🎨 DESIGN MODE (Có CKEditor)                                   │
+│  ───────────────────────────────                                │
+│  DrawPDF.create('#editor')                                      │
+│    → User soạn thảo trong editor                                │
+│    → pdf.getData() → Lấy blueprint                              │
+│    → Lưu blueprint.json                                         │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓ blueprint.json
+┌─────────────────────────────────────────────────────────────────┐
+│  🖨️ PRINT MODE (Không cần CKEditor)                             │
+│  ─────────────────────────────────                              │
+│  new DrawPDF()                                                  │
+│    .setData(blueprint)      ← Load blueprint có sẵn             │
+│    .download('file.pdf', {  ← Truyền data vào                   │
+│        name: 'Nguyễn Văn An',                                   │
+│        salary: 25000000                                         │
+│    });                                                          │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -288,7 +349,65 @@ const result = TemplateEngine.process(
 
 ---
 
-## 🔥 Code Block Eval
+## � Blueprint JSON Structure
+
+**Blueprint** là định dạng trung gian giữa HTML và PDF. Đây là output của `getData()` và input của `setData()`.
+
+### Cấu trúc cơ bản
+
+```json
+{
+  "version": "1.0",
+  "pageSize": { "width": 210, "height": 297, "unit": "mm" },
+  "margins": { "top": 20, "bottom": 20, "left": 15, "right": 15 },
+  "pages": [
+    {
+      "pageNumber": 1,
+      "elements": [
+        { "type": "richtext", "x": 15, "y": 20, "segments": [...] },
+        { "type": "table", "x": 15, "y": 50, "rows": [...] }
+      ]
+    }
+  ],
+  "sourceHtml": "<p>Original HTML...</p>",
+  "createdAt": "2026-01-30T07:00:00Z"
+}
+```
+
+### Element Types
+
+| Type | Description | Key Properties |
+|------|-------------|----------------|
+| `richtext` | Đoạn văn bản có định dạng | `segments[]` (text, style), `content`, `style` |
+| `table` | Bảng với cells | `rows[][]`, `style`, `rowHeight` |
+| `heading` | Tiêu đề H1-H6 | `level`, `content`, `style` |
+| `list` | Danh sách ul/ol | `items[]`, `listType` |
+| `image` | Hình ảnh | `src`, `width`, `height` |
+| `code` | Code block | `code`, `language` |
+
+### Ví dụ RichText Element
+
+```json
+{
+  "type": "richtext",
+  "x": 15,
+  "y": 20,
+  "width": 180,
+  "segments": [
+    { "text": "Xin chào ", "style": { "bold": false } },
+    { "text": "{{name}}", "style": { "bold": true, "color": "#0000ff" } },
+    { "text": "!", "style": { "bold": false } }
+  ],
+  "style": {
+    "fontSize": 12,
+    "align": "left",
+    "lineHeight": 6.35
+  }
+}
+
+---
+
+## �🔥 Code Block Eval
 
 Execute JavaScript directly in templates with `// eval`:
 
