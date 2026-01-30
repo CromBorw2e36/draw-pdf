@@ -6,9 +6,9 @@
  * - DrawPDF core
  */
 
-// 1. Import jsPDF và AutoTable (UMD files - they self-register to window)
+// 1. Import jsPDF (UMD file - self-registers to window)
+// Note: AutoTable is applied via applyPlugin in jspdf-service.js
 import './lib/jspdf.umd.min.js';
-import './lib/jspdf.plugin.autotable.min.js';
 
 // 2. Import Fonts
 import '../public/fonts/Roboto-Regular-normal.js';

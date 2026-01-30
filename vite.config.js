@@ -4,7 +4,8 @@ import { resolve } from "path";
 export default defineConfig(({ mode }) => {
   const aliases = {
     'jspdf': resolve(__dirname, 'src/lib/jspdf.umd.min.js'),
-    'jspdf-autotable': resolve(__dirname, 'src/lib/jspdf.plugin.autotable.min.js')
+    // Use ESM version from npm package - it properly exports applyPlugin
+    'jspdf-autotable': resolve(__dirname, 'node_modules/jspdf-autotable/dist/jspdf.plugin.autotable.mjs')
   };
 
   // Library build configuration (externalize jspdf)

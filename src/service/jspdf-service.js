@@ -1,6 +1,10 @@
 import 'jspdf';
 const { jsPDF } = window.jspdf;
-import 'jspdf-autotable';
+
+// Import applyPlugin from jspdf-autotable ESM version and register with jsPDF
+import { applyPlugin } from 'jspdf-autotable';
+applyPlugin(jsPDF);
+
 import { FONT_CONFIG } from '../utils/constants.js';
 
 // Ensure window.jspdf exists for font file compatibility
