@@ -36,6 +36,9 @@ export default defineConfig(({ mode }) => {
   // Standalone build - bundle everything including jspdf
   if (mode === 'standalone') {
     return {
+      resolve: {
+        alias: aliases
+      },
       build: {
         lib: {
           entry: resolve(__dirname, 'src/index.full.js'),
@@ -47,8 +50,11 @@ export default defineConfig(({ mode }) => {
         emptyOutDir: false, // Don't delete other dist files
         rollupOptions: {
           // Don't externalize anything - bundle all dependencies
+          external: [],
           output: {
-            globals: {}
+            globals: {},
+            // Ensure proper IIFE wrapping
+            inlineDynamicImports: true
           }
         }
       }
