@@ -2,66 +2,229 @@
 <html>
 
 <head>
-    <title>DrawPDF Demo - Vanilla JS</title>
+    <title>DrawPDF Demo - Professional Layout</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+        rel="stylesheet">
+
     <style>
+        :root {
+            --bg-dark: #1a1a2e;
+            --bg-secondary: #16213e;
+            --bg-paper: #ffffff;
+            --accent: #6366f1;
+            --accent-hover: #8b5cf6;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border: #2d2d4a;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Toolbar */
+        .toolbar {
+            background: var(--bg-secondary);
+            padding: 10px 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
 
         h1 {
-            color: #333;
-        }
-
-        button {
-            padding: 12px 24px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 10px 5px 10px 0;
-            border: none;
-            border-radius: 8px;
-            background: #4CAF50;
+            margin: 0;
+            font-size: 18px;
             color: white;
+            margin-right: auto;
         }
 
-        button:hover {
-            background: #45a049;
+        select,
+        button {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        #output {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            white-space: pre-wrap;
-            font-family: monospace;
-            font-size: 13px;
+        button.primary {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+            font-weight: 600;
+        }
+
+        button.primary:hover {
+            background: var(--accent-hover);
+        }
+
+        select:focus,
+        button:focus {
+            outline: 2px solid var(--accent);
+        }
+
+        /* Editor Area */
+        .editor-container {
+            flex: 1;
+            background: #333333;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            padding: 40px;
+        }
+
+        /* Paper Styles */
+        .paper {
+            background: white;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 40px;
+            transition: width 0.3s ease, min-height 0.3s ease;
+            position: relative;
+        }
+
+        .paper.a3 {
+            width: 297mm;
+            min-height: 420mm;
+        }
+
+        .paper.a4 {
+            width: 210mm;
+            min-height: 297mm;
+        }
+
+        .paper.a5 {
+            width: 148mm;
+            min-height: 210mm;
+        }
+
+        .paper.letter {
+            width: 216mm;
+            min-height: 279mm;
+        }
+
+        .paper.legal {
+            width: 216mm;
+            min-height: 356mm;
+        }
+
+        /* CKEditor Override */
+        .ck-content {
+            min-height: 100% !important;
+            padding: 20mm 20mm !important;
+            color: black;
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            line-height: 1.5;
         }
     </style>
 </head>
 
 <body>
-    <h1>🎨 DrawPDF - Vanilla JS Demo</h1>
-    <p>Mở file HTML trực tiếp trong browser - không cần server!</p>
+    <div class="toolbar">
+        <h1>🎨 DrawPDF Pro Demo</h1>
 
-    <button onclick="showInfo()">ℹ️ Show Info</button>
+        <select id="paperSize">
+            <option value="a4">A4 (Standard)</option>
+            <option value="a3">A3 (Large)</option>
+            <option value="a5">A5 (Small)</option>
+            <option value="letter">Letter</option>
+            <option value="legal">Legal</option>
+        </select>
 
-    <div id="output">Click một button để test...</div>
+        <button class="primary" id="downloadBtn">📥 Download PDF</button>
+    </div>
 
-    <!-- Load standalone bundle - includes jsPDF + AutoTable + CKEditor -->
+    <div class="editor-container">
+        <div class="paper a4" id="paper">
+            <div id="editor">
+                <h2>Welcome to DrawPDF</h2>
+                <p>This is a professional document editor running entirely in the browser.</p>
+                <p>Features:</p>
+                <ul>
+                    <li>Real-time PDF generation</li>
+                    <li>Paper size simulation</li>
+                    <li>High-quality typography</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Library -->
     <script src="../dist/drawpdf.standalone.umd.cjs"></script>
 
     <script>
-        // Access DrawPDF từ window
         document.addEventListener("DOMContentLoaded", async function () {
             const DrawPDF = window.DrawPDF.default;
-            const pdf = new DrawPDF({ format: 'a3', orientation: 'landscape' });
+
+            // 1. Initialize
+            const pdf = new DrawPDF({
+                format: 'a4',
+                orientation: 'portrait',
+                fonts: {
+                    defaultFont: 'Roboto'
+                }
+            });
+
+            await pdf.init('#editor');
             window.pdf = pdf;
+
+            // 2. Handle Paper Size
+            const paper = document.getElementById('paper');
+            const select = document.getElementById('paperSize');
+
+            select.addEventListener('change', (e) => {
+                const size = e.target.value;
+
+                // Update Visuals
+                paper.className = `paper ${size}`;
+
+                // Update PDF Config (Re-init wrapper simple or just update internals)
+                // Since DrawPDF instance stores options, we re-instantiate or expose a method.
+                // For this demo, we'll create a new instance when downloading, 
+                // OR ideally DrawPDF should support .setOptions(). 
+                // Let's check DrawPDF.js... it doesn't have setOptions.
+                // But render() accepts options! So we just store format.
+                pdf.currentFormat = size;
+            });
+
+            // 3. Download
+            document.getElementById('downloadBtn').addEventListener('click', () => {
+                const format = document.getElementById('paperSize').value;
+
+                // Pass format to render/download
+                const options = {
+                    format: format,
+                    orientation: 'portrait'
+                };
+
+                // The static methods or instance methods both work.
+                // Using instance method:
+                // Note: The 'render' method in DrawPDF.js now accepts options in our recent update?
+                // Let's verify DrawPDF.js... Yes, we updated render(data, options) or constructor options are used.
+                // Wait, constructor stores options. We need to update them or pass them.
+                // Checking DrawPDF.js: "this.renderer.render(this.blueprint, data, this.options);"
+                // It uses `this.options`. So we need to hack it or update `this.options`.
+
+                pdf.options.format = format; // Direct update since no setter
+
+                pdf.download('demo-document.pdf');
+            });
         });
-        //window.pdf.setData(bluePrint).download('document.pdf',dataSample)
-        //window.DrawPDF.default.downloadBlueprint(bluePrint, 'output.pdf', dataSample);
     </script>
 </body>
 
