@@ -21,13 +21,29 @@ import PDFRenderer from './renderer/PDFRenderer.js';
 import { FONT_CONFIG } from './utils/constants.js';
 
 class DrawPDF {
-    constructor() {
+    /**
+     * Create DrawPDF instance
+     * @param {Object} options - Configuration options
+     * @param {string} options.format - Paper format (default: 'a4')
+     * @param {string} options.orientation - Orientation (default: 'portrait')
+     * @param {Object} options.fonts - Font configuration
+     */
+    constructor(options = {}) {
         this.editor = null;
         this.parser = new CKEditorParser();
         this.renderer = null;  // Will be created with font config in init()
         this.blueprint = null;  // JSON Blueprint storage
         this._initialized = false;
-        this.fontConfig = { ...FONT_CONFIG };  // Default font config
+
+        // Extract font config and other options
+        const { fonts, ...otherOptions } = options;
+
+        this.fontConfig = { ...FONT_CONFIG, ...(fonts || {}) };  // Font config
+        this.options = {
+            format: 'a4',
+            orientation: 'portrait',
+            ...otherOptions
+        };
     }
 
     /**
@@ -165,9 +181,9 @@ class DrawPDF {
         const { fonts: fontsConfig, ...editorOptions } = options;
         const config = { ...defaultConfig, ...editorOptions };
 
-        // Handle font configuration
+        // Handle font configuration passed to init (override constructor config if present)
         if (fontsConfig) {
-            this.fontConfig = { ...FONT_CONFIG, ...fontsConfig };
+            this.fontConfig = { ...this.fontConfig, ...fontsConfig };
         }
 
         // Load custom font files if specified
@@ -304,7 +320,7 @@ class DrawPDF {
             throw new Error('DrawPDF: No blueprint. Call getData() or setData() first.');
         }
 
-        this.renderer.render(this.blueprint, data);
+        this.renderer.render(this.blueprint, data, this.options);
         return this.renderer.getDataUrl();
     }
 
@@ -324,7 +340,7 @@ class DrawPDF {
             throw new Error('DrawPDF: No blueprint. Call getData() or setData() first.');
         }
 
-        this.renderer.render(this.blueprint, data);
+        this.renderer.render(this.blueprint, data, this.options);
         this.renderer.download(filename);
         return this;
     }
@@ -341,7 +357,7 @@ class DrawPDF {
         if (!this.blueprint) {
             throw new Error('DrawPDF: No blueprint.');
         }
-        this.renderer.render(this.blueprint, data);
+        this.renderer.render(this.blueprint, data, this.options);
         return this.renderer.getBlob();
     }
 
@@ -356,7 +372,7 @@ class DrawPDF {
         if (!this.blueprint) {
             throw new Error('DrawPDF: No blueprint.');
         }
-        this.renderer.render(this.blueprint, data);
+        this.renderer.render(this.blueprint, data, this.options);
         this.renderer.preview();
     }
 
@@ -404,11 +420,16 @@ class DrawPDF {
     /**
      * Static factory method - create and initialize in one call
      * @param {string|HTMLElement} element - DOM element or selector
-     * @param {Object} options - CKEditor options
+     * @param {Object} options - DrawPDF options (font, wrapper options, etc)
+     *                         (Pass editorOptions inside options if needed, or update signature)
+     *                         Wait, previous signature was (element, options) where options was for CKEditor
+     *                         Now options can contain 'format', 'orientation', 'fonts' AND CKEditor options.
+     *                         Constructor handles format/orientation/fonts.
+     *                         Init handles CKEditor options.
      * @returns {Promise<DrawPDF>} Initialized DrawPDF instance
      */
     static async create(element, options = {}) {
-        const instance = new DrawPDF();
+        const instance = new DrawPDF(options);
         await instance.init(element, options);
         return instance;
     }
@@ -430,11 +451,13 @@ class DrawPDF {
      * Static method - render PDF from blueprint (headless)
      * @param {Object} blueprint - JSON Blueprint
      * @param {Object} data - Variable data
+     * @param {Object} options - PDF options (format, orientation, fontConfig)
      * @returns {string} PDF as data URL
      */
-    static renderBlueprint(blueprint, data = {}) {
-        const renderer = new PDFRenderer();
-        renderer.render(blueprint, data);
+    static renderBlueprint(blueprint, data = {}, options = {}) {
+        const fontConfig = options.fonts || {};
+        const renderer = new PDFRenderer(fontConfig);
+        renderer.render(blueprint, data, options);
         return renderer.getDataUrl();
     }
 
@@ -443,10 +466,12 @@ class DrawPDF {
      * @param {Object} blueprint - JSON Blueprint
      * @param {string} filename - Output filename
      * @param {Object} data - Variable data
+     * @param {Object} options - PDF options (format, orientation, fontConfig)
      */
-    static downloadBlueprint(blueprint, filename = 'document.pdf', data = {}) {
-        const renderer = new PDFRenderer();
-        renderer.render(blueprint, data);
+    static downloadBlueprint(blueprint, filename = 'document.pdf', data = {}, options = {}) {
+        const fontConfig = options.fonts || {};
+        const renderer = new PDFRenderer(fontConfig);
+        renderer.render(blueprint, data, options);
         renderer.download(filename);
     }
 }
