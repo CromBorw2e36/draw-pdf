@@ -261,6 +261,11 @@ class TemplateEditor {
       this.downloadPdf();
     });
 
+    // Paper Size Change
+    document.getElementById('paperSizeSelect')?.addEventListener('change', (e) => {
+      this.changePaperSize(e.target.value);
+    });
+
     // JSON Modal
     document.getElementById('closeJsonModal')?.addEventListener('click', () => {
       document.getElementById('jsonModal').classList.remove('show');
@@ -317,6 +322,16 @@ class TemplateEditor {
     document.getElementById('jsonModal').classList.add('show');
   }
 
+  changePaperSize(size) {
+    const paper = document.querySelector('.paper');
+    paper.className = 'paper ' + size;
+    console.log('Paper size changed to:', size);
+  }
+
+  getPaperSize() {
+    return document.getElementById('paperSizeSelect')?.value || 'a4';
+  }
+
   /**
    * Export PDF using direct jsPDF draw
    */
@@ -326,7 +341,12 @@ class TemplateEditor {
 
     try {
       const blueprint = this.generateBlueprint();
-      this.renderer.render(blueprint, this.variableData);
+      const options = {
+        format: this.getPaperSize(),
+        orientation: 'portrait'
+      };
+
+      this.renderer.render(blueprint, this.variableData, options);
       this.renderer.download(`${this.templateName}.pdf`);
 
       console.log('✅ PDF exported successfully (Direct Draw)');
@@ -347,7 +367,12 @@ class TemplateEditor {
     console.log(this.variableData);
     try {
       const blueprint = this.generateBlueprint();
-      this.renderer.render(blueprint, this.variableData);
+      const options = {
+        format: this.getPaperSize(),
+        orientation: 'portrait'
+      };
+
+      this.renderer.render(blueprint, this.variableData, options);
 
       const dataUrl = this.renderer.getDataUrl();
       document.getElementById('pdfPreview').src = dataUrl;

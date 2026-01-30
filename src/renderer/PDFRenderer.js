@@ -41,11 +41,17 @@ class PDFRenderer {
    * Render JSON blueprint to PDF using JsPdfService
    * @param {Object} blueprint - JSON blueprint from CKEditorParser
    * @param {Object} data - Variable data for replacement
+   * @param {Object} options - PDF generation options (format, orientation, etc.)
    * @returns {JsPdfService} PDF service instance
    */
-  render(blueprint, data = {}) {
-    // Create new JsPdfService instance with font configuration
-    this.pdfService = new JsPdfService(this.fontConfig);
+  render(blueprint, data = {}, options = {}) {
+    // Create new JsPdfService instance with font configuration and options
+    const serviceOptions = { ...this.fontConfig, ...options };
+    this.pdfService = new JsPdfService(serviceOptions);
+
+    // Update page dimensions from the service
+    this.pageWidth = this.pdfService.pageWidth;
+    this.contentWidth = this.pageWidth - this.margins.left - this.margins.right;
 
     // Update margins from blueprint if available
     if (blueprint.margins) {

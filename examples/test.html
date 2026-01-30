@@ -57,7 +57,7 @@
         // Access DrawPDF từ window
         document.addEventListener("DOMContentLoaded", async function () {
             const DrawPDF = window.DrawPDF.default;
-            const pdf = new DrawPDF();
+            const pdf = new DrawPDF({ format: 'a3', orientation: 'landscape' });
             window.pdf = pdf;
         });
         //window.pdf.setData(bluePrint).download('document.pdf',dataSample)

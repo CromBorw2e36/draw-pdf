@@ -16,17 +16,29 @@ if (typeof window !== 'undefined' && !window.jspdf) {
 class JsPdfService {
   /**
    * Create JsPdfService instance
-   * @param {Object} fontConfig - Font configuration
-   * @param {string} fontConfig.defaultFont - Primary font name (default: 'Roboto')
-   * @param {string} fontConfig.fallback - Fallback font name (default: 'helvetica')
+   * @param {Object} options - Configuration options
+   * @param {string} options.defaultFont - Primary font name (default: 'Roboto')
+   * @param {string} options.fallback - Fallback font name (default: 'helvetica')
+   * @param {string} options.format - Paper format (default: 'a4')
+   * @param {string} options.orientation - Orientation (default: 'portrait')
    */
-  constructor(fontConfig = {}) {
-    // Merge with default font config
-    this.fontConfig = { ...FONT_CONFIG, ...fontConfig };
+  constructor(options = {}) {
+    // Merge with default font config and other options
+    this.options = { ...FONT_CONFIG, format: 'a4', orientation: 'portrait', ...options };
+
+    this.fontConfig = {
+      defaultFont: this.options.defaultFont,
+      fallback: this.options.fallback
+    };
+
     this.defaultFont = this.fontConfig.defaultFont;
     this.fallbackFont = this.fontConfig.fallback;
 
-    this.doc = new jsPDF();
+    this.doc = new jsPDF({
+      orientation: this.options.orientation,
+      unit: 'mm',
+      format: this.options.format
+    });
     this.currentY = 20; // Vị trí Y hiện tại để tự động xuống dòng
     this.lineHeight = 1; // Khoảng cách giữa các dòng (giảm từ 7 xuống 4.5)
     this.pageHeight = this.doc.internal.pageSize.height;
