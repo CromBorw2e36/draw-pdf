@@ -1,212 +1,228 @@
 # DrawPDF (masax-drawpdf)
 
-**DrawPDF** là thư viện mạnh mẽ giúp bạn tạo PDF từ nội dung HTML (thông qua CKEditor) hoặc từ dữ liệu JSON Blueprint. Thư viện hỗ trợ Template Engine đầy đủ (biến, vòng lặp, điều kiện), xử lý font tiếng Việt tốt và cho phép render PDF ngay trên trình duyệt.
+📄 **PDF Template Builder** - Convert HTML templates to PDF with Vietnamese support, variables, loops, and conditionals.
 
-## Tính Năng Nổi Bật
+[![npm version](https://img.shields.io/npm/v/masax-drawpdf.svg)](https://www.npmjs.com/package/masax-drawpdf)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-* 📝 **Trình soạn thảo trực quan**: Tích hợp sẵn CKEditor 5 để thiết kế mẫu PDF dễ dàng.
-* 🚀 **Template Engine mạnh mẽ**: Hỗ trợ cú pháp giống Handlebars (`{{variable}}`, `{{#each}}`, `{{#if}}`).
-* 🇻🇳 **Hỗ trợ Tiếng Việt**: Font Roboto mặc định, hỗ trợ Unicode đầy đủ, định dạng tiền tệ/ngày tháng Việt Nam.
-* 📄 **Xuất PDF chất lượng cao**: Giữ nguyên định dạng, bảng biểu, hình ảnh từ trình soạn thảo.
-* 🔧 **Linh hoạt**: Chạy được cả chế độ có giao diện (UI) và headless (chỉ render).
+## ✨ Features
+
+- **HTML to PDF** - Parse CKEditor/HTML content to structured JSON, then render to PDF
+- **Template Engine** - Variables `{{name}}`, loops `{{#each}}`, conditionals `{{#if}}`
+- **Vietnamese Support** - Full Unicode support with Roboto/Tahoma fonts
+- **Rich Text** - Bold, italic, underline, colors, font sizes
+- **Tables** - With colspan, rowspan, borders, colors
+- **Code Eval** - Execute JavaScript in templates for dynamic content
+- **Dual Mode** - Design mode (UI) and Print mode (Headless)
 
 ---
 
-## Cài đặt
+## 📦 Installation
 
 ```bash
 npm install masax-drawpdf
 ```
 
-## Sử Dụng
+---
 
-### 1. Cách dùng cơ bản (ES Modules)
+## 🚀 Quick Start
+
+### 1. Design Mode (Create Templates)
+
+Use this mode to let users design templates with CKEditor.
 
 ```javascript
 import DrawPDF from 'masax-drawpdf';
 
-// 1. Khởi tạo
-const pdf = new DrawPDF();
+// 1. Initialize CKEditor
+const pdf = await DrawPDF.create('#editor');
 
-// 2. Gắn vào DOM (kèm cấu hình CKEditor nếu muốn)
-await pdf.init('#editor-container');
+// 2. Data for preview
+const data = { name: "Nguyen Van A", salary: 25000000 };
 
-// ... Người dùng soạn thảo văn bản ...
+// 3. User edits content...
+// 4. Get Blueprint JSON
+const blueprint = pdf.getData();
+console.log(blueprint); // Save this to database!
 
-// 3. Render ra PDF và tải xuống
-// Bạn có thể truyền data vào để thay thế các biến {{variable}}
-const data = {
-    name: "Nguyễn Văn A",
-    total: 5000000
-};
-
-// Tải xuống ngay
-pdf.download('hoadon.pdf', data);
-
-// Hoặc lấy Data URL để hiển thị
-const url = pdf.render(data);
-console.log(url); // data:application/pdf;base64,...
+// 5. Preview PDF
+pdf.preview(data);
 ```
 
-### 2. Dùng qua thẻ Script (CDN)
+### 2. Print Mode (Render from JSON)
 
-Nếu không dùng bundler (Webpack/Vite), bạn có thể nhúng trực tiếp:
+Use this mode to generate PDFs from saved blueprints (no editor UI required).
 
-```html
-<!-- Import thư viện (đã bao gồm CKEditor và jsPDF) -->
-<script src="https://unpkg.com/masax-drawpdf@2.1.0/dist/drawpdf.standalone.umd.cjs"></script>
+```javascript
+import DrawPDF from 'masax-drawpdf';
 
-<div id="editor"></div>
+// Load blueprint from DB/File
+const blueprint = await fetch('/models/invoice.json').then(r => r.json());
 
-<script>
-    // Truy cập qua biến toàn cục DrawPDF
-    DrawPDF.create('#editor').then(instance => {
-        console.log('Editor đã sẵn sàng!');
-        
-        // Nút tải PDF
-        document.getElementById('btn-download').onclick = () => {
-            instance.download('mau-don.pdf', {
-                ngay: '30/01/2025'
-            });
-        };
-    });
-</script>
+// Render and Download
+DrawPDF.downloadBlueprint(blueprint, 'invoice.pdf', {
+  name: "Tran Van B",
+  items: [
+    { name: "Laptop", price: 15000000 },
+    { name: "Mouse", price: 500000 }
+  ]
+});
+```
+
+### Workflow Comparison
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  🎨 DESIGN MODE (With CKEditor)                                 │
+│  ───────────────────────────────                                │
+│  DrawPDF.create('#editor')                                      │
+│    → User edits content                                         │
+│    → pdf.getData() → Get Blueprint                              │
+│    → Save blueprint.json to DB                                  │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓ blueprint.json
+┌─────────────────────────────────────────────────────────────────┐
+│  🖨️ PRINT MODE (Headless)                                       │
+│  ─────────────────────────────────                              │
+│  DrawPDF.downloadBlueprint(                                     │
+│     blueprint,              ← Load saved blueprint              │
+│     'file.pdf',             ← Output filename                   │
+│     {...data}               ← Inject variables                  │
+│  );                                                             │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Template Engine (Cú pháp mẫu)
+## 📝 Template Syntax
 
-Bạn có thể viết trực tiếp các cú pháp sau vào trong trình soạn thảo CKEditor.
+You can use these in the editor directly.
 
-### Biến (Variables)
+### Variables & Formatters
 
-```handlebars
-Xin chào {{customer.name}}!
-Số điện thoại: {{customer.phone}}
-```
+| Syntax | Example Input | Output |
+|--------|---------------|--------|
+| `{{name}}` | `World` | `World` |
+| `{{customer.phone}}` | `{customer: {phone: '0909...'}}` | `0909...` |
+| `{{formatNumber val}}` | `1000000` | `1.000.000` |
+| `{{formatCurrency val}}` | `500000` | `500.000đ` |
+| `{{formatDate val}}` | `2024-01-30` | `30/01/2024` |
+| `{{uppercase val}}` | `abc` | `ABC` |
 
-### Định dạng dữ liệu (Formatters)
-
-Hỗ trợ sẵn các hàm định dạng phổ biến cho người Việt:
-
-* **Số**: `{{formatNumber 1000000}}` -> `1.000.000`
-* **Tiền tệ**: `{{formatCurrency 500000}}` -> `500.000đ`
-* **Ngày tháng**: `{{formatDate "2024-01-30"}}` -> `30/01/2024`
-* **Chữ cái**: `{{uppercase name}}`, `{{lowercase name}}`, `{{capitalize name}}`
-
-### Vòng lặp (Loops)
-
-Dùng để tạo bảng hoặc danh sách từ mảng dữ liệu.
+### Loops & Conditionals
 
 ```handlebars
 {{#each items}}
-  - Sản phẩm: {{name}} | Giá: {{formatCurrency price}}
+  - Product: {{name}} | Price: {{formatCurrency price}}
 {{/each}}
-```
 
-**Biến đặc biệt trong vòng lặp:**
-
-* `{{@index}}`: Số thứ tự (bắt đầu từ 0).
-* `{{@first}}`: `true` nếu là phần tử đầu.
-* `{{@last}}`: `true` nếu là phần tử cuối.
-* `{{this}}` hoặc `{{@item}}`: Lấy chính phần tử đó (nếu mảng là chuỗi/số).
-
-### Điều kiện (Conditionals)
-
-```handlebars
 {{#if total > 1000000}}
-  Khách hàng VIP
+  <strong>VIP Customer</strong>
 {{else}}
-  Khách hàng thường
+  Regular Customer
 {{/if}}
 ```
 
-Hỗ trợ các toán tử: `===`, `!==`, `>`, `<`, `>=`, `<=`.
+### Layout Helpers
 
-### Thông tin ngày giờ hiện tại
+- `{{pageBreak}}`: New page.
 
-* `{{now}}`: Ngày giờ hiện tại đầy đủ.
-* `{{today}}`: Ngày hiện tại (dd/MM/yyyy).
-* `{{year}}`, `{{month}}`, `{{day}}`, `{{time}}`.
-
-### Layout
-
-* `{{pageBreak}}`: Ngắt trang bắt buộc tại vị trí này.
+- `{{br}}`: Line break.
+- `{{tab}}`: Tab indentation.
 
 ---
 
-## API Documentation
+## 📚 API Reference (DrawPDF Class)
 
-### Class `DrawPDF`
+### Instance Methods
 
-Khởi tạo đối tượng quản lý PDF.
+| Method | Description |
+|--------|-------------|
+| `init(el, options)` | Initialize CKEditor. |
+| `getData()` | Get JSON Blueprint. |
+| `setData(blueprint)` | Load JSON Blueprint. |
+| `render(data)` | Return Data URL (base64). |
+| `download(name, data)` | Download PDF file. |
+| `getBlob(data)` | Return Blob object (for API upload). |
+| `preview(data)` | Open PDF in new tab. |
+| `registerFont(url)` | Load custom font dynamically. |
 
-```javascript
-const instance = new DrawPDF(options);
-```
+### Static Methods (Headless)
 
-**`options` (Object):**
+| Method | Description |
+|--------|-------------|
+| `DrawPDF.renderBlueprint(bp, data, opts)` | Render to Data URL. |
+| `DrawPDF.downloadBlueprint(bp, name, data)` | Direct download. |
 
-* `format` (string): Khổ giấy. Mặc định `'a4'`. (Hỗ trợ 'a3', 'a5', 'letter'...)
-* `orientation` (string): Hướng giấy. Mặc định `'portrait'` (dọc). Chọn `'landscape'` cho ngang.
-* `fonts` (Object): Cấu hình font (xem phần Font bên dưới).
+---
 
-#### Các phương thức (Methods)
+## 🧩 Blueprint JSON Structure
 
-| Tên | Tham số | Mô tả |
-| :--- | :--- | :--- |
-| `init(el, config)` | `el`: Selector/Element<br>`config`: CKEditor config | Khởi tạo Editor vào element. |
-| `getData()` | - | Lấy cấu trúc JSON Blueprint hiện tại từ Editor. |
-| `setData(blueprint)` | `blueprint`: Object | Nạp dữ liệu JSON Blueprint vào Editor. |
-| `download(name, data)` | `name`: Tên file<br>`data`: Dữ liệu biến | Render và tải xuống file PDF. |
-| `render(data)` | `data`: Dữ liệu biến | Trả về Data URL (base64) của PDF. |
-| `preview(data)` | `data`: Dữ liệu biến | Mở PDF trong tab mới để xem trước. |
-| `getBlob(data)` | `data`: Dữ liệu biến | Trả về Blob object (dể gửi lên server). |
-| `registerFont(url)` | `url`: Link file JS font | Đăng ký thêm font mới động. |
+The **Blueprint** is the intermediate format between HTML and PDF.
 
-### Static Methods (Dùng không cần khởi tạo Editor)
-
-Dùng cho trường hợp bạn đã có JSON Blueprint (lưu trong database) và muốn render lại mà không cần hiện UI editor.
-
-```javascript
-import DrawPDF from 'masax-drawpdf';
-
-// Render từ blueprint có sẵn
-const pdfUrl = DrawPDF.renderBlueprint(blueprintJson, data, {
-    format: 'a4',
-    fonts: { ... }
-});
-
-// Tải xuống trực tiếp
-DrawPDF.downloadBlueprint(blueprintJson, 'filename.pdf', data);
+```json
+{
+  "version": "1.0",
+  "pageSize": { "width": 210, "height": 297, "unit": "mm" },
+  "margins": { "top": 20, "bottom": 20, "left": 15, "right": 15 },
+  "pages": [
+    {
+      "pageNumber": 1,
+      "elements": [
+        { 
+          "type": "richtext", 
+          "x": 15, 
+          "segments": [
+             { "text": "Hello ", "style": { "bold": false } },
+             { "text": "{{name}}", "style": { "bold": true } }
+          ]
+        },
+        { 
+          "type": "table", 
+          "rows": [...] 
+        }
+      ]
+    }
+  ],
+  "sourceHtml": "<p>Original HTML...</p>"
+}
 ```
 
 ---
 
-## Quản lý Font (Custom Fonts)
+## ⚡ Advanced Config
 
-Mặc định thư viện sử dụng font **Roboto** để hỗ trợ tiếng Việt.
-
-Để thêm font khác (ví dụ: `OpenSans`), bạn cần file font đã được convert sang dạng JS module (dùng tool của jsPDF).
+### Font Configuration
 
 ```javascript
 const pdf = new DrawPDF({
-    fonts: {
-        // Tên font mặc định
-        defaultFont: 'OpenSans',
-        
-        // Link tới các file font JS cần load
-        register: [
-            'https://your-cdn.com/fonts/OpenSans-Regular-normal.js',
-            'https://your-cdn.com/fonts/OpenSans-Bold-bold.js'
-        ]
-    }
+  fonts: {
+    defaultFont: 'Roboto', // Default
+    fallback: 'helvetica',
+    // Register custom fonts (ES Module format)
+    register: [
+      'https://cdn.com/fonts/MyFont-Regular.js',
+      'https://cdn.com/fonts/MyFont-Bold.js'
+    ]
+  }
 });
+```
+
+### Eval Block (Scripting)
+
+Write JavaScript in a code block starting with `// eval` to execute complex logic.
+
+```javascript
+// eval
+const total = sum(data.items, 'price');
+if (total > 1000000) {
+    pdf.addText('High Value Order', null, null, { color: [255, 0, 0] });
+}
+pdf.addTable(['Item', 'Price'], data.items.map(i => [i.name, i.price]));
 ```
 
 ---
 
-## License
+## 📄 License
 
-MIT License.
+MIT License

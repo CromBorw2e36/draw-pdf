@@ -1,6 +1,6 @@
 {
   "name": "masax-drawpdf",
-  "version": "2.1.2",
+  "version": "2.1.4",
   "description": "PDF Template Builder - CKEditor to PDF with Vietnamese support, template engine with variables, loops, conditionals",
   "type": "module",
   "main": "dist/drawpdf.umd.cjs",
@@ -37,10 +37,6 @@
   ],
   "author": "masax",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/masax/DrawPDF/issues"
-  },
-  "homepage": "https://github.com/masax/DrawPDF#readme",
   "peerDependencies": {
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.1"
