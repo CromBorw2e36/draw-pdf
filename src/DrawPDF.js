@@ -47,8 +47,9 @@ class DrawPDF {
         }
 
         // Get CKEditor class (supports both Super Build and standard)
-        const EditorClass = window.CKEDITOR?.DecoupledEditor
-            || window.CKEDITOR?.ClassicEditor
+        const CKEDITOR = window.CKEDITOR ?? window.DrawPDF?.CKEDITOR;
+        const EditorClass = CKEDITOR?.DecoupledEditor
+            || CKEDITOR?.ClassicEditor
             || window.DecoupledEditor
             || window.ClassicEditor;
 

@@ -22,4 +22,11 @@ import './lib/ckeditor.js';
 // 4. Export everything from the main entry point
 export * from './index.js';
 import DrawPDF from './index.js';
+
+// 5. Attach CKEDITOR to DrawPDF namespace for encapsulation
+// This allows access via window.DrawPDF.CKEDITOR in UMD build
+if (typeof window !== 'undefined' && window.CKEDITOR) {
+    DrawPDF.CKEDITOR = window.CKEDITOR;
+}
+
 export default DrawPDF;
