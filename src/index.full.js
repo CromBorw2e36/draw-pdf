@@ -11,10 +11,10 @@
 import './lib/jspdf.umd.min.js';
 
 // 2. Import Fonts
-import '../public/fonts/Roboto-Regular-normal.js';
-import '../public/fonts/Roboto-Bold-normal.js';
-import '../public/fonts/Roboto-Italic-normal.js';
-import '../public/fonts/Roboto-BoldItalic-normal.js';
+import './fonts/Roboto-Regular-normal.js';
+import './fonts/Roboto-Bold-normal.js';
+import './fonts/Roboto-Italic-normal.js';
+import './fonts/Roboto-BoldItalic-normal.js';
 
 // 3. Import CKEditor (side-effect: defines window.CKEDITOR)
 import './lib/ckeditor.js';

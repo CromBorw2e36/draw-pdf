@@ -29,4 +29,4 @@ export { FONT_CONFIG } from './utils/constants.js';
 
 // Re-export for convenience
 export { DrawPDF };
-export const VERSION = '2.1.0';
+export const VERSION = '2.1.2';
