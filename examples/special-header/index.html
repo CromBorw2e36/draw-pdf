@@ -1,0 +1,143 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DrawPDF - Special Header Example</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 20px;
+      }
+      .panel {
+        flex: 1;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        height: 90vh;
+        overflow: auto;
+      }
+      h2 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #editor {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Panel Trái: Code Hướng Dẫn -->
+    <div class="panel" style="flex: 0 0 40%">
+      <h2>💻 Special Header Guide</h2>
+      <p>Header "Quốc Hiệu - Tiêu Ngữ" hành chính Việt Nam.</p>
+
+      <h3>1. Table Layout</h3>
+      <p>
+        Sử dụng <code>table</code> 2 cột không viền để căn chỉnh Header hành
+        chính.
+      </p>
+      <pre><code class="language-html">&lt;table border="0"&gt;
+  &lt;tr&gt;
+    &lt;td&gt;CƠ QUAN CHỦ QUẢN&lt;/td&gt;
+    &lt;td&gt;QUỐC HIỆU TIÊU NGỮ&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+
+      <div
+        style="
+          margin-top: 30px;
+          padding: 15px;
+          background: #e9ecef;
+          border-radius: 5px;
+        "
+      >
+        <strong>Thử Nghiệm:</strong><br />
+        Tạo mẫu Header hành chính chuẩn.
+        <br />
+        <button onclick="runDemo()">🚀 Create Admin Header</button>
+      </div>
+    </div>
+
+    <!-- Panel Phải: Editor -->
+    <div class="panel">
+      <h2>📄 Live Editor</h2>
+      <div id="editor"></div>
+    </div>
+
+    <script src="../../dist/drawpdf.standalone.umd.cjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script>
+      let pdfInstance = null;
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const DrawPDF = window.DrawPDF.default;
+        pdfInstance = await DrawPDF.create("#editor");
+      });
+
+      function runDemo() {
+        if (pdfInstance) {
+          const headerHtml = `
+            <table style="width:100%; border:none; margin-bottom: 20px;">
+                <tr>
+                    <td style="text-align:center; vertical-align:top; width:40%;">
+                        <strong style="font-size:11pt;">BỘ GIÁO DỤC VÀ ĐÀO TẠO</strong><br>
+                        TRƯỜNG ĐẠI HỌC ABC
+                        <hr style="width:30%; text-align:center; border-top: 1px solid black;">
+                    </td>
+                    <td style="text-align:center; vertical-align:top; width:60%;">
+                        <strong style="font-size:11pt;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong><br>
+                        <strong style="font-size:12pt; text-decoration: underline;">Độc lập - Tự do - Hạnh phúc</strong>
+                        <br>
+                        <em style="font-size:10pt;">Hà Nội, ngày ... tháng ... năm ...</em>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <div style="text-align:center;">
+                <h2>QUYẾT ĐỊNH</h2>
+                <i>(V/v: Ban hành quy chế...)</i>
+            </div>
+            `;
+          pdfInstance.setData({ sourceHtml: headerHtml });
+        }
+      }
+    </script>
+  </body>
+</html>

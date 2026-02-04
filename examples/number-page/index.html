@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DrawPDF - Page Numbering</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 20px;
+      }
+      .panel {
+        flex: 1;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        height: 90vh;
+        overflow: auto;
+      }
+      h2 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #editor {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Panel Trái: Code Hướng Dẫn -->
+    <div class="panel" style="flex: 0 0 40%">
+      <h2>💻 Page Numbering Guide</h2>
+      <p>Cấu hình đánh số trang tự động ở Footer.</p>
+
+      <h3>1. Footer Config</h3>
+      <p>Thiết lập <code>showPageNumbers</code> và format <code>text</code>.</p>
+      <pre><code class="language-javascript">{
+    showPageNumbers: true, 
+    footer: {
+        text: "Page {page} of {pages}", // biến {page} và {pages}
+        align: "center"
+    }
+}</code></pre>
+
+      <div
+        style="
+          margin-top: 30px;
+          padding: 15px;
+          background: #e9ecef;
+          border-radius: 5px;
+        "
+      >
+        <strong>Thử Nghiệm:</strong><br />
+        Tạo nội dung dài để test số trang.
+        <br />
+        <button onclick="runDemo()">🚀 Generate Long Content</button>
+      </div>
+    </div>
+
+    <!-- Panel Phải: Editor -->
+    <div class="panel">
+      <h2>📄 Live Editor</h2>
+      <div id="editor"></div>
+    </div>
+
+    <script src="../../dist/drawpdf.standalone.umd.cjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script>
+      let pdfInstance = null;
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const DrawPDF = window.DrawPDF.default;
+
+        pdfInstance = await DrawPDF.create("#editor", {
+          showPageNumbers: true,
+          footer: {
+            text: "Trang {page} / {pages}",
+            align: "center",
+          },
+        });
+
+        pdfInstance.setData({ sourceHtml: "<p>Initial content...</p>" });
+      });
+
+      function runDemo() {
+        if (pdfInstance) {
+          let longContent = "<h2>Long Document Test</h2>";
+          for (let i = 1; i <= 30; i++) {
+            longContent += `<p><strong>Line ${i}:</strong> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>`;
+          }
+          pdfInstance.setData({ sourceHtml: longContent });
+        }
+      }
+    </script>
+  </body>
+</html>

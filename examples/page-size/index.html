@@ -1,0 +1,162 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DrawPDF - Page Size & Layout</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 20px;
+      }
+      .panel {
+        flex: 1;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        height: 90vh;
+        overflow: auto;
+      }
+      h2 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #editor {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        background: #fff;
+      }
+
+      .control-group {
+        margin: 15px 0;
+      }
+      select {
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Panel Trái: Code Hướng Dẫn -->
+    <div class="panel" style="flex: 0 0 40%">
+      <h2>💻 Page Config Guide</h2>
+      <p>Cấu hình khổ giấy và hướng giấy ngay khi khởi tạo instance.</p>
+
+      <h3>1. Initialize Options</h3>
+      <p>Truyền object tham số thứ 2 vào hàm <code>create</code>.</p>
+      <pre><code class="language-javascript">await DrawPDF.create("#editor", {
+    format: 'a4',        // a4, a5, letter
+    orientation: 'portrait' // portrait, landscape
+});</code></pre>
+
+      <div
+        style="
+          margin-top: 30px;
+          padding: 15px;
+          background: #e9ecef;
+          border-radius: 5px;
+        "
+      >
+        <strong>Thử Nghiệm:</strong><br />
+
+        <div class="control-group">
+          <label>Format: </label>
+          <select id="format">
+            <option value="a4">A4</option>
+            <option value="a5">A5</option>
+            <option value="letter">Letter</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Orientation: </label>
+          <select id="orientation">
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
+        </div>
+
+        <button onclick="reloadEditor()">🔄 Reload Editor</button>
+      </div>
+    </div>
+
+    <!-- Panel Phải: Editor -->
+    <div class="panel">
+      <h2>📄 Live Editor (Check Page Size)</h2>
+      <div id="editor"></div>
+    </div>
+
+    <script src="../../dist/drawpdf.standalone.umd.cjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script>
+      let pdfInstance = null;
+
+      async function initEditor(config = {}) {
+        const DrawPDF = window.DrawPDF.default;
+
+        // Clean up visual div
+        document.getElementById("editor").innerHTML = "";
+
+        // Create new instance
+        pdfInstance = await DrawPDF.create("#editor", {
+          format: config.format || "a4",
+          orientation: config.orientation || "portrait",
+        });
+
+        // Show feedback
+        pdfInstance.setData({
+          sourceHtml: `
+                <h2>Current Page Configuration</h2>
+                <ul>
+                    <li><strong>Format:</strong> ${config.format || "a4"}</li>
+                    <li><strong>Orientation:</strong> ${config.orientation || "portrait"}</li>
+                </ul>
+            `,
+        });
+      }
+
+      function reloadEditor() {
+        const format = document.getElementById("format").value;
+        const orientation = document.getElementById("orientation").value;
+        initEditor({ format, orientation });
+      }
+
+      // Start default
+      document.addEventListener("DOMContentLoaded", () => initEditor());
+    </script>
+  </body>
+</html>
