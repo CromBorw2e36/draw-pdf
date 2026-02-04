@@ -90,12 +90,49 @@
       </ul>
 
       <h3>2. Code Example</h3>
-      <pre><code class="language-javascript">// Khởi tạo editor với cấu hình trang
-await DrawPDF.create("#editor", {
-    format: 'a4',
-    orientation: 'landscape',
-    margins: { top: 20, right: 20, bottom: 20, left: 20 }
-});</code></pre>
+      <p>Cách xử lý reload và cập nhật config an toàn:</p>
+      <pre><code class="language-javascript">let pdfInstance = null;
+
+async function initEditor(config) {
+    // 1. Dọn dẹp instance cũ (quan trọng!)
+    if (pdfInstance) {
+        await pdfInstance.destroy();
+        pdfInstance = null;
+    }
+
+    // 2. Khởi tạo mới với config
+    pdfInstance = await DrawPDF.create("#editor", {
+        format: config.format,       // 'a4', 'letter'...
+        orientation: config.orientation, // 'portrait', 'landscape'
+        
+        // Tùy chỉnh Toolbar gọn gàng
+        toolbar: {
+            items: ['heading', 'bold', 'italic', 'insertTable', 'undo', 'redo'],
+            shouldNotGroupWhenFull: true
+        }
+    });
+
+    // 3. Mô phỏng khổ giấy trên màn hình (Visual Feedback)
+    updateEditorVisuals(config.format, config.orientation);
+}
+
+// Helper: Chỉnh CSS editor theo khổ giấy (mm => px)
+function updateEditorVisuals(format, orientation) {
+    const sizes = { a4: {w: 210, h: 297}, /*...*/ };
+    const size = sizes[format] || sizes.a4;
+    
+    // Tính kích thước theo chiều xoay
+    const wMm = orientation === 'landscape' ? size.h : size.w;
+    const hMm = orientation === 'landscape' ? size.w : size.h;
+    
+    // Quy đổi 1mm ~ 3.78px và set style
+    const editorEl = document.querySelector('.ck-editor__editable');
+    if (editorEl) {
+        editorEl.style.width = (wMm * 3.78) + 'px';
+        editorEl.style.minHeight = (hMm * 3.78) + 'px';
+        editorEl.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+    }
+}</code></pre>
 
       <div
         style="
