@@ -1,144 +1,152 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DrawPDF Examples</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f5f7fa;
-            color: #333;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 40px 20px;
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        p.subtitle {
-            text-align: center;
-            color: #7f8c8d;
-            margin-bottom: 40px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-        }
-        .card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            border: 1px solid #eaeaea;
-        }
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-color: #007bff;
-        }
-        .card h3 {
-            margin: 0 0 10px 0;
-            color: #007bff;
-        }
-        .card p {
-            margin: 0;
-            font-size: 14px;
-            color: #666;
-            line-height: 1.5;
-        }
-        .badge {
-            display: inline-block;
-            background: #e1f0ff;
-            color: #007bff;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            margin-bottom: 10px;
-            width: fit-content;
-        }
-        .badge.new {
-            background: #d4edda;
-            color: #155724;
-        }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f5f7fa;
+        color: #333;
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+      }
+      h1 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+      p.subtitle {
+        text-align: center;
+        color: #7f8c8d;
+        margin-bottom: 40px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+      }
+      .card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+        text-decoration: none;
+        color: inherit;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #eaeaea;
+      }
+      .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        border-color: #007bff;
+      }
+      .card h3 {
+        margin: 0 0 10px 0;
+        color: #007bff;
+      }
+      .card p {
+        margin: 0;
+        font-size: 14px;
+        color: #666;
+        line-height: 1.5;
+      }
+      .badge {
+        display: inline-block;
+        background: #e1f0ff;
+        color: #007bff;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 12px;
+        margin-bottom: 10px;
+        width: fit-content;
+      }
+      .badge.new {
+        background: #d4edda;
+        color: #155724;
+      }
     </style>
-</head>
-<body>
-
+  </head>
+  <body>
     <h1>📚 DrawPDF Library Examples</h1>
-    <p class="subtitle">Collection of examples demonstrating features and usage patterns.</p>
+    <p class="subtitle">
+      Collection of examples demonstrating features and usage patterns.
+    </p>
 
     <div class="grid">
-        <!-- New Guides -->
-        <a href="./user-guide/index.html" class="card">
-            <span class="badge new">New</span>
-            <h3>User Guide Guide</h3>
-            <p>A comprehensive guide loaded directly into the Rich Editor. Shows how to use the editor vs the API.</p>
-        </a>
+      <!-- New Guides -->
+      <a href="./user-guide/index.html" class="card">
+        <span class="badge new">New</span>
+        <h3>User Guide Guide</h3>
+        <p>
+          A comprehensive guide loaded directly into the Rich Editor. Shows how
+          to use the editor vs the API.
+        </p>
+      </a>
 
-        <a href="./review-n-export/index.html" class="card">
-            <span class="badge new">New</span>
-            <h3>Review & Export</h3>
-            <p>Demonstrates the workflow for validating data and exporting the PDF programmatically.</p>
-        </a>
+      <a href="./review-n-export/index.html" class="card">
+        <span class="badge new">New</span>
+        <h3>Review & Export</h3>
+        <p>
+          Demonstrates the workflow for validating data and exporting the PDF
+          programmatically.
+        </p>
+      </a>
 
-        <!-- Feature Examples -->
-        <a href="./simple-page/index.html" class="card">
-            <span class="badge">Basic</span>
-            <h3>Simple Page</h3>
-            <p>Basic initialization and usage.</p>
-        </a>
+      <!-- Feature Examples -->
+      <a href="./simple-page/index.html" class="card">
+        <span class="badge">Basic</span>
+        <h3>Simple Page</h3>
+        <p>Basic initialization and usage.</p>
+      </a>
 
-        <a href="./special-header/index.html" class="card">
-            <span class="badge">Layout</span>
-            <h3>Special Header</h3>
-            <p>Custom headers with multi-column layout.</p>
-        </a>
+      <a href="./special-header/index.html" class="card">
+        <span class="badge">Layout</span>
+        <h3>Special Header</h3>
+        <p>Custom headers with multi-column layout.</p>
+      </a>
 
-        <a href="./table/index.html" class="card">
-            <span class="badge">Content</span>
-            <h3>Tables</h3>
-            <p>Working with tables and data.</p>
-        </a>
+      <a href="./table/index.html" class="card">
+        <span class="badge">Content</span>
+        <h3>Tables</h3>
+        <p>Working with tables and data.</p>
+      </a>
 
-        <a href="./image-in-page/index.html" class="card">
-            <span class="badge">Content</span>
-            <h3>Images</h3>
-            <p>Embedding and handling images.</p>
-        </a>
+      <a href="./image-in-page/index.html" class="card">
+        <span class="badge">Content</span>
+        <h3>Images</h3>
+        <p>Embedding and handling images.</p>
+      </a>
 
-        <a href="./page-size/index.html" class="card">
-            <span class="badge">Config</span>
-            <h3>Page Size</h3>
-            <p>Customizing page dimensions and orientation.</p>
-        </a>
+      <a href="./page-size/index.html" class="card">
+        <span class="badge">Config</span>
+        <h3>Page Size</h3>
+        <p>Customizing page dimensions and orientation.</p>
+      </a>
 
-        <a href="./number-page/index.html" class="card">
-            <span class="badge">Config</span>
-            <h3>Page Numbering</h3>
-            <p>Adding page numbers automatically.</p>
-        </a>
-        
-        <a href="./mark-header/index.html" class="card">
-            <span class="badge">Layout</span>
-            <h3>Mark Header</h3>
-            <p>Header marking features.</p>
-        </a>
+      <a href="./header-n-footer/index.html" class="card">
+        <span class="badge">Config</span>
+        <h3>Page Numbering</h3>
+        <p>Adding page numbers automatically.</p>
+      </a>
 
-        <a href="./signature/index.html" class="card">
-            <span class="badge">Advanced</span>
-            <h3>Signature</h3>
-            <p>Digital signature areas.</p>
-        </a>
+      <a href="./mark-header/index.html" class="card">
+        <span class="badge">Layout</span>
+        <h3>Mark Header</h3>
+        <p>Header marking features.</p>
+      </a>
+
+      <a href="./signature/index.html" class="card">
+        <span class="badge">Advanced</span>
+        <h3>Signature</h3>
+        <p>Digital signature areas.</p>
+      </a>
     </div>
-
-</body>
+  </body>
 </html>
