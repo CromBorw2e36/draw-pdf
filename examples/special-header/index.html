@@ -25,7 +25,7 @@
         height: 90vh;
         overflow: auto;
       }
-      h2 {
+      p {
         margin-top: 0;
         color: #333;
         border-bottom: 2px solid #eee;
@@ -61,7 +61,7 @@
   <body>
     <!-- Panel Trái: Code Hướng Dẫn -->
     <div class="panel" style="flex: 0 0 40%">
-      <h2>💻 Special Header Guide</h2>
+      <p>💻 Special Header Guide</p>
       <p>Header "Quốc Hiệu - Tiêu Ngữ" hành chính Việt Nam.</p>
 
       <h3>1. Table Layout</h3>
@@ -87,13 +87,18 @@
         <strong>Thử Nghiệm:</strong><br />
         Tạo mẫu Header hành chính chuẩn.
         <br />
-        <button onclick="runDemo()">🚀 Create Admin Header</button>
+        <button onclick="runDemo()" style="width: 100%; margin-bottom: 10px">
+          📚 Load All Templates
+        </button>
+        <button onclick="reviewPdf()" style="background: #28a745; width: 100%">
+          📄 Review PDF
+        </button>
       </div>
     </div>
 
     <!-- Panel Phải: Editor -->
     <div class="panel">
-      <h2>📄 Live Editor</h2>
+      <p>📄 Live Editor</p>
       <div id="editor"></div>
     </div>
 
@@ -112,30 +117,115 @@
       });
 
       function runDemo() {
-        if (pdfInstance) {
-          const headerHtml = `
-            <table style="width:100%; border:none; margin-bottom: 20px;">
+        if (!pdfInstance) return;
+
+        // Common styles
+        const tableStyle =
+          "width:100%; border-color:hsl(0, 0%, 100%); border-style:solid; margin-bottom: 20px;";
+        const tdStyle = "text-align:center; vertical-align:top;";
+
+        // Single Combined HTML Blob
+        const html = `
+            <!-- 1. Mẫu Cơ quan Hành chính -->
+            <h3 style="text-align:center; color:#555; background:#eee; padding:5px;">1. Mẫu Cơ quan Hành chính</h3>
+            <table style="${tableStyle}">
                 <tr>
-                    <td style="text-align:center; vertical-align:top; width:40%;">
-                        <strong style="font-size:11pt;">BỘ GIÁO DỤC VÀ ĐÀO TẠO</strong><br>
-                        TRƯỜNG ĐẠI HỌC ABC
+                    <td style="${tdStyle} width:40%;">
+                        <strong style="font-size:11pt;">ỦY BAN NHÂN DÂN<br>THÀNH PHỐ HỒ CHÍ MINH</strong><br>
+                        <strong>SỞ CÔNG THƯƠNG</strong>
                         <hr style="width:30%; text-align:center; border-top: 1px solid black;">
                     </td>
-                    <td style="text-align:center; vertical-align:top; width:60%;">
+                    <td style="${tdStyle} width:60%;">
                         <strong style="font-size:11pt;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong><br>
                         <strong style="font-size:12pt; text-decoration: underline;">Độc lập - Tự do - Hạnh phúc</strong>
                         <br>
-                        <em style="font-size:10pt;">Hà Nội, ngày ... tháng ... năm ...</em>
+                        <em style="font-size:10pt;">TP. Hồ Chí Minh, ngày ... tháng ... năm 202...</em>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align:center;">
+                <p>QUYẾT ĐỊNH</p>
+                <i>(V/v: Thành lập tổ công tác...)</i>
+            </div>
+
+            <br><br>
+
+            <!-- 2. Mẫu Trường học / Đào tạo -->
+            <h3 style="text-align:center; color:#555; background:#eee; padding:5px;">2. Mẫu Trường học / Đào tạo</h3>
+            <table style="${tableStyle}">
+                <tr>
+                    <td style="${tdStyle} width:45%;">
+                        <strong style="font-size:11pt;">BỘ GIÁO DỤC VÀ ĐÀO TẠO</strong><br>
+                        <strong>TRƯỜNG ĐẠI HỌC BÁCH KHOA</strong>
+                        <hr style="width:35%; text-align:center; border-top: 1px solid black;">
+                        Số: 123/QĐ-ĐHBK
+                    </td>
+                    <td style="${tdStyle} width:55%;">
+                        <strong style="font-size:11pt;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong><br>
+                        <strong style="font-size:12pt; text-decoration: underline;">Độc lập - Tự do - Hạnh phúc</strong>
+                        <br>
+                        <em style="font-size:10pt;">Hà Nội, ngày 15 tháng 10 năm 2025</em>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align:center; margin-top:15px;">
+                <p>GIẤY KHEN</p>
+            </div>
+
+            <br><br>
+
+            <!-- 3. Mẫu Đảng bộ / Đoàn thể -->
+            <h3 style="text-align:center; color:#555; background:#eee; padding:5px;">3. Mẫu Đảng bộ / Đoàn thể</h3>
+            <table style="${tableStyle}">
+                <tr>
+                    <td style="${tdStyle} width:50%;">
+                        <strong style="font-size:11pt;">ĐẢNG CỘNG SẢN VIỆT NAM</strong><br>
+                        ĐẢNG BỘ KHỐI DOANH NGHIỆP<br>
+                        <strong>CHI BỘ CÔNG TY ABC</strong>
+                        <hr style="width:30%; text-align:center; border-top: 1px solid black;">
+                    </td>
+                    <td style="${tdStyle} width:50%; text-align:right; padding-right:20px;">
+                        <em style="font-size:10pt;">Đà Nẵng, ngày 03 tháng 02 năm 2026</em>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align:center;">
+                <p>NGHỊ QUYẾT</p>
+                <strong>HỘI NGHỊ CHI BỘ THÁNG 02/2026</strong>
+            </div>
+
+            <br><br>
+
+            <!-- 4. Mẫu Doanh nghiệp -->
+            <h3 style="text-align:center; color:#555; background:#eee; padding:5px;">4. Mẫu Doanh nghiệp</h3>
+             <table style="${tableStyle}">
+                <tr>
+                    <td style="${tdStyle} width:40%; text-align:left;">
+                        <strong style="font-size:12pt; color:#0056b3;">CÔNG TY CỔ PHẦN CÔNG NGHỆ XYZ</strong><br>
+                        <span style="font-size:9pt;">📍 123 Đường Công Nghệ, Q. Cầu Giấy, HN</span><br>
+                        <span style="font-size:9pt;">🌐 www.xyz-tech.com | 📞 0909 123 456</span>
+                        <hr style="width:100%; border-top: 2px solid #0056b3;">
+                    </td>
+                    <td style="${tdStyle} width:60%; text-align:right;">
+                        <strong style="font-size:16pt; color:#dc3545;">HÓA ĐƠN GTGT</strong><br>
+                        <em style="font-size:10pt;">(Bản Thể Hiện Của Hóa Đơn Điện Tử)</em><br>
+                        <strong style="font-size:10pt;">Ký hiệu: 1C26TTR | Số: 0000123</strong>
                     </td>
                 </tr>
             </table>
             <br>
-            <div style="text-align:center;">
-                <h2>QUYẾT ĐỊNH</h2>
-                <i>(V/v: Ban hành quy chế...)</i>
-            </div>
-            `;
-          pdfInstance.setData({ sourceHtml: headerHtml });
+            <p>Hôm nay, ngày ... tháng ... năm ..., chúng tôi gồm có:</p>
+        `;
+
+        pdfInstance.setData({ sourceHtml: html });
+      }
+
+      function reviewPdf() {
+        if (pdfInstance) {
+          pdfInstance.getData(); // Sync data
+          const blob = pdfInstance.getBlob();
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
         }
       }
     </script>
