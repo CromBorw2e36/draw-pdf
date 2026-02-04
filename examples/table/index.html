@@ -88,7 +88,12 @@
         <strong>Thử Nghiệm:</strong><br />
         Nhấn nút bên dưới để tạo bảng dữ liệu mẫu.
         <br />
-        <button onclick="runDemo()">🚀 Create Table</button>
+        <button onclick="runDemo()" style="width: 100%; margin-bottom: 10px">
+          🚀 Load All Table Types
+        </button>
+        <button onclick="reviewPdf()" style="width: 100%; background: #28a745">
+          📄 Review PDF
+        </button>
       </div>
     </div>
 
@@ -113,40 +118,128 @@
       });
 
       function runDemo() {
-        const tableHtml = `
-            <h3>Product List</h3>
-            <table border="1" style="width:100%; border-collapse: collapse;">
-                <thead style="background-color: #f2f2f2;">
+        if (!pdfInstance) return;
+
+        const thStyle = "text-align: center;";
+        const tdStyle = "border: 1px solid #ddd;";
+        const centerStyle = "text-align: center;";
+        const boldStyle = "font-weight: bold;";
+
+        const html = `
+            <!-- 1. MERGED HEADER TABLE -->
+            <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 2px solid #007bff; display: inline-block;">1. Bảng Trộn Cột (Merged Headers)</div>
+            <table style="width:100%; margin-bottom: 20px;">
+                <thead>
                     <tr>
-                        <th style="padding: 8px;">ID</th>
-                        <th style="padding: 8px;">Product Name</th>
-                        <th style="padding: 8px;">Price</th>
+                        <th rowspan="2" style="${thStyle}">STT</th>
+                        <th rowspan="2" style="${thStyle}">Họ và Tên</th>
+                        <th colspan="3" style="${thStyle}">Điểm Các Môn</th>
+                    </tr>
+                    <tr>
+                        <th style="${thStyle}">Toán</th>
+                        <th style="${thStyle}">Lý</th>
+                        <th style="${thStyle}">Hóa</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td style="padding: 8px;">1</td>
-                        <td style="padding: 8px;">Apple</td>
-                        <td style="padding: 8px;">$1.00</td>
+                        <td style="${tdStyle} ${centerStyle}">1</td>
+                        <td style="${tdStyle}">Nguyễn Văn A</td>
+                        <td style="${tdStyle} ${centerStyle}">8.5</td>
+                        <td style="${tdStyle} ${centerStyle}">7.0</td>
+                        <td style="${tdStyle} ${centerStyle}">9.0</td>
                     </tr>
                     <tr>
-                        <td style="padding: 8px;">2</td>
-                        <td style="padding: 8px;">Banana</td>
-                        <td style="padding: 8px;">$0.50</td>
-                    </tr>
-                    <tr>
-                        <td style="padding: 8px;">3</td>
-                        <td style="padding: 8px;">Cherry</td>
-                        <td style="padding: 8px;">$2.00</td>
+                        <td style="${tdStyle} ${centerStyle}">2</td>
+                        <td style="${tdStyle}">Trần Thị B</td>
+                        <td style="${tdStyle} ${centerStyle}">9.0</td>
+                        <td style="${tdStyle} ${centerStyle}">9.5</td>
+                        <td style="${tdStyle} ${centerStyle}">8.5</td>
                     </tr>
                 </tbody>
             </table>
+
+            <br>
+
+            <!-- 2. INVOICE STYLE TABLE -->
+            <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 2px solid #28a745; display: inline-block;">2. Bảng Hóa Đơn (Invoice Style)</div>
+            <table style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #28a745; color: white;">
+                        <th style="padding: 10px;">Mô Tả</th>
+                        <th style="padding: 10px; text-align: right;">Số Lượng</th>
+                        <th style="padding: 10px; text-align: right;">Đơn Giá</th>
+                        <th style="padding: 10px; text-align: right;">Thành Tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">Thiết kế Website</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">1</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$500.00</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$500.00</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">Hosting (1 Năm)</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">1</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$120.00</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$120.00</td>
+                    </tr>
+                     <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">Bảo Trì</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">2</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$50.00</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$100.00</td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9; font-weight: bold;">
+                        <td colspan="3" style="padding: 10px; text-align: right;">Tổng Cộng:</td>
+                        <td style="padding: 10px; text-align: right; color: #dc3545;">$720.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <br>
+
+            <!-- 3. COMPLEX MERGE TABLE -->
+            <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 2px solid #dc3545; display: inline-block;">3. Bảng Phức Tạp (Rowspan & Colspan)</div>
+            <table border="1" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
+                <tr style="background-color: #ccc;">
+                    <th rowspan="2">Khu Vực</th>
+                    <th colspan="2">Doanh Số (Tỷ VNĐ)</th>
+                    <th rowspan="2">Ghi Chú</th>
+                </tr>
+                <tr style="background-color: #eee;">
+                    <th>Q1</th>
+                    <th>Q2</th>
+                </tr>
+                <tr>
+                    <td rowspan="2" style="${centerStyle}">Miền Bắc</td>
+                    <td style="${centerStyle}">150</td>
+                    <td style="${centerStyle}">200</td>
+                    <td>Tăng trưởng đều</td>
+                </tr>
+                <tr>
+                    <td style="${centerStyle}">180</td>
+                    <td style="${centerStyle}">210</td>
+                    <td>Vượt chỉ tiêu</td>
+                </tr>
+                 <tr>
+                    <td style="${centerStyle}">Miền Nam</td>
+                    <td colspan="2" style="${centerStyle} background-color: #fff3cd;">300 (Tổng 6 tháng)</td>
+                    <td>Mới mở rộng</td>
+                </tr>
+            </table>
         `;
+
+        pdfInstance.setData({ sourceHtml: html });
+      }
+
+      function reviewPdf() {
         if (pdfInstance) {
-          const DrawPDF = window.DrawPDF.default;
-          // Create valid blueprint from HTML
-          const blueprint = DrawPDF.parseHtml(tableHtml);
-          pdfInstance.setData(blueprint);
+          pdfInstance.getData(); // Sync data
+          const blob = pdfInstance.getBlob();
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
         }
       }
     </script>
