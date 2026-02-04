@@ -45,7 +45,7 @@
   "bugs": {
     "url": "https://github.com/CromBorw2e36/draw-pdf/issues"
   },
-  "homepage": "https://github.com/CromBorw2e36/draw-pdf#readme",
+  "homepage": "https://cromborw2e36.github.io/draw-pdf/",
   "peerDependencies": {
     "jspdf": "^2.5.1",
     "jspdf-autotable": "^3.8.1"
