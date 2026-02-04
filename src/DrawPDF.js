@@ -18,9 +18,12 @@
 
 import CKEditorParser from './parser/CKEditorParser.js';
 import PDFRenderer from './renderer/PDFRenderer.js';
+import JsPdfService from './service/jspdf-service/main.js';
 import { FONT_CONFIG } from './utils/constants.js';
 
 class DrawPDF {
+    static JsPdfService = JsPdfService;
+
     constructor() {
         this.editor = null;
         this.parser = new CKEditorParser();
