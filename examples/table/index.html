@@ -62,20 +62,101 @@
     <!-- Panel Trái: Code Hướng Dẫn -->
     <div class="panel" style="flex: 0 0 40%">
       <h2>💻 Table Guide</h2>
-      <p>Cách hiển thị bảng dữ liệu (Table) trong DrawPDF.</p>
-
-      <h3>1. HTML Table Structure</h3>
       <p>
-        Sử dụng thẻ <code>table</code> chuẩn HTML với
-        <code>border-collapse: collapse</code> để có viền đẹp.
+        DrawPDF hỗ trợ hiển thị bảng biểu đa dạng từ HTML chuẩn. Dưới đây là các
+        tính năng chính:
       </p>
-      <pre><code class="language-html">&lt;table border="1" style="border-collapse: collapse;"&gt;
-  &lt;thead&gt;...&lt;/thead&gt;
+
+      <h3>1. Cấu Trúc Bảng (Structure)</h3>
+      <p>
+        Sử dụng thẻ <code>&lt;table&gt;</code>, <code>&lt;thead&gt;</code>,
+        <code>&lt;tbody&gt;</code>.
+        <br />
+        Hỗ trợ đầy đủ <strong>rowspan</strong> và <strong>colspan</strong> để
+        trộn ô.
+      </p>
+      <pre><code class="language-html">&lt;table style="width:100%; border-collapse: collapse;"&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th colspan="2"&gt;Header Group&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;th&gt;Sub 1&lt;/th&gt;&lt;th&gt;Sub 2&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
   &lt;tbody&gt;...&lt;/tbody&gt;
 &lt;/table&gt;</code></pre>
 
-      <h3>2. Load Data</h3>
-      <p>Load chuỗi HTML chứa table vào editor.</p>
+      <h3>2. Định Dạng (Styling)</h3>
+      <p>DrawPDF nhận diện các inline CSS sau:</p>
+      <ul>
+        <li>
+          <strong>Borders:</strong> <code>border: 1px solid #000</code> (áp dụng
+          cho table hoặc td/th).
+        </li>
+        <li>
+          <strong>Background:</strong> <code>background-color: #f0f0f0</code>.
+        </li>
+        <li>
+          <strong>Alignment:</strong> <code>text-align: center/right</code>.
+        </li>
+        <li><strong>Padding:</strong> <code>padding: 5px</code>.</li>
+        <li>
+          <strong>Width:</strong> <code>width: 100%</code> hoặc pixel cố định.
+        </li>
+      </ul>
+
+      <h3>3. Bảng Động (Dynamic Code)</h3>
+      <p>
+        Sử dụng
+        <strong>Code Block</strong> (<code>&lt;pre&gt;&lt;code&gt;</code>) với
+        <code>// eval</code> để chạy JavaScript trực tiếp.
+      </p>
+
+      <h4>Các biến có sẵn:</h4>
+      <ul>
+        <li>
+          <code>pdf</code>: Instance của <code>JsPdfService</code> (API vẽ PDF
+          chính).
+        </li>
+        <li><code>data</code>: Dữ liệu được truyền vào (nếu có).</li>
+      </ul>
+
+      <h4>Ví dụ đầy đủ:</h4>
+      <pre><code class="language-javascript">// eval
+// 1. Dữ liệu mẫu (Header có thể là 1 chiều hoặc 2 chiều)
+const headers = [
+  [{ content: 'Danh Sách Nhân Sự', colSpan: 3, styles: { halign: 'center' } }], // Row 1
+  ['STT', 'Họ Tên', 'Phòng Ban'] // Row 2
+];
+
+const rows = [
+  [1, 'Nguyễn Văn A', 'Kỹ Thuật'],
+  [2, 'Trần Thị B', 'Nhân Sự'],
+  [3, 'Lê Văn C', 'Kinh Doanh']
+];
+
+// 2. Vẽ bảng
+pdf.addTable(headers, rows, {
+  theme: 'grid', // 'striped' | 'grid' | 'plain'
+  styles: { 
+    fontSize: 10,
+    cellPadding: 4,
+    font: 'Roboto'
+  },
+  headStyles: {
+    fillColor: [41, 128, 185],
+    textColor: 255,
+    fontStyle: 'bold'
+  },
+  columnStyles: {
+    0: { cellWidth: 15, halign: 'center' }, // Cột STT
+    2: { fontStyle: 'italic' } // Cột Phòng Ban
+  },
+  margin: { top: 10 }
+});
+
+// 3. Thêm ghi chú bên dưới
+pdf.addText("Tổng số: " + rows.length + " nhân sự.", 15, pdf.currentY + 5, {
+    fontStyle: 'italic',
+    color: [100, 100, 100]
+});</code></pre>
 
       <div
         style="
@@ -229,9 +310,46 @@
                     <td>Mới mở rộng</td>
                 </tr>
             </table>
-        `;
 
-        pdfInstance.setData({ sourceHtml: html });
+            <br>
+            
+            <!-- 4. DYNAMIC TABLE (CODE BLOCK) -->
+             <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 2px solid #6f42c1; display: inline-block;">4. Bảng Động (Generated via Code Block)</div>
+             <p>Bảng dưới đây được sinh ra từ đoạn script embedded:</p>
+             <pre><code class="language-javascript">// eval
+const headers = ["ID", "Tên sản phẩm", "Giá (USD)", "Số Lượng", "Tổng"];
+const rows = [];
+
+// Tạo 5 dòng dữ liệu mẫu ngẫu nhiên
+for (let i = 1; i <= 5; i++) {
+    const price = Math.floor(Math.random() * 100) + 10;
+    const qty = Math.floor(Math.random() * 10) + 1;
+    rows.push([
+        i, 
+        "Sản phẩm " + String.fromCharCode(64 + i), 
+        price, 
+        qty, 
+        price * qty
+    ]);
+}
+
+// Gọi hàm vẽ bảng của jsPDF wrapper
+// pdf là instance của JsPdfService được expose vào eval context
+pdf.addTable(headers, rows, {
+    margin: { left: 15 },
+    theme: 'grid', // 'striped', 'grid', 'plain'
+    styles: { fontSize: 10 },
+    headStyles: { fillColor: [41, 128, 185], textColor: 255 }
+});
+
+pdf.addText("Tổng số dòng đã sinh: " + rows.length, 15, pdf.currentY + 10);
+pdf.currentY += 15; // Dịch chuyển con trỏ xuống để không ghi đè
+</code></pre>
+
+        `;
+        const bluePrint = window.DrawPDF.default.parseHtml(html);
+        console.log("bluePrint", bluePrint);
+        pdfInstance.setData(bluePrint);
       }
 
       function reviewPdf() {
