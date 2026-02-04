@@ -27,6 +27,7 @@ npm install github:masax/DrawPDF#main
 ```
 
 **Peer Dependencies:**
+
 - `jspdf` ^2.5.1
 - `jspdf-autotable` ^3.8.1
 
@@ -35,31 +36,36 @@ npm install github:masax/DrawPDF#main
 ## 🔤 Font Configuration
 
 ### Default Behavior
+
 By default, DrawPDF uses **Roboto** font (Vietnamese support built-in) with **helvetica** as fallback.
 
 ### Custom Font Configuration
-```javascript
-import DrawPDF from 'drawpdf';
 
-const pdf = await DrawPDF.create('#editor', {
+```javascript
+import DrawPDF from "drawpdf";
+
+const pdf = await DrawPDF.create("#editor", {
   fonts: {
-    defaultFont: 'MyCustomFont',     // Primary font name
-    fallback: 'helvetica',           // Fallback if font not found
-    register: [                       // Pre-converted font files (.js)
-      '/fonts/MyCustomFont-Regular.js',
-      '/fonts/MyCustomFont-Bold.js'
-    ]
-  }
+    defaultFont: "MyCustomFont", // Primary font name
+    fallback: "helvetica", // Fallback if font not found
+    register: [
+      // Pre-converted font files (.js)
+      "/fonts/MyCustomFont-Regular.js",
+      "/fonts/MyCustomFont-Bold.js",
+    ],
+  },
 });
 ```
 
 ### Dynamic Font Registration
+
 ```javascript
 // Register font at runtime
-await pdf.registerFont('/fonts/AnotherFont.js');
+await pdf.registerFont("/fonts/AnotherFont.js");
 ```
 
 ### Creating Custom Font Files
+
 1. Download TTF font from [Font Squirrel](https://www.fontsquirrel.com/)
 2. Convert using [jsPDF Font Converter](https://rawgit.com/MrRio/jsPDF/master/fontconverter/fontconverter.html)
 3. Place the `.js` file in your project
@@ -80,8 +86,8 @@ For direct usage in the browser without a bundler, use the standalone build whic
   const { DrawPDF } = window.DrawPDF;
 
   // Initialize
-  DrawPDF.create('#editor').then(pdf => {
-    console.log('Ready!');
+  DrawPDF.create("#editor").then((pdf) => {
+    console.log("Ready!");
   });
 </script>
 ```
@@ -93,10 +99,10 @@ For direct usage in the browser without a bundler, use the standalone build whic
 ### Design Mode (Thiết kế template với CKEditor)
 
 ```javascript
-import DrawPDF from 'drawpdf';
+import DrawPDF from "drawpdf";
 
 // 1. Khởi tạo CKEditor
-const pdf = await DrawPDF.create('#editor');
+const pdf = await DrawPDF.create("#editor");
 
 // 2. User soạn thảo trong editor...
 
@@ -104,10 +110,10 @@ const pdf = await DrawPDF.create('#editor');
 const blueprint = pdf.getData();
 
 // 4. Save blueprint để dùng sau
-localStorage.setItem('myTemplate', JSON.stringify(blueprint));
+localStorage.setItem("myTemplate", JSON.stringify(blueprint));
 
 // 5. Preview PDF
-pdf.preview({ name: 'Test', salary: 25000000 });
+pdf.preview({ name: "Test", salary: 25000000 });
 ```
 
 ---
@@ -117,29 +123,27 @@ pdf.preview({ name: 'Test', salary: 25000000 });
 **Đây là use case phổ biến nhất:** Bạn đã có file `blueprint.json` và chỉ cần in ra PDF!
 
 ```javascript
-import DrawPDF from 'drawpdf';
+import DrawPDF from "drawpdf";
 
 // 📂 Cách 1: Load blueprint từ file/localStorage
-const blueprint = JSON.parse(localStorage.getItem('myTemplate'));
+const blueprint = JSON.parse(localStorage.getItem("myTemplate"));
 // hoặc: const blueprint = await fetch('/templates/invoice.json').then(r => r.json());
 
 // 🖨️ In ngay! Không cần CKEditor
-new DrawPDF()
-  .setData(blueprint)
-  .download('document.pdf', { 
-    name: 'Nguyễn Văn An', 
-    salary: 25000000,
-    items: [
-      { name: 'Sản phẩm A', price: 100000 },
-      { name: 'Sản phẩm B', price: 200000 }
-    ]
-  });
+new DrawPDF().setData(blueprint).download("document.pdf", {
+  name: "Nguyễn Văn An",
+  salary: 25000000,
+  items: [
+    { name: "Sản phẩm A", price: 100000 },
+    { name: "Sản phẩm B", price: 200000 },
+  ],
+});
 ```
 
 **Hoặc dùng Static Method (1 dòng):**
 
 ```javascript
-DrawPDF.downloadBlueprint(blueprint, 'output.pdf', { name: 'Test' });
+DrawPDF.downloadBlueprint(blueprint, "output.pdf", { name: "Test" });
 ```
 
 **Các cách xuất khác:**
@@ -149,11 +153,11 @@ const pdf = new DrawPDF().setData(blueprint);
 
 // Render và lấy data URL (để preview trong iframe)
 const dataUrl = pdf.render(data);
-document.getElementById('preview').src = dataUrl;
+document.getElementById("preview").src = dataUrl;
 
 // Lấy Blob (để upload lên server)
 const blob = pdf.getBlob(data);
-await fetch('/api/upload', { method: 'POST', body: blob });
+await fetch("/api/upload", { method: "POST", body: blob });
 
 // Mở preview trong tab mới
 pdf.preview(data);
@@ -165,29 +169,29 @@ pdf.preview(data);
 
 ### Instance Methods (Main API)
 
-| Method | Description | Returns |
-|--------|-------------|---------|
-| `init(element, options)` | Khởi tạo CKEditor vào element | `Promise<DrawPDF>` |
-| `getData()` | Parse HTML từ editor → JSON Blueprint | `Object` (Blueprint) |
-| `setData(blueprint)` | Load blueprint có sẵn để render | `DrawPDF` (chainable) |
-| `render(data)` | Render PDF từ blueprint | `string` (data URL) |
-| `download(filename, data)` | Tải PDF xuống | `DrawPDF` (chainable) |
-| `preview(data)` | Mở PDF trong tab mới | `void` |
-| `getBlob(data)` | Lấy Blob để upload | `Blob` |
-| `getBlueprint()` | Lấy blueprint hiện tại (không parse lại) | `Object` or `null` |
-| `exportJson()` | Xuất blueprint dạng JSON string | `string` |
-| `importJson(jsonString)` | Import blueprint từ JSON string | `DrawPDF` (chainable) |
-| `registerFont(url)` | Đăng ký font tùy chỉnh | `Promise<DrawPDF>` |
-| `destroy()` | Hủy editor instance | `void` |
+| Method                     | Description                              | Returns               |
+| -------------------------- | ---------------------------------------- | --------------------- |
+| `init(element, options)`   | Khởi tạo CKEditor vào element            | `Promise<DrawPDF>`    |
+| `getData()`                | Parse HTML từ editor → JSON Blueprint    | `Object` (Blueprint)  |
+| `setData(blueprint)`       | Load blueprint có sẵn để render          | `DrawPDF` (chainable) |
+| `render(data)`             | Render PDF từ blueprint                  | `string` (data URL)   |
+| `download(filename, data)` | Tải PDF xuống                            | `DrawPDF` (chainable) |
+| `preview(data)`            | Mở PDF trong tab mới                     | `void`                |
+| `getBlob(data)`            | Lấy Blob để upload                       | `Blob`                |
+| `getBlueprint()`           | Lấy blueprint hiện tại (không parse lại) | `Object` or `null`    |
+| `exportJson()`             | Xuất blueprint dạng JSON string          | `string`              |
+| `importJson(jsonString)`   | Import blueprint từ JSON string          | `DrawPDF` (chainable) |
+| `registerFont(url)`        | Đăng ký font tùy chỉnh                   | `Promise<DrawPDF>`    |
+| `destroy()`                | Hủy editor instance                      | `void`                |
 
 ### Static Methods (Headless - Không cần CKEditor)
 
-| Method | Description |
-|--------|-------------|
-| `DrawPDF.create(element, options)` | Factory method: `new DrawPDF().init()` |
-| `DrawPDF.parseHtml(html)` | Parse HTML → Blueprint |
-| `DrawPDF.renderBlueprint(blueprint, data)` | Render blueprint → data URL |
-| `DrawPDF.downloadBlueprint(blueprint, filename, data)` | Download PDF ngay từ blueprint |
+| Method                                                 | Description                            |
+| ------------------------------------------------------ | -------------------------------------- |
+| `DrawPDF.create(element, options)`                     | Factory method: `new DrawPDF().init()` |
+| `DrawPDF.parseHtml(html)`                              | Parse HTML → Blueprint                 |
+| `DrawPDF.renderBlueprint(blueprint, data)`             | Render blueprint → data URL            |
+| `DrawPDF.downloadBlueprint(blueprint, filename, data)` | Download PDF ngay từ blueprint         |
 
 ### Workflow Comparison
 
@@ -220,33 +224,33 @@ pdf.preview(data);
 ### CKEditorParser
 
 ```javascript
-import { CKEditorParser, PDFRenderer } from 'drawpdf';
+import { CKEditorParser, PDFRenderer } from "drawpdf";
 
 const parser = new CKEditorParser();
 const renderer = new PDFRenderer();
 
-const blueprint = parser.parse('<h1>Hello</h1>');
-renderer.render(blueprint, { name: 'World' });
-renderer.download('output.pdf');
+const blueprint = parser.parse("<h1>Hello</h1>");
+renderer.render(blueprint, { name: "World" });
+renderer.download("output.pdf");
 ```
 
 ### CKEditorParser
 
 ```javascript
-import { CKEditorParser, PAGE, FONTS } from 'drawpdf';
+import { CKEditorParser, PAGE, FONTS } from "drawpdf";
 
 const parser = new CKEditorParser();
 const blueprint = parser.parse(htmlString);
 
 // Constants
-console.log(PAGE.WIDTH);  // 210 (A4 mm)
-console.log(FONTS.DEFAULT_SIZE);  // 12
+console.log(PAGE.WIDTH); // 210 (A4 mm)
+console.log(FONTS.DEFAULT_SIZE); // 12
 ```
 
 ### PDFRenderer
 
 ```javascript
-import { PDFRenderer } from 'drawpdf';
+import { PDFRenderer } from "drawpdf";
 
 const renderer = new PDFRenderer();
 
@@ -254,10 +258,10 @@ const renderer = new PDFRenderer();
 renderer.render(blueprint, data);
 
 // Output methods
-renderer.download('file.pdf');     // Download file
-renderer.getDataUrl();             // Get data URL for preview
-renderer.getBlob();                // Get Blob for upload
-renderer.preview();                // Open in new tab
+renderer.download("file.pdf"); // Download file
+renderer.getDataUrl(); // Get data URL for preview
+renderer.getBlob(); // Get Blob for upload
+renderer.preview(); // Open in new tab
 ```
 
 ### JsPdfService
@@ -265,17 +269,23 @@ renderer.preview();                // Open in new tab
 Low-level wrapper with 88+ methods for direct PDF manipulation.
 
 ```javascript
-import { JsPdfService } from 'drawpdf';
+import { JsPdfService } from "drawpdf";
 
 const pdf = new JsPdfService();
 
-pdf.addTitle('Document Title');
-pdf.addText('Hello World', null, null, { fontSize: 14 });
-pdf.addTable(['Col1', 'Col2'], [['A', 'B'], ['C', 'D']]);
+pdf.addTitle("Document Title");
+pdf.addText("Hello World", null, null, { fontSize: 14 });
+pdf.addTable(
+  ["Col1", "Col2"],
+  [
+    ["A", "B"],
+    ["C", "D"],
+  ],
+);
 pdf.addSpace(10);
 pdf.addHorizontalLine();
 pdf.addNewPage();
-pdf.savePDF('output.pdf');
+pdf.savePDF("output.pdf");
 ```
 
 ### TemplateEngine
@@ -283,12 +293,9 @@ pdf.savePDF('output.pdf');
 Process template syntax independently.
 
 ```javascript
-import { TemplateEngine } from 'drawpdf';
+import { TemplateEngine } from "drawpdf";
 
-const result = TemplateEngine.process(
-  'Hello {{name}}!',
-  { name: 'World' }
-);
+const result = TemplateEngine.process("Hello {{name}}!", { name: "World" });
 // "Hello World!"
 ```
 
@@ -299,16 +306,16 @@ const result = TemplateEngine.process(
 ### Variables
 
 ```html
-{{name}}                    <!-- Simple -->
-{{employee.department.name}} <!-- Nested -->
+{{name}}
+<!-- Simple -->
+{{employee.department.name}}
+<!-- Nested -->
 ```
 
 ### Loops
 
 ```html
-{{#each items}}
-  - {{name}}: {{formatCurrency price}}{{br}}
-{{/each}}
+{{#each items}} - {{name}}: {{formatCurrency price}}{{br}} {{/each}}
 ```
 
 **Loop variables:** `{{@index}}`, `{{@first}}`, `{{@last}}`
@@ -316,36 +323,36 @@ const result = TemplateEngine.process(
 ### Conditionals
 
 ```html
-{{#if isActive}}Active{{else}}Inactive{{/if}}
-{{#if salary > 10000000}}High salary{{/if}}
+{{#if isActive}}Active{{else}}Inactive{{/if}} {{#if salary > 10000000}}High
+salary{{/if}}
 ```
 
 ### Format Helpers
 
-| Helper | Example |
-|--------|---------|
-| `{{formatNumber num}}` | `1000000` → `1.000.000` |
-| `{{formatCurrency num}}` | `1000000` → `1.000.000đ` |
-| `{{formatDate date}}` | `2026-01-29` → `29/01/2026` |
-| `{{uppercase text}}` | `hello` → `HELLO` |
-| `{{capitalize text}}` | `hello world` → `Hello World` |
+| Helper                   | Example                       |
+| ------------------------ | ----------------------------- |
+| `{{formatNumber num}}`   | `1000000` → `1.000.000`       |
+| `{{formatCurrency num}}` | `1000000` → `1.000.000đ`      |
+| `{{formatDate date}}`    | `2026-01-29` → `29/01/2026`   |
+| `{{uppercase text}}`     | `hello` → `HELLO`             |
+| `{{capitalize text}}`    | `hello world` → `Hello World` |
 
 ### Date Helpers
 
-| Helper | Output |
-|--------|--------|
-| `{{today}}` | `29/01/2026` |
-| `{{now}}` | `29/01/2026, 13:45` |
-| `{{year}}` | `2026` |
+| Helper      | Output              |
+| ----------- | ------------------- |
+| `{{today}}` | `29/01/2026`        |
+| `{{now}}`   | `29/01/2026, 13:45` |
+| `{{year}}`  | `2026`              |
 
 ### Layout Tags
 
-| Tag | Effect |
-|-----|--------|
-| `{{br}}` | Line break |
-| `{{tab}}` | Tab (4 spaces) |
-| `{{hr}}` | Horizontal line |
-| `{{pageBreak}}` | New page |
+| Tag             | Effect          |
+| --------------- | --------------- |
+| `{{br}}`        | Line break      |
+| `{{tab}}`       | Tab (4 spaces)  |
+| `{{hr}}`        | Horizontal line |
+| `{{pageBreak}}` | New page        |
 
 ---
 
@@ -376,18 +383,18 @@ const result = TemplateEngine.process(
 
 ### Element Types
 
-| Type | Description | Key Properties |
-|------|-------------|----------------|
+| Type       | Description               | Key Properties                                 |
+| ---------- | ------------------------- | ---------------------------------------------- |
 | `richtext` | Đoạn văn bản có định dạng | `segments[]` (text, style), `content`, `style` |
-| `table` | Bảng với cells | `rows[][]`, `style`, `rowHeight` |
-| `heading` | Tiêu đề H1-H6 | `level`, `content`, `style` |
-| `list` | Danh sách ul/ol | `items[]`, `listType` |
-| `image` | Hình ảnh | `src`, `width`, `height` |
-| `code` | Code block | `code`, `language` |
+| `table`    | Bảng với cells            | `rows[][]`, `style`, `rowHeight`               |
+| `heading`  | Tiêu đề H1-H6             | `level`, `content`, `style`                    |
+| `list`     | Danh sách ul/ol           | `items[]`, `listType`                          |
+| `image`    | Hình ảnh                  | `src`, `width`, `height`                       |
+| `code`     | Code block                | `code`, `language`                             |
 
 ### Ví dụ RichText Element
 
-```json
+````json
 {
   "type": "richtext",
   "x": 15,
@@ -420,9 +427,10 @@ pdf.addTable(
   ['Item', 'Price'],
   data.items.map(i => [i.name, formatCurrency(i.price)])
 );
-```
+````
 
 **Available in eval:**
+
 - `pdf` - JsPdfService instance
 - `data` - Template data
 - `formatNumber()`, `formatCurrency()`, `sum()`, `count()`
@@ -460,7 +468,7 @@ pdf-builder/
 │   ├── renderer/
 │   │   └── PDFRenderer.js    # Blueprint → PDF
 │   ├── service/
-│   │   └── jspdf-service.js  # jsPDF wrapper (3000+ lines)
+│   │   └── jspdf-service/main.js  # jsPDF wrapper (3000+ lines)
 │   └── utils/
 │       └── TemplateEngine.js # Template processing
 ├── examples/

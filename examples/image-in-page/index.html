@@ -1,0 +1,131 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DrawPDF - Image Example</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 20px;
+      }
+      .panel {
+        flex: 1;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        height: 90vh;
+        overflow: auto;
+      }
+      h2 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #editor {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Panel Trái: Code Hướng Dẫn -->
+    <div class="panel" style="flex: 0 0 40%">
+      <h2>💻 Image Guide</h2>
+      <p>Cách chèn ảnh vào văn bản PDF.</p>
+
+      <h3>1. Base64 Data URI</h3>
+      <p>
+        Cách tốt nhất để chạy standalone (không server) là dùng Base64 cho ảnh.
+      </p>
+      <pre><code class="language-javascript">const imgData = "data:image/png;base64,...";</code></pre>
+
+      <h3>2. Image Element</h3>
+      <p>Sử dụng thẻ <code>img</code> hoặc <code>figure</code>.</p>
+      <pre><code class="language-html">&lt;img src="${imgData}" width="50" /&gt;</code></pre>
+
+      <div
+        style="
+          margin-top: 30px;
+          padding: 15px;
+          background: #e9ecef;
+          border-radius: 5px;
+        "
+      >
+        <strong>Thử Nghiệm:</strong><br />
+        Nhấn nút bên dưới để chèn ảnh mẫu.
+        <br />
+        <button onclick="runDemo()">🚀 Insert Image</button>
+      </div>
+    </div>
+
+    <!-- Panel Phải: Editor -->
+    <div class="panel">
+      <h2>📄 Live Editor</h2>
+      <div id="editor"></div>
+    </div>
+
+    <script src="../../dist/drawpdf.standalone.umd.cjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script>
+      let pdfInstance = null;
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const DrawPDF = window.DrawPDF.default;
+        pdfInstance = await DrawPDF.create("#editor");
+      });
+
+      function runDemo() {
+        const imgData =
+          "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==";
+
+        if (pdfInstance) {
+          pdfInstance.setData({
+            sourceHtml: `
+                    <h2>Image Embedding</h2>
+                    <p>Below is an embedded image:</p>
+                    <figure class="image">
+                        <img src="${imgData}" alt="Red Dot" width="50" />
+                        <figcaption>Fig.1 - A Red Dot</figcaption>
+                    </figure>
+                `,
+          });
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DrawPDF - Interactive Tutorial</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            height: 100vh; 
+            display: flex; 
+            background: #f0f2f5; 
+            overflow: hidden;
+        }
+        
+        /* Left Panel: Tutorial Feed */
+        .tutorial-feed {
+            width: 45%;
+            min-width: 400px;
+            background: white;
+            border-right: 1px solid #ddd;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            padding-bottom: 50px;
+        }
+
+        .header-hero {
+            background: #2c3e50;
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header-hero h1 { margin: 0; font-size: 1.5rem; }
+        .header-hero p { margin: 5px 0 0; opacity: 0.8; }
+
+        .tutorial-step {
+            padding: 25px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+        .tutorial-step:hover { background: #fcfcfc; }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .step-number {
+            background: #007bff;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 14px;
+        }
+        .step-name { font-weight: bold; font-size: 1.1rem; color: #333; }
+
+        .step-desc {
+            color: #666; 
+            line-height: 1.5; 
+            margin-bottom: 15px; 
+            font-size: 0.95rem;
+        }
+
+        .code-block {
+            position: relative;
+            margin-bottom: 15px;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        
+        .run-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: transform 0.1s;
+        }
+        .run-btn:hover { background: #218838; transform: translateY(-1px); }
+        .run-btn:active { transform: translateY(0); }
+        .run-btn.done { background: #6c757d; cursor: default; }
+
+        /* Right Panel: Live Editor */
+        .editor-container {
+            flex: 1;
+            padding: 20px;
+            background: #e9ecef;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .preview-label {
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #555;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        #editor {
+            flex: 1;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    
+    <!-- Left: Tutorial Feed -->
+    <div class="tutorial-feed">
+        <div class="header-hero">
+            <h1>🎓 Hướng Dẫn Tương Tác</h1>
+            <p>Vừa học code, vừa xem kết quả trực tiếp</p>
+        </div>
+
+        <!-- Step 1 -->
+        <div class="tutorial-step">
+            <div class="step-title">
+                <div class="step-number">1</div>
+                <div class="step-name">Header Hành Chính</div>
+            </div>
+            <div class="step-desc">
+                Trong các văn bản hành chính Việt Nam, phần Header thường chia làm 2 cột: Tên cơ quan và Quốc hiệu.<br>
+                Đoạn code HTML dưới đây sử dụng <code>table</code> không viền để căn chỉnh layout này.
+            </div>
+            <div class="code-block">
+                <button class="run-btn" onclick="runStep(this, 'header')">▶ RUN</button>
+                <pre><code class="language-html">&lt;!-- Header 2 Cột --&gt;
+&lt;table style="width:100%; border:none;"&gt;
+  &lt;tr&gt;
+    &lt;td style="text-align:center; width:40%;"&gt;
+      &lt;strong&gt;CÔNG TY ABC&lt;/strong&gt;&lt;br&gt;
+      Số: 01/BC-2026
+      &lt;hr style="width:30%;"&gt;
+    &lt;/td&gt;
+    &lt;td style="text-align:center; width:60%;"&gt;
+      &lt;strong&gt;CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM&lt;/strong&gt;&lt;br&gt;
+      &lt;em&gt;Độc lập - Tự do - Hạnh phúc&lt;/em&gt;
+      &lt;hr style="width:20%;"&gt;
+    &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+            </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="tutorial-step">
+            <div class="step-title">
+                <div class="step-number">2</div>
+                <div class="step-name">Tiêu Đề Văn Bản</div>
+            </div>
+            <div class="step-desc">
+                Tiêu đề chính cần nổi bật, căn giữa và thường viết hoa. Chúng ta dùng thẻ <code>h1</code> hoặc <code>h2</code> với style căn giữa.
+            </div>
+            <div class="code-block">
+                <button class="run-btn" onclick="runStep(this, 'title')">▶ RUN</button>
+                <pre><code class="language-html">&lt;div style="text-align:center; margin: 30px 0;"&gt;
+    &lt;h1 style="color:#2c3e50;"&gt;BÁO CÁO DOANH THU&lt;/h1&gt;
+    &lt;em&gt;(Quý I năm 2026)&lt;/em&gt;
+&lt;/div&gt;</code></pre>
+            </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="tutorial-step">
+            <div class="step-title">
+                <div class="step-number">3</div>
+                <div class="step-name">Nội Dung & Danh Sách</div>
+            </div>
+            <div class="step-desc">
+                Sử dụng các thẻ paragraph <code>p</code> và danh sách <code>ul/li</code> để trình bày nội dung chi tiết rõ ràng.
+            </div>
+            <div class="code-block">
+                <button class="run-btn" onclick="runStep(this, 'content')">▶ RUN</button>
+                <pre><code class="language-html">&lt;h3&gt;I. Tình Hình Chung&lt;/h3&gt;
+&lt;p&gt;Trong quý vừa qua, công ty đã đạt được nhiều thành tựu:&lt;/p&gt;
+&lt;ul&gt;
+    &lt;li&gt;Doanh số tăng trưởng &lt;strong&gt;15%&lt;/strong&gt;.&lt;/li&gt;
+    &lt;li&gt;Mở rộng thêm &lt;u&gt;2 chi nhánh&lt;/u&gt; mới.&lt;/li&gt;
+    &lt;li&gt;Tuyển dụng thêm 50 nhân sự.&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+            </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="tutorial-step">
+            <div class="step-title">
+                <div class="step-number">4</div>
+                <div class="step-name">Bảng Biểu (Table)</div>
+            </div>
+            <div class="step-desc">
+                Để hiện thị dữ liệu, <code>table</code> với <code>border-collapse: collapse</code> là lựa chọn tốt nhất để render đẹp khi xuất PDF.
+            </div>
+            <div class="code-block">
+                <button class="run-btn" onclick="runStep(this, 'table')">▶ RUN</button>
+                <pre><code class="language-html">&lt;h3&gt;II. Số Liệu Chi Tiết&lt;/h3&gt;
+&lt;table border="1" style="width:100%; border-collapse:collapse; text-align:center;"&gt;
+    &lt;tr style="background:#f2f2f2; font-weight:bold;"&gt;
+        &lt;td&gt;Tháng&lt;/td&gt;&lt;td&gt;Doanh Thu ($)&lt;/td&gt;&lt;td&gt;Trạng Thái&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;01/2026&lt;/td&gt;&lt;td&gt;50,000&lt;/td&gt;&lt;td&gt;Đạt&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;02/2026&lt;/td&gt;&lt;td&gt;65,000&lt;/td&gt;&lt;td&gt;Vượt&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+            </div>
+        </div>
+
+        <div style="text-align:center; padding: 20px;">
+           <button onclick="resetEditor()" style="background:#dc3545; color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">↺ Reset Editor</button>
+        </div>
+
+    </div>
+
+    <!-- Right: Live Editor -->
+    <div class="editor-container">
+        <div class="preview-label">
+            <span>LIVE PREVIEW</span>
+            <span style="font-size:12px; font-weight:normal;">Kết quả hiển thị tại đây</span>
+        </div>
+        <div id="editor"></div>
+    </div>
+
+    <script src="../../dist/drawpdf.standalone.umd.cjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <script>
+        let pdfInstance = null;
+        let currentHtml = "";
+
+        // Raw HTML fragments mapping to keys
+        const fragments = {
+            header: `
+<table style="width:100%; border:none;">
+  <tr>
+    <td style="text-align:center; width:40%; vertical-align:top;">
+      <strong>CÔNG TY ABC</strong><br>
+      Số: 01/BC-2026
+      <hr style="width:30%; border-top:1px solid black;">
+    </td>
+    <td style="text-align:center; width:60%; vertical-align:top;">
+      <strong>CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong><br>
+      <em>Độc lập - Tự do - Hạnh phúc</em>
+      <hr style="width:20%; border-top:1px solid black;">
+    </td>
+  </tr>
+</table>
+<br>`,
+            title: `
+<div style="text-align:center; margin-bottom: 20px;">
+    <h1 style="color:#2c3e50; font-size: 20pt; margin:10px 0;">BÁO CÁO DOANH THU</h1>
+    <em>(Quý I năm 2026)</em>
+</div>
+<br>`,
+            content: `
+<h3>I. Tình Hình Chung</h3>
+<p>Trong quý vừa qua, công ty đã đạt được nhiều thành tựu:</p>
+<ul>
+    <li>Doanh số tăng trưởng <strong>15%</strong>.</li>
+    <li>Mở rộng thêm <u>2 chi nhánh</u> mới.</li>
+    <li>Tuyển dụng thêm 50 nhân sự.</li>
+</ul>
+<br>`,
+            table: `
+<h3>II. Số Liệu Chi Tiết</h3>
+<table border="1" style="width:100%; border-collapse:collapse; text-align:center;">
+    <tr style="background:#f2f2f2; font-weight:bold;">
+        <td style="padding:5px;">Tháng</td><td style="padding:5px;">Doanh Thu ($)</td><td style="padding:5px;">Trạng Thái</td>
+    </tr>
+    <tr>
+        <td style="padding:5px;">01/2026</td><td style="padding:5px;">50,000</td><td style="padding:5px;">Đạt</td>
+    </tr>
+    <tr>
+        <td style="padding:5px;">02/2026</td><td style="padding:5px;">65,000</td><td style="padding:5px;">Vượt</td>
+    </tr>
+</table>`
+        };
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            const DrawPDF = window.DrawPDF.default;
+            try {
+                pdfInstance = await DrawPDF.create("#editor");
+                updateEditor();
+            } catch (e) {
+                console.error(e);
+            }
+        });
+
+        function runStep(btn, key) {
+            if(!fragments[key]) return;
+
+            // Append content
+            currentHtml += fragments[key];
+            updateEditor();
+
+            // UI Feedback
+            if(btn) {
+                btn.innerHTML = "✔ APPLIED";
+                btn.classList.add('done');
+            }
+        }
+
+        function resetEditor() {
+            currentHtml = "";
+            updateEditor();
+            
+            // Reset buttons
+            document.querySelectorAll('.run-btn').forEach(btn => {
+                btn.innerHTML = "▶ RUN";
+                btn.classList.remove('done');
+            });
+        }
+
+        function updateEditor() {
+            if(pdfInstance) {
+                pdfInstance.setData({ sourceHtml: currentHtml });
+            }
+        }
+    </script>
+</body>
+</html>

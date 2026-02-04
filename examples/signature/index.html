@@ -1,0 +1,389 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DrawPDF - Signature Suite</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 20px;
+      }
+      .panel {
+        flex: 1;
+        background: white;
+        padding: 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        height: 90vh; /* Fixed height relative to viewport */
+        overflow-y: auto; /* Internal scrolling */
+        display: flex;
+        flex-direction: column;
+      }
+      h2 {
+        margin-top: 0;
+        color: #2c3e50;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+      h3 {
+        color: #007bff;
+        margin-top: 25px;
+        margin-bottom: 10px;
+      }
+      .badge {
+        display: inline-block;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: bold;
+        margin-left: 5px;
+      }
+      .badge.simple {
+        background: #e1f0ff;
+        color: #007bff;
+      }
+      .badge.dual {
+        background: #d4edda;
+        color: #155724;
+      }
+      .badge.form {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      pre {
+        background: #f8f9fa;
+        padding: 15px;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        margin: 10px 0;
+      }
+      code {
+        font-family: "Consolas", monospace;
+        font-size: 13px;
+      }
+
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 15px;
+        font-weight: 600;
+        transition: background 0.2s;
+        margin-top: 10px;
+        width: 100%;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      button.secondary {
+        background: #6c757d;
+        margin-top: 10px;
+      }
+      button.secondary:hover {
+        background: #5a6268;
+      }
+
+      .demo-box {
+        margin-top: auto;
+        padding: 20px;
+        background: #f1f3f5;
+        border-radius: 8px;
+        border: 1px solid #dee2e6;
+      }
+
+      #editor {
+        flex: 1;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+      }
+
+      /* Props table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+        margin: 10px 0;
+      }
+      th,
+      td {
+        border: 1px solid #dee2e6;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f8f9fa;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Panel Trái: Hướng Dẫn -->
+    <div class="panel" style="flex: 0 0 45%">
+      <h2>�️ Signature Suite Guide</h2>
+      <p>Bộ công cụ tạo chữ ký chuyên nghiệp cho mọi trường hợp.</p>
+
+      <h3>1. Basic Signature <span class="badge simple">Single</span></h3>
+      <p>Tạo một khối chữ ký đơn giản với đường kẻ.</p>
+      <pre><code class="language-javascript">// pdf.addSimpleSignature(name, title, x, options)
+pdf.addSimpleSignature("Nguyễn Văn A", "GIÁM ĐỐC", null, {
+  fontSize: 12,
+  width: 150
+});</code></pre>
+
+      <h3>2. Dual Signature <span class="badge dual">Contract</span></h3>
+      <p>Layout 2 bên cổ điển cho hợp đồng (Bên A - Bên B).</p>
+      <pre><code class="language-javascript">// pdf.addDualSignature(leftConfig, rightConfig)
+pdf.addDualSignature(
+  { 
+    title: "ĐẠI DIỆN BÊN A", 
+    name: "Nguyễn Văn A", 
+    note: "(Ký, đóng dấu)",
+    date: "Ngày 01/01/2024" 
+  },
+  { 
+    title: "ĐẠI DIỆN BÊN B", 
+    name: "Trần Thị B", 
+    note: "(Ký, ghi rõ họ tên)" 
+  }
+);</code></pre>
+
+      <h3>3. Smart Signature <span class="badge form">Advanced</span></h3>
+      <p>
+        Tự động dùng ảnh nếu có, hoặc tạo chữ ký giả (text-based) nếu không.
+      </p>
+      <pre><code class="language-javascript">// pdf.addSmartSignature(name, title, imageOpts, date, opts)
+pdf.addSmartSignature("Nguyễn Văn A", "GIÁM ĐỐC", {
+  imagePath: null, // Hoặc đường dẫn ảnh
+  fallbackText: "Nguyen Van A", // Chữ ký Text nếu ko có ảnh
+  createFallback: true
+}, "Ngày 20/10/2024", {
+  align: "right",
+  blockWidth: 150
+});</code></pre>
+
+      <h3>4. Secondary Signature <span class="badge simple">Initials</span></h3>
+      <p>Chữ ký nháy / ký tắt ở góc trang (xuất hiện trên TOÀN BỘ trang).</p>
+      <pre><code class="language-javascript">// pdf.addSecondarySignature(options)
+pdf.addSecondarySignature({
+  nameTag: "NVA", // Chữ hiển thị
+  positions: ["top-right", "bottom-left"], // Vị trí
+  color: [100, 100, 100],
+  fontSize: 10
+});</code></pre>
+
+      <h3>5. Picture Signature <span class="badge form">File</span></h3>
+      <p>Chèn ảnh chữ ký từ đường dẫn file hoặc Base64.</p>
+      <pre><code class="language-javascript">// pdf.addSignatureFromFile(name, title, path, date, opts)
+pdf.addSignatureFromFile(
+  "Nguyễn Văn A", 
+  "GIÁM ĐỐC", 
+  "images/signature.png", // Path hoặc Base64
+  "Ngày 20/10/2024"
+);</code></pre>
+
+      <h3>
+        6. Custom Text Signature <span class="badge simple">Stylized</span>
+      </h3>
+      <p>Tạo chữ ký cách điệu từ văn bản (giả lập chữ ký tay).</p>
+      <pre><code class="language-javascript">// pdf.createTextSignature(text) -> Base64 Image
+const sigImg = pdf.createTextSignature("Nguyen Van A");
+
+// Dùng chung với addSignatureWithImage
+pdf.addSignatureWithImage(
+  "Nguyễn Văn A",
+  "NGƯỜI LẬP BIỂU",
+  sigImg,
+  "Ngày 20/10/2024"
+);</code></pre>
+
+      <h3>7. Form Signature <span class="badge form">Forms</span></h3>
+      <p>Tạo các dòng điền thông tin (Ngày, Chức vụ, Ký tên) tự động.</p>
+      <pre><code class="language-javascript">// pdf.addSignature(signers, options)
+pdf.addSignature([
+  { title: "Kế toán trưởng", label: "(Ký tên)" }
+], {
+  layout: "horizontal", 
+  spacing: 30
+});</code></pre>
+
+      <div class="demo-box">
+        <strong>⚡ Live Demo:</strong><br />
+        Tạo tài liệu mẫu chứa tất cả loại chữ ký trên.
+        <button onclick="runDemo()" style="margin-bottom: 5px">
+          🚀 Generate Demo Contract
+        </button>
+        <button
+          onclick="reviewPdf()"
+          style="background: #28a745; margin-top: 5px"
+        >
+          📄 Review PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel Phải: Editor -->
+    <div class="panel">
+      <h2>📄 Live Preview</h2>
+      <div id="editor"></div>
+    </div>
+
+    <script src="../../dist/drawpdf.standalone.umd.cjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script>
+      let pdfInstance = null;
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const DrawPDF = window.DrawPDF.default;
+        pdfInstance = await DrawPDF.create("#editor");
+      });
+
+      function runDemo() {
+        if (!pdfInstance) return;
+
+        const content = `
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1>HỢP ĐỒNG DỊCH VỤ</h1>
+            <p>Số: 123/2024/HDDV</p>
+            <hr>
+          </div>
+          
+          <p>Hôm nay, ngày ... tháng ... năm 2024, chúng tôi gồm có:</p>
+          
+          <h3>I. ĐẠI DIỆN BÊN A (BÊN THUÊ)</h3>
+          <p>Công ty Cổ phần Công nghệ ABC<br>Địa chỉ: 123 Đường Láng, Hà Nội</p>
+          
+          <h3>II. ĐẠI DIỆN BÊN B (BÊN CUNG CẤP)</h3>
+          <p>Công ty TNHH Giải pháp XYZ<br>Địa chỉ: 456 Hai Bà Trưng, TP.HCM</p>
+          
+          <p>Hai bên thống nhất ký kết hợp đồng này với các điều khoản sau...</p>
+          <p><i>(Nội dung hợp đồng rút gọn cho demo)</i></p>
+          
+          <br><br>
+          <p>Hợp đồng được lập thành 02 bản có giá trị như nhau.</p>
+          <br><br>
+
+<pre><code class="language-javascript">// eval
+// 1. Secondary Signature (Chữ ký nháy)
+// Sẽ xuất hiện ở góc trên phải và dưới trái của TOÀN BỘ trang
+pdf.addSecondarySignature({
+  nameTag: "N.V.A",
+  positions: ["top-right", "bottom-left"],
+  fontSize: 9,
+  margin: 10
+});
+
+// 2. Dual Signature (Chữ ký hợp đồng chính)
+pdf.addDualSignature(
+  {
+    title: "ĐẠI DIỆN BÊN A",
+    name: "NGUYỄN VĂN A",
+    note: "(Ký, đóng dấu)",
+    date: "Hà Nội, ngày 20/10/2024"
+  },
+  {
+    title: "ĐẠI DIỆN BÊN B",
+    name: "TRẦN THỊ B",
+    note: "(Ký, ghi rõ họ tên)",
+    date: "TP.HCM, ngày 20/10/2024"
+  }
+);
+
+pdf.addSpace(30);
+
+// 3. Smart Signature (Người làm chứng - giả lập chữ ký ảnh)
+pdf.addText("Xác nhận của Luật sư:", null, null, { fontStyle: 'bold' });
+pdf.addSmartSignature("Lê Văn C", "Luật Sư Riêng", {
+    imagePath: "../image/chu-ki-mau.jpg", // Ảnh chữ ký thật
+    fallbackText: "LeVanC",
+    createFallback: true
+}, "20/10/2024", {
+    align: "left",
+    blockWidth: 120,
+    imageWidth: 30,
+    imageHeight: 15
+});
+
+// 4. Custom Text Signature & Picture Signature
+// Tạo ảnh chữ ký từ text "Approved"
+const sigImg = pdf.createTextSignature("Approved by BOD");
+
+// Bên trái: Ảnh từ Text
+pdf.addSignatureWithImage(
+    "Hội Đồng Quản Trị", 
+    "PHÊ DUYỆT (Text)", 
+    sigImg, 
+    "20/10/2024", 
+    { align: 'left', blockWidth: 100 }
+);
+
+// Bên phải: Ảnh từ File (chu-ki-mau2.jpg)
+// Lưu ý: Cần await nếu gọi trong async func, nhưng ở đây dùng trong eval
+// nên ta dùng addSignatureFromFile sẽ tự xử lý (tuy nhiên eval sync khó handle async image load)
+// Tốt nhất trong demo eval này ta dùng addSmartSignature hoặc addSignatureWithImage với base64.
+// Nhưng vì PDFRenderer handles async eval, ta có thể thử:
+
+// pdf.addSignatureFromFile(...) 
+// NOTE: Trong môi trường eval của PDFRenderer, các hàm async có thể không chạy đúng thứ tự 
+// nếu không có 'await'. 
+// Tuy nhiên, context eval không hỗ trợ top-level await trực tiếp trong string code nếu không được wrap.
+// PDFRenderer.js đã wrap code trong hàm async? -> check PDFRenderer.
+
+// Cách an toàn cho demo này:
+pdf.addSmartSignature("Nguyễn Thị D", "KẾ TOÁN TRƯỞNG", {
+    imagePath: "../image/chu-ki-mau2.jpg",
+    fallbackText: "NguyenThiD"
+}, "20/10/2024", { 
+    align: "right",
+    blockWidth: 100
+});
+
+pdf.addSpace(40);
+
+// 5. Form Signature (Phần duyệt nội bộ)
+pdf.addNewPage(); 
+pdf.addTitle("PHIẾU DUYỆT HỒ SƠ", { align: 'center', fontSize: 14 });
+pdf.addSpace(20);
+
+pdf.addSignature([
+    { title: "Người Đề Xuất" },
+    { title: "Trưởng Phòng" }, 
+    { title: "Giám Đốc Duyệt" }
+], {
+    layout: "horizontal",
+    showDate: true,
+    spacing: 15
+});
+</code></pre>
+        `;
+
+        // Parse & Set Data
+        const blueprint = DrawPDF.default.parseHtml(content);
+        pdfInstance.setData(blueprint);
+      }
+
+      function reviewPdf() {
+        if (pdfInstance) {
+          pdfInstance.getData();
+          const blob = pdfInstance.getBlob();
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1118 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>DrawPDF - Complete Internal API Reference</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css"
+    />
+    <style>
+      :root {
+        --sidebar-width: 350px;
+        --primary-color: #0366d6;
+        --bg-color: #f6f8fa;
+        --border-color: #e1e4e8;
+        --text-color: #24292e;
+      }
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+          sans-serif;
+        margin: 0;
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+        color: var(--text-color);
+        background: var(--bg-color);
+      }
+
+      /* SIDEBAR */
+      .sidebar {
+        width: var(--sidebar-width);
+        background: #fff;
+        border-right: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+      }
+      .search-box {
+        padding: 15px;
+        border-bottom: 1px solid var(--border-color);
+        background: #fcfcfc;
+      }
+      .search-box input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        box-sizing: border-box;
+        font-size: 14px;
+      }
+      .tree-container {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px 0;
+      }
+      .nav-group {
+        margin-bottom: 5px;
+      }
+      .nav-header {
+        padding: 8px 15px;
+        font-weight: 600;
+        font-size: 13px;
+        color: #586069;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        cursor: pointer;
+        user-select: none;
+      }
+      .nav-header:hover {
+        background: #f1f8ff;
+        color: var(--primary-color);
+      }
+      .nav-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .nav-item a {
+        display: block;
+        padding: 6px 15px 6px 25px;
+        font-size: 13px;
+        color: #444;
+        text-decoration: none;
+        border-left: 3px solid transparent;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .nav-item a:hover {
+        background: #f6f8fa;
+        color: var(--primary-color);
+      }
+      .nav-item a.active {
+        background: #f1f8ff;
+        color: var(--primary-color);
+        border-left-color: var(--primary-color);
+        font-weight: 500;
+      }
+      .nav-item .badge {
+        font-size: 10px;
+        padding: 1px 4px;
+        border-radius: 3px;
+        float: right;
+        margin-left: 5px;
+        opacity: 0.7;
+      }
+      .badge.static {
+        background: #6f42c1;
+        color: white;
+      }
+      .badge.check {
+        background: #28a745;
+        color: white;
+      }
+
+      /* MAIN CONTENT */
+      .main {
+        flex: 1;
+        overflow-y: auto;
+        padding: 40px 60px;
+        scroll-behavior: smooth;
+        background: white;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding-bottom: 200px;
+      }
+
+      h1 {
+        font-size: 32px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+      }
+      h2 {
+        font-size: 24px;
+        margin-top: 50px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        color: #0366d6;
+      }
+      h3 {
+        font-size: 18px;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+      }
+
+      .method-card {
+        background: #fff;
+        border: 1px solid #e1e4e8;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        overflow: hidden;
+      }
+      .method-header {
+        background: #f6f8fa;
+        padding: 12px 15px;
+        border-bottom: 1px solid #e1e4e8;
+        font-family: monospace;
+        font-size: 15px;
+        color: #24292e;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .method-name {
+        font-weight: 600;
+        color: #6f42c1;
+      }
+      .method-args {
+        color: #24292e;
+      }
+      .method-body {
+        padding: 15px;
+      }
+      .desc {
+        margin-bottom: 15px;
+        line-height: 1.5;
+        color: #444;
+      }
+      .tag {
+        display: inline-block;
+        padding: 2px 6px;
+        font-size: 11px;
+        font-weight: 600;
+        line-height: 1;
+        border-radius: 20px;
+        margin-right: 5px;
+      }
+      .tag.public {
+        background: #def;
+        color: #0366d6;
+      }
+      .tag.private {
+        background: #ffeef0;
+        color: #cb2431;
+      }
+      .tag.static {
+        background: #eee;
+        color: #555;
+      }
+
+      table.params {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+      }
+      table.params th {
+        text-align: left;
+        font-size: 12px;
+        color: #586069;
+        padding: 5px 0;
+        border-bottom: 1px solid #eee;
+      }
+      table.params td {
+        padding: 8px 0;
+        border-bottom: 1px solid #eee;
+        font-size: 13px;
+        vertical-align: top;
+      }
+      table.params td:first-child {
+        width: 150px;
+        font-family: monospace;
+        color: #d73a49;
+      }
+
+      pre {
+        margin: 10px 0 0;
+        border-radius: 4px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="search-box">
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Search 180+ methods..."
+          onkeyup="filterNav()"
+        />
+      </div>
+      <div class="tree-container" id="navTree">
+        <!-- Javascript will populate this -->
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="container">
+        <h1>DrawPDF Internal API Reference</h1>
+        <p>
+          This document lists
+          <strong>every single class, method, and utility</strong> function
+          found in the DrawPDF source code. Use the sidebar to navigate or
+          search.
+        </p>
+
+        <!-- 1. DrawPDF.js -->
+        <section id="mod-drawpdf">
+          <h2>
+            DrawPDF.js
+            <small style="font-size: 14px; color: #666">Main Entry Point</small>
+          </h2>
+
+          <div class="method-card" id="api-DrawPDF-create">
+            <div class="method-header">
+              <span
+                ><span class="method-name">create</span>(element, options)</span
+              >
+              <span class="tag static">STATIC</span>
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Factory method to initialize a new DrawPDF instance and attach
+                it to a DOM element.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-constructor">
+            <div class="method-header">
+              <span class="method-name">constructor</span>()
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Creates a new instance. Does not initialize the editor until
+                <code>init()</code> is called.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-init">
+            <div class="method-header">
+              <span class="method-name">init</span>(elementOrSelector, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Initializes CKEditor, loads fonts, and sets up the renderer.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-parseHtml">
+            <div class="method-header">
+              <span class="method-name">parseHtml</span>(html)
+              <span class="tag static">STATIC</span>
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Converts raw HTML string into a Blueprint object using
+                <code>CKEditorParser</code>.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-renderBlueprint">
+            <div class="method-header">
+              <span class="method-name">renderBlueprint</span>(blueprint, data)
+              <span class="tag static">STATIC</span>
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Render a PDF directly from a Blueprint object (Headless mode).
+                Returns Data URL.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-downloadBlueprint">
+            <div class="method-header">
+              <span class="method-name">downloadBlueprint</span>(blueprint,
+              filename, data) <span class="tag static">STATIC</span>
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Render and download a PDF directly from a Blueprint object.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-getData">
+            <div class="method-header">
+              <span class="method-name">getData</span>()
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Syncs editor content to internal blueprint. Returns the
+                Blueprint object.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-setData">
+            <div class="method-header">
+              <span class="method-name">setData</span>(blueprint)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Sets the editor content from a Blueprint object (using
+                <code>blueprint.sourceHtml</code>).
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-render">
+            <div class="method-header">
+              <span class="method-name">render</span>(data)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Generates the PDF from current state. Returns Data URL string.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-download">
+            <div class="method-header">
+              <span class="method-name">download</span>(filename, data)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Generates and triggers download of the PDF file.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-getBlob">
+            <div class="method-header">
+              <span class="method-name">getBlob</span>(data)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Returns the generated PDF as a Blob object.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-preview">
+            <div class="method-header">
+              <span class="method-name">preview</span>(data)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Opens the generated PDF in a new browser tab.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-registerFont">
+            <div class="method-header">
+              <span class="method-name">registerFont</span>(fontUrl)
+            </div>
+            <div class="method-body">
+              <div class="desc">Dynamically loads a JS font file.</div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-DrawPDF-destroy">
+            <div class="method-header">
+              <span class="method-name">destroy</span>()
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Destroys the CKEditor instance and cleans up resources.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. PDFRenderer.js -->
+        <section id="mod-renderer">
+          <h2>
+            PDFRenderer.js
+            <small style="font-size: 14px; color: #666">Layout Engine</small>
+          </h2>
+
+          <div class="method-card" id="api-PDFRenderer-constructor">
+            <div class="method-header">
+              <span class="method-name">constructor</span>(fontConfig)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Initializes the renderer with optional font configuration.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-PDFRenderer-render">
+            <div class="method-header">
+              <span class="method-name">render</span>(blueprint, data)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Main entry point. Iterates over pages and elements in the
+                blueprint.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-PDFRenderer-renderPage">
+            <div class="method-header">
+              <span class="method-name">renderPage</span>(page, data)
+            </div>
+            <div class="method-body">
+              <div class="desc">Renders a single page from the blueprint.</div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-PDFRenderer-renderText">
+            <div class="method-header">
+              <span class="method-name">renderText</span>(element, data)
+            </div>
+            <div class="method-body">
+              <div class="desc">Renders a standard text block.</div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-PDFRenderer-renderRichText">
+            <div class="method-header">
+              <span class="method-name">renderRichText</span>(element, data)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Renders complex text with mixed styles (bold, italic) using
+                `JsPdfService.addMixedParagraph`.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-PDFRenderer-renderTable">
+            <div class="method-header">
+              <span class="method-name">renderTable</span>(element, data)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Renders a table using `jspdf-autotable`. Supports data binding.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-PDFRenderer-renderImage">
+            <div class="method-header">
+              <span class="method-name">renderImage</span>(element, data)
+            </div>
+            <div class="method-body">
+              <div class="desc">Renders an image element.</div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-PDFRenderer-renderEvalBlock">
+            <div class="method-header">
+              <span class="method-name">renderEvalBlock</span>(element, data)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Executes raw JavaScript code found in `// eval` blocks within
+                the PDF context.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-PDFRenderer-calculateX">
+            <div class="method-header">
+              <span class="method-name">calculateX</span>(element)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Calculates X position based on alignment, indents, and margins.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-PDFRenderer-replaceVariables">
+            <div class="method-header">
+              <span class="method-name">replaceVariables</span>(text, data)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Uses `TemplateEngine` to process `{{variable}}` placeholders.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. CKEditorParser.js -->
+        <section id="mod-parser">
+          <h2>
+            CKEditorParser.js
+            <small style="font-size: 14px; color: #666">HTML to JSON</small>
+          </h2>
+
+          <div class="method-card" id="api-CKEditorParser-parse">
+            <div class="method-header">
+              <span class="method-name">parse</span>(html)
+            </div>
+            <div class="method-body">
+              <div class="desc">Parses HTML string into Blueprint JSON.</div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-CKEditorParser-processNode">
+            <div class="method-header">
+              <span class="method-name">processNode</span>(node)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Recursive function to process DOM nodes. Dispatches to specific
+                handlers.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-CKEditorParser-processParagraph">
+            <div class="method-header">
+              <span class="method-name">processParagraph</span>(node)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Handlers <code>&lt;p&gt;</code> tags. Detects if it should be
+                RichText or CodeBlock.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-CKEditorParser-processTable">
+            <div class="method-header">
+              <span class="method-name">processTable</span>(tableNode)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Extracts headers, rows, and styles from HTML tables.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-CKEditorParser-processImage">
+            <div class="method-header">
+              <span class="method-name">processImage</span>(imgNode)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Extracts src, width, height from <code>&lt;img&gt;</code> tags.
+              </div>
+            </div>
+          </div>
+
+          <div class="method-card" id="api-CKEditorParser-extractStyles">
+            <div class="method-header">
+              <span class="method-name">extractStyles</span>(node)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Parses CSS style string into an object (bold, color, align,
+                etc.).
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. JsPdfService.js -->
+        <section id="mod-service">
+          <h2>
+            JsPdfService.js
+            <small style="font-size: 14px; color: #666"
+              >Low Level Rendering</small
+            >
+          </h2>
+          <p>This service contains over 80 methods for granular PDF control.</p>
+
+          <h3>Core & Setup</h3>
+          <div class="method-card" id="api-JsPdfService-constructor">
+            <div class="method-header">
+              <span class="method-name">constructor</span>(options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Initializes jsPDF instance, loads fonts, sets up page size.
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-savePDF">
+            <div class="method-header">
+              <span class="method-name">savePDF</span>(filename)
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-previewPDF">
+            <div class="method-header">
+              <span class="method-name">previewPDF</span>()
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-uploadPDFToServer">
+            <div class="method-header">
+              <span class="method-name">uploadPDFToServer</span>(url, filename,
+              options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Uploads the generated PDF to a remote server endpoint via POST.
+              </div>
+            </div>
+          </div>
+
+          <h3>Drawing Primitives</h3>
+          <div class="method-card" id="api-JsPdfService-addText">
+            <div class="method-header">
+              <span class="method-name">addText</span>(text, x, y, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Draws text with word wrapping and decoding.
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-drawJustifiedText">
+            <div class="method-header">
+              <span class="method-name">drawJustifiedText</span>(text, x, y,
+              maxWidth, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Draws text fully justified to both margins.
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addHorizontalLine">
+            <div class="method-header">
+              <span class="method-name">addHorizontalLine</span>(options)
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addImage">
+            <div class="method-header">
+              <span class="method-name">addImage</span>(imageData, x, y, w, h,
+              options)
+            </div>
+          </div>
+
+          <h3>Layout Control</h3>
+          <div class="method-card" id="api-JsPdfService-addNewPage">
+            <div class="method-header">
+              <span class="method-name">addNewPage</span>()
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Adds a new page and resets <code>currentY</code>.
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-checkPageBreak">
+            <div class="method-header">
+              <span class="method-name">checkPageBreak</span>(heightNeeded)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Automatically adds a new page if the required height exceeds
+                remaining space.
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addSpace">
+            <div class="method-header">
+              <span class="method-name">addSpace</span>(height)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Moves <code>currentY</code> down by specified height.
+              </div>
+            </div>
+          </div>
+
+          <h3>Complex Elements (Lists, Menus, Tables)</h3>
+          <div class="method-card" id="api-JsPdfService-addTable">
+            <div class="method-header">
+              <span class="method-name">addTable</span>(headers, rows, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">Wrapper for <code>autoTable</code> plugin.</div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addTableOfContents">
+            <div class="method-header">
+              <span class="method-name">addTableOfContents</span>(items,
+              options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Generates a TOC with leader dots (e.g., "Chapter 1 ..........
+                5").
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addPriceList">
+            <div class="method-header">
+              <span class="method-name">addPriceList</span>(items, options)
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addMenu">
+            <div class="method-header">
+              <span class="method-name">addMenu</span>(sections, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">Creates a restaurant-style menu layout.</div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addMultiLevelList">
+            <div class="method-header">
+              <span class="method-name">addMultiLevelList</span>(items, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Creates nested lists (I. -> A. -> 1. -> a.).
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addOutline">
+            <div class="method-header">
+              <span class="method-name">addOutline</span>(items, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Creates a numbered outline (1.1, 1.1.2) with page references.
+              </div>
+            </div>
+          </div>
+
+          <h3>Active Forms & Signatures</h3>
+          <div class="method-card" id="api-JsPdfService-addFillInLine">
+            <div class="method-header">
+              <span class="method-name">addFillInLine</span>(label, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Creates a line for user input (e.g., "Name: ________________").
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addFillInForm">
+            <div class="method-header">
+              <span class="method-name">addFillInForm</span>(fields, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Generates a full form with multiple fill-in lines.
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addSignature">
+            <div class="method-header">
+              <span class="method-name">addSignature</span>(name, title, date,
+              options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Standard signature block with Title, Date, and Name.
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addSignatureWithImage">
+            <div class="method-header">
+              <span class="method-name">addSignatureWithImage</span>(name,
+              title, image, date, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Signature block that includes a signature image.
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addSecondarySignature">
+            <div class="method-header">
+              <span class="method-name">addSecondarySignature</span>(options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Adds "flash" signatures (small signatures) to the corner of
+                every page.
+              </div>
+            </div>
+          </div>
+
+          <h3>Styled Text Builders</h3>
+          <div class="method-card" id="api-JsPdfService-addMixedText">
+            <div class="method-header">
+              <span class="method-name">addMixedText</span>(parts, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Draws a single line containing multiple styles (e.g., normal +
+                <strong>bold</strong> + <span style="color: red">red</span>).
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-addMixedParagraph">
+            <div class="method-header">
+              <span class="method-name">addMixedParagraph</span>(parts, options)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Draws a wrapping paragraph with mixed styles.
+              </div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-bold">
+            <div class="method-header">
+              <span class="method-name">bold</span>(text)
+            </div>
+            <div class="method-body">
+              <div class="desc">Helper to create a bold text part object.</div>
+            </div>
+          </div>
+          <div class="method-card" id="api-JsPdfService-italic">
+            <div class="method-header">
+              <span class="method-name">italic</span>(text)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Helper to create an italic text part object.
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. Utility Services -->
+        <section id="mod-utils">
+          <h2>Utilities</h2>
+
+          <h3>TemplateEngine.js</h3>
+          <div class="method-card" id="api-TemplateEngine-process">
+            <div class="method-header">
+              <span class="method-name">process</span>(text, data)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Processes Handlebars-like syntax: <code>{{#if}}</code>,
+                <code>{{#each}}</code>, <code>{{val}}</code>.
+              </div>
+            </div>
+          </div>
+
+          <h3>RichTextTokenizer.js</h3>
+          <div class="method-card" id="api-RichTextTokenizer-tokenize">
+            <div class="method-header">
+              <span class="method-name">tokenize</span>(html)
+            </div>
+            <div class="method-body">
+              <div class="desc">
+                Splits HTML string into styled segments for `addMixedParagraph`.
+              </div>
+            </div>
+          </div>
+
+          <h3>helpers.js</h3>
+          <div class="method-card" id="api-helpers-mmToPx">
+            <div class="method-header">
+              <span class="method-name">mmToPx</span>(mm)
+            </div>
+          </div>
+          <div class="method-card" id="api-helpers-generateId">
+            <div class="method-header">
+              <span class="method-name">generateId</span>()
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+
+      // Navigation Data Structure
+      const navData = [
+        {
+          title: "DrawPDF.js",
+          id: "mod-drawpdf",
+          items: [
+            "create",
+            "constructor",
+            "init",
+            "parseHtml",
+            "renderBlueprint",
+            "downloadBlueprint",
+            "getData",
+            "setData",
+            "render",
+            "download",
+            "getBlob",
+            "preview",
+            "registerFont",
+            "destroy",
+          ],
+        },
+        {
+          title: "PDFRenderer.js",
+          id: "mod-renderer",
+          items: [
+            "render",
+            "renderPage",
+            "renderText",
+            "renderRichText",
+            "renderTable",
+            "renderImage",
+            "renderEvalBlock",
+            "calculateX",
+            "replaceVariables",
+          ],
+        },
+        {
+          title: "CKEditorParser.js",
+          id: "mod-parser",
+          items: [
+            "parse",
+            "processNode",
+            "processParagraph",
+            "processTable",
+            "processImage",
+            "extractStyles",
+          ],
+        },
+        {
+          title: "JsPdfService.js",
+          id: "mod-service",
+          items: [
+            "savePDF",
+            "uploadPDFToServer",
+            "addText",
+            "drawJustifiedText",
+            "addHorizontalLine",
+            "addImage",
+            "addNewPage",
+            "checkPageBreak",
+            "addSpace",
+            "addTable",
+            "addTableOfContents",
+            "addMenu",
+            "addMultiLevelList",
+            "addOutline",
+            "addFillInLine",
+            "addFillInForm",
+            "addSignature",
+            "addSignatureWithImage",
+            "addSecondarySignature",
+            "addMixedText",
+            "addMixedParagraph",
+            "bold",
+            "italic",
+          ],
+        },
+        {
+          title: "Utilities",
+          id: "mod-utils",
+          items: [
+            "TemplateEngine.process",
+            "RichTextTokenizer.tokenize",
+            "helpers.mmToPx",
+          ],
+        },
+      ];
+
+      // Render Sidebar
+      const navTree = document.getElementById("navTree");
+
+      function renderNav(filter = "") {
+        navTree.innerHTML = "";
+        const lowerFilter = filter.toLowerCase();
+
+        navData.forEach((group) => {
+          const matches = group.items.filter((i) =>
+            i.toLowerCase().includes(lowerFilter),
+          );
+          if (
+            matches.length > 0 ||
+            group.title.toLowerCase().includes(lowerFilter)
+          ) {
+            const groupDiv = document.createElement("div");
+            groupDiv.className = "nav-group";
+
+            const header = document.createElement("div");
+            header.className = "nav-header";
+            header.textContent = group.title;
+            header.onclick = () => {
+              document.getElementById(group.id).scrollIntoView();
+            };
+            groupDiv.appendChild(header);
+
+            const ul = document.createElement("ul");
+            ul.className = "nav-list";
+
+            matches.forEach((item) => {
+              const li = document.createElement("li");
+              li.className = "nav-item";
+              const a = document.createElement("a");
+              a.textContent = item;
+              // Construct ID: api-ModuleName-methodName using heuristic
+              // Simple heuristic: Title without .js part
+              const modName = group.title.split(".")[0];
+              // Special case for utils dot notation
+              const cleanItem = item.split(".").pop();
+
+              // Actually, let's just use the ID map we wrote in HTML
+              // ID format in HTML: api-ClassName-methodName
+              // e.g. api-DrawPDF-create
+
+              let targetId = `api-${modName}-${cleanItem}`;
+              if (group.title === "Utilities") {
+                // Special handling for utils sub-modules
+                if (item.includes("TemplateEngine"))
+                  targetId = "api-TemplateEngine-process";
+                if (item.includes("RichTextTokenizer"))
+                  targetId = "api-RichTextTokenizer-tokenize";
+                if (item.includes("helpers"))
+                  targetId = "api-helpers-" + cleanItem;
+              }
+
+              a.href = "#" + targetId;
+              a.onclick = (e) => {
+                e.preventDefault();
+                const el = document.getElementById(targetId);
+                if (el) {
+                  el.scrollIntoView({ block: "center" });
+                  el.classList.add("highlight-flash");
+                  setTimeout(
+                    () => el.classList.remove("highlight-flash"),
+                    1000,
+                  );
+
+                  // Update active state
+                  document
+                    .querySelectorAll(".nav-item a")
+                    .forEach((x) => x.classList.remove("active"));
+                  a.classList.add("active");
+                }
+              };
+              li.appendChild(a);
+              ul.appendChild(li);
+            });
+
+            groupDiv.appendChild(ul);
+            navTree.appendChild(groupDiv);
+          }
+        });
+      }
+
+      function filterNav() {
+        renderNav(document.getElementById("searchInput").value);
+      }
+
+      // Initial Render
+      renderNav();
+    </script>
+  </body>
+</html>

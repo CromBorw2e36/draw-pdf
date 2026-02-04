@@ -1,0 +1,365 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DrawPDF - Table Example</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 20px;
+      }
+      .panel {
+        flex: 1;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        height: 90vh;
+        overflow: auto;
+      }
+      h2 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #editor {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Panel Trái: Code Hướng Dẫn -->
+    <div class="panel" style="flex: 0 0 40%">
+      <h2>💻 Table Guide</h2>
+      <p>
+        DrawPDF hỗ trợ hiển thị bảng biểu đa dạng từ HTML chuẩn. Dưới đây là các
+        tính năng chính:
+      </p>
+
+      <h3>1. Cấu Trúc Bảng (Structure)</h3>
+      <p>
+        Sử dụng thẻ <code>&lt;table&gt;</code>, <code>&lt;thead&gt;</code>,
+        <code>&lt;tbody&gt;</code>.
+        <br />
+        Hỗ trợ đầy đủ <strong>rowspan</strong> và <strong>colspan</strong> để
+        trộn ô.
+      </p>
+      <pre><code class="language-html">&lt;table style="width:100%; border-collapse: collapse;"&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;&lt;th colspan="2"&gt;Header Group&lt;/th&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;th&gt;Sub 1&lt;/th&gt;&lt;th&gt;Sub 2&lt;/th&gt;&lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;...&lt;/tbody&gt;
+&lt;/table&gt;</code></pre>
+
+      <h3>2. Định Dạng (Styling)</h3>
+      <p>DrawPDF nhận diện các inline CSS sau:</p>
+      <ul>
+        <li>
+          <strong>Borders:</strong> <code>border: 1px solid #000</code> (áp dụng
+          cho table hoặc td/th).
+        </li>
+        <li>
+          <strong>Background:</strong> <code>background-color: #f0f0f0</code>.
+        </li>
+        <li>
+          <strong>Alignment:</strong> <code>text-align: center/right</code>.
+        </li>
+        <li><strong>Padding:</strong> <code>padding: 5px</code>.</li>
+        <li>
+          <strong>Width:</strong> <code>width: 100%</code> hoặc pixel cố định.
+        </li>
+      </ul>
+
+      <h3>3. Bảng Động (Dynamic Code)</h3>
+      <p>
+        Sử dụng
+        <strong>Code Block</strong> (<code>&lt;pre&gt;&lt;code&gt;</code>) với
+        <code>// eval</code> để chạy JavaScript trực tiếp.
+      </p>
+
+      <h4>Các biến có sẵn:</h4>
+      <ul>
+        <li>
+          <code>pdf</code>: Instance của <code>JsPdfService</code> (API vẽ PDF
+          chính).
+        </li>
+        <li><code>data</code>: Dữ liệu được truyền vào (nếu có).</li>
+      </ul>
+
+      <h4>Ví dụ đầy đủ:</h4>
+      <pre><code class="language-javascript">// eval
+// 1. Dữ liệu mẫu (Header có thể là 1 chiều hoặc 2 chiều)
+const headers = [
+  [{ content: 'Danh Sách Nhân Sự', colSpan: 3, styles: { halign: 'center' } }], // Row 1
+  ['STT', 'Họ Tên', 'Phòng Ban'] // Row 2
+];
+
+const rows = [
+  [1, 'Nguyễn Văn A', 'Kỹ Thuật'],
+  [2, 'Trần Thị B', 'Nhân Sự'],
+  [3, 'Lê Văn C', 'Kinh Doanh']
+];
+
+// 2. Vẽ bảng
+pdf.addTable(headers, rows, {
+  theme: 'grid', // 'striped' | 'grid' | 'plain'
+  styles: { 
+    fontSize: 10,
+    cellPadding: 4,
+    font: 'Roboto'
+  },
+  headStyles: {
+    fillColor: [41, 128, 185],
+    textColor: 255,
+    fontStyle: 'bold'
+  },
+  columnStyles: {
+    0: { cellWidth: 15, halign: 'center' }, // Cột STT
+    2: { fontStyle: 'italic' } // Cột Phòng Ban
+  },
+  margin: { top: 10 }
+});
+
+// 3. Thêm ghi chú bên dưới
+pdf.addText("Tổng số: " + rows.length + " nhân sự.", 15, pdf.currentY + 5, {
+    fontStyle: 'italic',
+    color: [100, 100, 100]
+});</code></pre>
+
+      <div
+        style="
+          margin-top: 30px;
+          padding: 15px;
+          background: #e9ecef;
+          border-radius: 5px;
+        "
+      >
+        <strong>Thử Nghiệm:</strong><br />
+        Nhấn nút bên dưới để tạo bảng dữ liệu mẫu.
+        <br />
+        <button onclick="runDemo()" style="width: 100%; margin-bottom: 10px">
+          🚀 Load All Table Types
+        </button>
+        <button onclick="reviewPdf()" style="width: 100%; background: #28a745">
+          📄 Review PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel Phải: Editor -->
+    <div class="panel">
+      <h2>📄 Live Editor</h2>
+      <div id="editor"></div>
+    </div>
+
+    <script src="../../dist/drawpdf.standalone.umd.cjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script>
+      let pdfInstance = null;
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const DrawPDF = window.DrawPDF.default;
+        pdfInstance = await DrawPDF.create("#editor");
+      });
+
+      function runDemo() {
+        if (!pdfInstance) return;
+
+        const thStyle = "text-align: center;";
+        const tdStyle = "border: 1px solid #ddd;";
+        const centerStyle = "text-align: center;";
+        const boldStyle = "font-weight: bold;";
+
+        const html = `
+            <!-- 1. MERGED HEADER TABLE -->
+            <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 2px solid #007bff; display: inline-block;">1. Bảng Trộn Cột (Merged Headers)</div>
+            <table style="width:100%; margin-bottom: 20px;">
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="${thStyle}">STT</th>
+                        <th rowspan="2" style="${thStyle}">Họ và Tên</th>
+                        <th colspan="3" style="${thStyle}">Điểm Các Môn</th>
+                    </tr>
+                    <tr>
+                        <th style="${thStyle}">Toán</th>
+                        <th style="${thStyle}">Lý</th>
+                        <th style="${thStyle}">Hóa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="${tdStyle} ${centerStyle}">1</td>
+                        <td style="${tdStyle}">Nguyễn Văn A</td>
+                        <td style="${tdStyle} ${centerStyle}">8.5</td>
+                        <td style="${tdStyle} ${centerStyle}">7.0</td>
+                        <td style="${tdStyle} ${centerStyle}">9.0</td>
+                    </tr>
+                    <tr>
+                        <td style="${tdStyle} ${centerStyle}">2</td>
+                        <td style="${tdStyle}">Trần Thị B</td>
+                        <td style="${tdStyle} ${centerStyle}">9.0</td>
+                        <td style="${tdStyle} ${centerStyle}">9.5</td>
+                        <td style="${tdStyle} ${centerStyle}">8.5</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <br>
+
+            <!-- 2. INVOICE STYLE TABLE -->
+            <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 2px solid #28a745; display: inline-block;">2. Bảng Hóa Đơn (Invoice Style)</div>
+            <table style="width:100%; border-collapse: collapse; margin-bottom: 20px;">
+                <thead>
+                    <tr style="background-color: #28a745; color: white;">
+                        <th style="padding: 10px;">Mô Tả</th>
+                        <th style="padding: 10px; text-align: right;">Số Lượng</th>
+                        <th style="padding: 10px; text-align: right;">Đơn Giá</th>
+                        <th style="padding: 10px; text-align: right;">Thành Tiền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">Thiết kế Website</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">1</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$500.00</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$500.00</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">Hosting (1 Năm)</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">1</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$120.00</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$120.00</td>
+                    </tr>
+                     <tr>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee;">Bảo Trì</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">2</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$50.00</td>
+                        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right;">$100.00</td>
+                    </tr>
+                    <tr style="background-color: #f9f9f9; font-weight: bold;">
+                        <td colspan="3" style="padding: 10px; text-align: right;">Tổng Cộng:</td>
+                        <td style="padding: 10px; text-align: right; color: #dc3545;">$720.00</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <br>
+
+            <!-- 3. COMPLEX MERGE TABLE -->
+            <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 2px solid #dc3545; display: inline-block;">3. Bảng Phức Tạp (Rowspan & Colspan)</div>
+            <table border="1" style="width:100%; border-collapse: collapse; border: 1px solid #000;">
+                <tr style="background-color: #ccc;">
+                    <th rowspan="2">Khu Vực</th>
+                    <th colspan="2">Doanh Số (Tỷ VNĐ)</th>
+                    <th rowspan="2">Ghi Chú</th>
+                </tr>
+                <tr style="background-color: #eee;">
+                    <th>Q1</th>
+                    <th>Q2</th>
+                </tr>
+                <tr>
+                    <td rowspan="2" style="${centerStyle}">Miền Bắc</td>
+                    <td style="${centerStyle}">150</td>
+                    <td style="${centerStyle}">200</td>
+                    <td>Tăng trưởng đều</td>
+                </tr>
+                <tr>
+                    <td style="${centerStyle}">180</td>
+                    <td style="${centerStyle}">210</td>
+                    <td>Vượt chỉ tiêu</td>
+                </tr>
+                 <tr>
+                    <td style="${centerStyle}">Miền Nam</td>
+                    <td colspan="2" style="${centerStyle} background-color: #fff3cd;">300 (Tổng 6 tháng)</td>
+                    <td>Mới mở rộng</td>
+                </tr>
+            </table>
+
+            <br>
+            
+            <!-- 4. DYNAMIC TABLE (CODE BLOCK) -->
+             <div style="font-size: 16px; font-weight: bold; color: #333; margin-bottom: 10px; border-bottom: 2px solid #6f42c1; display: inline-block;">4. Bảng Động (Generated via Code Block)</div>
+             <p>Bảng dưới đây được sinh ra từ đoạn script embedded:</p>
+             <pre><code class="language-javascript">// eval
+const headers = ["ID", "Tên sản phẩm", "Giá (USD)", "Số Lượng", "Tổng"];
+const rows = [];
+
+// Tạo 5 dòng dữ liệu mẫu ngẫu nhiên
+for (let i = 1; i <= 5; i++) {
+    const price = Math.floor(Math.random() * 100) + 10;
+    const qty = Math.floor(Math.random() * 10) + 1;
+    rows.push([
+        i, 
+        "Sản phẩm " + String.fromCharCode(64 + i), 
+        price, 
+        qty, 
+        price * qty
+    ]);
+}
+
+// Gọi hàm vẽ bảng của jsPDF wrapper
+// pdf là instance của JsPdfService được expose vào eval context
+pdf.addTable(headers, rows, {
+    margin: { left: 15 },
+    theme: 'grid', // 'striped', 'grid', 'plain'
+    styles: { fontSize: 10 },
+    headStyles: { fillColor: [41, 128, 185], textColor: 255 }
+});
+
+pdf.addText("Tổng số dòng đã sinh: " + rows.length, 15, pdf.currentY + 10);
+pdf.currentY += 15; // Dịch chuyển con trỏ xuống để không ghi đè
+</code></pre>
+
+        `;
+        const bluePrint = window.DrawPDF.default.parseHtml(html);
+        console.log("bluePrint", bluePrint);
+        pdfInstance.setData(bluePrint);
+      }
+
+      function reviewPdf() {
+        if (pdfInstance) {
+          pdfInstance.getData(); // Sync data
+          const blob = pdfInstance.getBlob();
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
+        }
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DrawPDF - Special Header Example</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 20px;
+      }
+      .panel {
+        flex: 1;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        height: 90vh;
+        overflow: auto;
+      }
+      p {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #editor {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Panel Trái: Code Hướng Dẫn -->
+    <div class="panel" style="flex: 0 0 40%">
+      <p>💻 Special Header Guide</p>
+      <p>Header "Quốc Hiệu - Tiêu Ngữ" hành chính Việt Nam.</p>
+
+      <h3>1. Table Layout</h3>
+      <p>
+        Sử dụng <code>table</code> 2 cột không viền để căn chỉnh Header hành
+        chính.
+      </p>
+      <pre><code class="language-html">&lt;table border="0"&gt;
+  &lt;tr&gt;
+    &lt;td&gt;CƠ QUAN CHỦ QUẢN&lt;/td&gt;
+    &lt;td&gt;QUỐC HIỆU TIÊU NGỮ&lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+
+      <div
+        style="
+          margin-top: 30px;
+          padding: 15px;
+          background: #e9ecef;
+          border-radius: 5px;
+        "
+      >
+        <strong>Thử Nghiệm:</strong><br />
+        Tạo mẫu Header hành chính chuẩn.
+        <br />
+        <button onclick="runDemo()" style="width: 100%; margin-bottom: 10px">
+          📚 Load All Templates
+        </button>
+        <button onclick="reviewPdf()" style="background: #28a745; width: 100%">
+          📄 Review PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel Phải: Editor -->
+    <div class="panel">
+      <p>📄 Live Editor</p>
+      <div id="editor"></div>
+    </div>
+
+    <script src="../../dist/drawpdf.standalone.umd.cjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script>
+      let pdfInstance = null;
+
+      document.addEventListener("DOMContentLoaded", async function () {
+        const DrawPDF = window.DrawPDF.default;
+        pdfInstance = await DrawPDF.create("#editor");
+      });
+
+      function runDemo() {
+        if (!pdfInstance) return;
+
+        // Common styles
+        const tableStyle =
+          "width:100%; border-color:hsl(0, 0%, 100%); border-style:solid; margin-bottom: 20px;";
+        const tdStyle = "text-align:center; vertical-align:top;";
+
+        // Single Combined HTML Blob
+        const html = `
+            <!-- 1. Mẫu Cơ quan Hành chính -->
+            <h3 style="text-align:center; color:#555; background:#eee; padding:5px;">1. Mẫu Cơ quan Hành chính</h3>
+            <table style="${tableStyle}">
+                <tr>
+                    <td style="${tdStyle} width:40%;">
+                        <strong style="font-size:11pt;">ỦY BAN NHÂN DÂN<br>THÀNH PHỐ HỒ CHÍ MINH</strong><br>
+                        <strong>SỞ CÔNG THƯƠNG</strong>
+                        <hr style="width:30%; text-align:center; border-top: 1px solid black;">
+                    </td>
+                    <td style="${tdStyle} width:60%;">
+                        <strong style="font-size:11pt;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong><br>
+                        <strong style="font-size:12pt; text-decoration: underline;">Độc lập - Tự do - Hạnh phúc</strong>
+                        <br>
+                        <em style="font-size:10pt;">TP. Hồ Chí Minh, ngày ... tháng ... năm 202...</em>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align:center;">
+                <p>QUYẾT ĐỊNH</p>
+                <i>(V/v: Thành lập tổ công tác...)</i>
+            </div>
+
+            <br><br>
+
+            <!-- 2. Mẫu Trường học / Đào tạo -->
+            <h3 style="text-align:center; color:#555; background:#eee; padding:5px;">2. Mẫu Trường học / Đào tạo</h3>
+            <table style="${tableStyle}">
+                <tr>
+                    <td style="${tdStyle} width:45%;">
+                        <strong style="font-size:11pt;">BỘ GIÁO DỤC VÀ ĐÀO TẠO</strong><br>
+                        <strong>TRƯỜNG ĐẠI HỌC BÁCH KHOA</strong>
+                        <hr style="width:35%; text-align:center; border-top: 1px solid black;">
+                        Số: 123/QĐ-ĐHBK
+                    </td>
+                    <td style="${tdStyle} width:55%;">
+                        <strong style="font-size:11pt;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</strong><br>
+                        <strong style="font-size:12pt; text-decoration: underline;">Độc lập - Tự do - Hạnh phúc</strong>
+                        <br>
+                        <em style="font-size:10pt;">Hà Nội, ngày 15 tháng 10 năm 2025</em>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align:center; margin-top:15px;">
+                <p>GIẤY KHEN</p>
+            </div>
+
+            <br><br>
+
+            <!-- 3. Mẫu Đảng bộ / Đoàn thể -->
+            <h3 style="text-align:center; color:#555; background:#eee; padding:5px;">3. Mẫu Đảng bộ / Đoàn thể</h3>
+            <table style="${tableStyle}">
+                <tr>
+                    <td style="${tdStyle} width:50%;">
+                        <strong style="font-size:11pt;">ĐẢNG CỘNG SẢN VIỆT NAM</strong><br>
+                        ĐẢNG BỘ KHỐI DOANH NGHIỆP<br>
+                        <strong>CHI BỘ CÔNG TY ABC</strong>
+                        <hr style="width:30%; text-align:center; border-top: 1px solid black;">
+                    </td>
+                    <td style="${tdStyle} width:50%; text-align:right; padding-right:20px;">
+                        <em style="font-size:10pt;">Đà Nẵng, ngày 03 tháng 02 năm 2026</em>
+                    </td>
+                </tr>
+            </table>
+            <div style="text-align:center;">
+                <p>NGHỊ QUYẾT</p>
+                <strong>HỘI NGHỊ CHI BỘ THÁNG 02/2026</strong>
+            </div>
+
+            <br><br>
+
+            <!-- 4. Mẫu Doanh nghiệp -->
+            <h3 style="text-align:center; color:#555; background:#eee; padding:5px;">4. Mẫu Doanh nghiệp</h3>
+             <table style="${tableStyle}">
+                <tr>
+                    <td style="${tdStyle} width:40%; text-align:left;">
+                        <strong style="font-size:12pt; color:#0056b3;">CÔNG TY CỔ PHẦN CÔNG NGHỆ XYZ</strong><br>
+                        <span style="font-size:9pt;">📍 123 Đường Công Nghệ, Q. Cầu Giấy, HN</span><br>
+                        <span style="font-size:9pt;">🌐 www.xyz-tech.com | 📞 0909 123 456</span>
+                        <hr style="width:100%; border-top: 2px solid #0056b3;">
+                    </td>
+                    <td style="${tdStyle} width:60%; text-align:right;">
+                        <strong style="font-size:16pt; color:#dc3545;">HÓA ĐƠN GTGT</strong><br>
+                        <em style="font-size:10pt;">(Bản Thể Hiện Của Hóa Đơn Điện Tử)</em><br>
+                        <strong style="font-size:10pt;">Ký hiệu: 1C26TTR | Số: 0000123</strong>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <p>Hôm nay, ngày ... tháng ... năm ..., chúng tôi gồm có:</p>
+        `;
+
+        pdfInstance.setData({ sourceHtml: html });
+      }
+
+      function reviewPdf() {
+        if (pdfInstance) {
+          pdfInstance.getData(); // Sync data
+          const blob = pdfInstance.getBlob();
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
+        }
+      }
+    </script>
+  </body>
+</html>

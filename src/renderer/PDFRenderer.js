@@ -4,7 +4,7 @@
  */
 
 import { TemplateEngine } from '../utils/TemplateEngine.js';
-import JsPdfService from '../service/jspdf-service.js';
+import JsPdfService from '../service/jspdf-service/main.js';
 import { FONT_CONFIG } from '../utils/constants.js';
 
 class PDFRenderer {
@@ -14,17 +14,27 @@ class PDFRenderer {
    * @param {string} fontConfig.defaultFont - Primary font name
    * @param {string} fontConfig.fallback - Fallback font name
    */
-  constructor(fontConfig = {}) {
-    this.fontConfig = { ...FONT_CONFIG, ...fontConfig };
+  constructor(options = {}) {
+    this.options = { ...options };
+    // Extract font config for backward compatibility if needed, 
+    // but primarily we pass 'this.options' to JsPdfService
+    this.fontConfig = { ...FONT_CONFIG, ...options.fonts, ...options };
+    
     this.pdfService = null;
+    
     // Content-flow: Store margins for position calculation
-    this.margins = {
+    this.margins = options.margins || {
       left: 15,
       right: 15,
       top: 20,
       bottom: 20
     };
-    this.pageWidth = 210; // A4 width in mm
+    
+    this.pageWidth = 210; // Default A4 width
+    // TODO: Ideally we should calculate this from 'options.format' if possible, 
+    // but strict mm calculation from string formats (a4, letter...) requires map.
+    // For now, rely on PdfService to handle actual page size, this is just for layout estimation.
+    
     this.contentWidth = this.pageWidth - this.margins.left - this.margins.right;
   }
 
@@ -44,8 +54,8 @@ class PDFRenderer {
    * @returns {JsPdfService} PDF service instance
    */
   render(blueprint, data = {}) {
-    // Create new JsPdfService instance with font configuration
-    this.pdfService = new JsPdfService(this.fontConfig);
+    // Create new JsPdfService instance with full options
+    this.pdfService = new JsPdfService(this.options);
 
     // Update margins from blueprint if available
     if (blueprint.margins) {
@@ -362,16 +372,35 @@ class PDFRenderer {
       };
     };
 
-    // Build header row
-    const headerRow = rows[0]?.map((cell, idx) => processCell(cell, 0, idx)) || [];
+    // Identify header rows based on 'isHeader' property (from <th> tags)
+    let headerRowCount = 0;
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        // If row contains any header cell, consider it part of the header section
+        // Note: consecutive rows from top only
+        if (row.some(cell => cell.isHeader)) {
+            headerRowCount++;
+        } else {
+            break;
+        }
+    }
+    // Fallback: If no explicit headers found but rows exist, use first row as header (legacy behavior)
+    if (headerRowCount === 0 && rows.length > 0) {
+        headerRowCount = 1;
+    }
 
-    // Extract header background color from first cell (assume consistent)
+    // Process header rows
+    const headerRows = rows.slice(0, headerRowCount).map((row, rIdx) => 
+        row.map((cell, cIdx) => processCell(cell, rIdx, cIdx))
+    );
+
+    // Extract header background color from first cell of first row
     const firstHeaderCell = rows[0]?.[0];
     const headerBgColor = firstHeaderCell?.cellStyle?.backgroundColor;
 
-    // Build data rows
-    const dataRows = rows.slice(1).map((row, rIdx) =>
-      row.map((cell, cIdx) => processCell(cell, rIdx + 1, cIdx))
+    // Process data rows
+    const dataRows = rows.slice(headerRowCount).map((row, rIdx) =>
+      row.map((cell, cIdx) => processCell(cell, rIdx + headerRowCount, cIdx))
     );
 
     // Build table options from tableStyle
@@ -408,7 +437,7 @@ class PDFRenderer {
 
     // Use addTable from service
     if (typeof this.pdfService.addTable === 'function') {
-      this.pdfService.addTable(headerRow, dataRows, tableOptions);
+      this.pdfService.addTable(headerRows, dataRows, tableOptions);
     } else {
       this.drawTableManually(element, data);
     }
@@ -779,7 +808,7 @@ class PDFRenderer {
         map: (arr, fn) => Array.isArray(arr) ? arr.map(fn) : [],
         join: (arr, sep = ', ') => Array.isArray(arr) ? arr.join(sep) : '',
 
-        // Convenience shortcuts
+        // Shortcuts aliases
         addText: (text, x, y, opts) => this.pdfService.addText(text, x, y, opts),
         addTitle: (text, opts) => this.pdfService.addTitle(text, opts),
         addTable: (headers, rows, opts) => this.pdfService.addTable(headers, rows, opts),
@@ -787,6 +816,26 @@ class PDFRenderer {
         addLine: () => this.pdfService.addHorizontalLine(),
         addImage: (src, x, y, w, h) => this.pdfService.addImage(src, x, y, w, h),
         newPage: () => this.pdfService.addNewPage(),
+        
+        // Extended features requested by user
+        addHeader: (content, opts) => this.pdfService.addHeader(content, opts),
+        addFooter: (content, opts) => this.pdfService.addFooter(content, opts),
+        addPageNumbers: (opts) => this.pdfService.addFooter(opts.format || "{pageNumber}", opts), // Compatibility
+        addFilter: (label, opts) => this.pdfService.addFillInLine(label, opts), // Alias for addFillInLine
+        addFiller: (label, opts) => this.pdfService.addFillInLine(label, opts), // Clearer alias
+        addSign: (signers, opts) => this.pdfService.addDottedSignature(signers, opts), // Alias for addDottedSignature
+        addSignature: (signers, opts) => this.pdfService.addSignatureFillIn(signers, opts), // Safe default      
+        // Full Signature Suite
+        addDualSignature: (...args) => this.pdfService.addDualSignature(...args),
+        addSimpleSignature: (...args) => this.pdfService.addSimpleSignature(...args),
+        addSecondarySignature: (...args) => this.pdfService.addSecondarySignature(...args),
+        addSmartSignature: (...args) => this.pdfService.addSmartSignature(...args),
+        addSignatureFromFile: (...args) => this.pdfService.addSignatureFromFile(...args),
+        addSignatureWithImage: (...args) => this.pdfService.addSignatureWithImage(...args),
+        
+        // Generic alias defaulting to Smart Signature if robust, or FillIn if form-based. 
+        // User listed 'addSignature' separately. Let's map it to addSignatureFillIn as a safe default block.
+        addSignature: (...args) => this.pdfService.addSignatureFillIn(...args),
       };
 
       // Create function with all context vars

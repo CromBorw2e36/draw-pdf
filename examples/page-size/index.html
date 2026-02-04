@@ -1,0 +1,306 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DrawPDF - Page Size & Layout</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 20px;
+      }
+      .panel {
+        flex: 1;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        height: 90vh;
+        overflow: auto;
+      }
+      h2 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      #editor {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        background: #fff;
+      }
+
+      .control-group {
+        margin: 15px 0;
+      }
+      select {
+        padding: 5px;
+        border-radius: 4px;
+        border: 1px solid #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Panel Trái: Code Hướng Dẫn -->
+    <div class="panel" style="flex: 0 0 40%">
+      <h2>💻 Page Config Guide</h2>
+      <p>
+        DrawPDF cho phép tùy chỉnh kích thước khổ giấy và hướng giấy linh hoạt
+        ngay thời điểm khởi tạo.
+      </p>
+
+      <h3>1. Initialize Options</h3>
+      <p>Các tham số cấu hình khi gọi <code>create</code>:</p>
+      <ul>
+        <li><code>format</code>: Khổ giấy (a3, a4, a5, letter, legal...).</li>
+        <li>
+          <code>orientation</code>: Hướng giấy ('portrait' - dọc, 'landscape' -
+          ngang).
+        </li>
+        <li>
+          <code>margins</code>: Căn lề (top, right, bottom, left) đơn vị mm.
+        </li>
+      </ul>
+
+      <h3>2. Code Example</h3>
+      <p>Cách xử lý reload và cập nhật config an toàn:</p>
+      <pre><code class="language-javascript">let pdfInstance = null;
+
+async function initEditor(config) {
+    // 1. Dọn dẹp instance cũ (quan trọng!)
+    if (pdfInstance) {
+        await pdfInstance.destroy();
+        pdfInstance = null;
+    }
+
+    // 2. Khởi tạo mới với config
+    pdfInstance = await DrawPDF.create("#editor", {
+        format: config.format,       // 'a4', 'letter'...
+        orientation: config.orientation, // 'portrait', 'landscape'
+        
+        // Tùy chỉnh Toolbar gọn gàng
+        toolbar: {
+            items: ['heading', 'bold', 'italic', 'insertTable', 'undo', 'redo'],
+            shouldNotGroupWhenFull: true
+        }
+    });
+
+    // 3. Mô phỏng khổ giấy trên màn hình (Visual Feedback)
+    updateEditorVisuals(config.format, config.orientation);
+}
+
+// Helper: Chỉnh CSS editor theo khổ giấy (mm => px)
+function updateEditorVisuals(format, orientation) {
+    const sizes = { a4: {w: 210, h: 297}, /*...*/ };
+    const size = sizes[format] || sizes.a4;
+    
+    // Tính kích thước theo chiều xoay
+    const wMm = orientation === 'landscape' ? size.h : size.w;
+    const hMm = orientation === 'landscape' ? size.w : size.h;
+    
+    // Quy đổi 1mm ~ 3.78px và set style
+    const editorEl = document.querySelector('.ck-editor__editable');
+    if (editorEl) {
+        editorEl.style.width = (wMm * 3.78) + 'px';
+        editorEl.style.minHeight = (hMm * 3.78) + 'px';
+        editorEl.style.boxShadow = '0 0 10px rgba(0,0,0,0.1)';
+    }
+}</code></pre>
+
+      <div
+        style="
+          margin-top: 30px;
+          padding: 15px;
+          background: #e9ecef;
+          border-radius: 5px;
+        "
+      >
+        <strong>Thử Nghiệm:</strong><br />
+        Thay đổi cấu hình bên dưới và nhấn nút Reload để áp dụng.
+
+        <div class="control-group">
+          <label>Format: </label>
+          <select id="format" class="form-control">
+            <option value="a4">A4 (210 x 297 mm)</option>
+            <option value="a3">A3 (297 x 420 mm)</option>
+            <option value="a5">A5 (148 x 210 mm)</option>
+            <option value="letter">Letter</option>
+            <option value="legal">Legal</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label>Orientation: </label>
+          <select id="orientation" class="form-control">
+            <option value="portrait">Portrait (Dọc)</option>
+            <option value="landscape">Landscape (Ngang)</option>
+          </select>
+        </div>
+
+        <button
+          onclick="reloadEditor()"
+          style="width: 100%; margin-bottom: 10px"
+        >
+          🔄 Reload Editor Config
+        </button>
+        <button onclick="reviewPdf()" style="width: 100%; background: #28a745">
+          📄 Review PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel Phải: Editor -->
+    <div class="panel">
+      <h2>📄 Live Editor (Check Page Size)</h2>
+      <div id="editor"></div>
+    </div>
+
+    <script src="../../dist/drawpdf.standalone.umd.cjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script>
+      let pdfInstance = null;
+
+      async function initEditor(config = {}) {
+        const DrawPDF = window.DrawPDF.default;
+
+        // Clean up previous instance
+        if (pdfInstance) {
+          try {
+            pdfInstance.destroy();
+          } catch (e) {
+            console.warn("Error destroying previous instance:", e);
+          }
+          pdfInstance = null;
+        }
+
+        // Wait a bit to ensure DOM is clean or manually clear
+        const editorEl = document.getElementById("editor");
+        if (editorEl) {
+          // CKEditor usually restores the content, let's clear it for a fresh start or let it be.
+          // editor-source-element-already-used happens if CKEditor thinks it's still attached.
+          // destroy() shoud handle it.
+          editorEl.innerHTML = "";
+        }
+
+        // Create new instance
+        pdfInstance = await DrawPDF.create("#editor", {
+          format: config.format || "a4",
+          orientation: config.orientation || "portrait",
+          toolbar: {
+            items: [
+              "heading",
+              "|",
+              "bold",
+              "italic",
+              "underline",
+              "|",
+              "bulletedList",
+              "numberedList",
+              "|",
+              "insertTable",
+              "blockQuote",
+              "|",
+              "undo",
+              "redo",
+            ],
+            shouldNotGroupWhenFull: true,
+          },
+        });
+
+        const bluePrint = DrawPDF.parseHtml(`
+                <h2>Current Page Configuration</h2>
+                <ul>
+                    <li><strong>Format:</strong> ${config.format || "a4"}</li>
+                    <li><strong>Orientation:</strong> ${config.orientation || "portrait"}</li>
+                </ul>
+            `);
+
+        // Show feedback
+        pdfInstance.setData(bluePrint);
+
+        // Update visual size of editor to simulate page
+        updateEditorVisuals(
+          config.format || "a4",
+          config.orientation || "portrait",
+        );
+      }
+
+      // Helper: Resize editor to match page config
+      function updateEditorVisuals(format, orientation) {
+        const sizes = {
+          a4: { w: 210, h: 297 },
+          a5: { w: 148, h: 210 },
+          a3: { w: 297, h: 420 },
+          letter: { w: 216, h: 279 },
+          legal: { w: 216, h: 356 },
+        };
+
+        const size = sizes[format] || sizes.a4;
+        const widthMm = orientation === "landscape" ? size.h : size.w;
+        const heightMm = orientation === "landscape" ? size.w : size.h;
+
+        // 1mm ~ 3.78px (96 DPI)
+        const mmToPx = 3.78;
+
+        // Need to target the internal editable area of CKEditor
+        const editorEl = document.querySelector(".ck-editor__editable");
+        if (editorEl) {
+          editorEl.style.width = widthMm * mmToPx + "px";
+          editorEl.style.minHeight = heightMm * mmToPx + "px";
+          editorEl.style.margin = "20px auto"; // Center
+          editorEl.style.border = "1px solid #c4c4c4";
+          editorEl.style.boxShadow = "0 0 10px rgba(0,0,0,0.15)";
+          editorEl.style.padding = "20px"; // Margin simulation
+        }
+      }
+
+      function reloadEditor() {
+        const format = document.getElementById("format").value;
+        const orientation = document.getElementById("orientation").value;
+        initEditor({ format, orientation });
+      }
+
+      function reviewPdf() {
+        if (pdfInstance) {
+          pdfInstance.getData(); // Sync data
+          const blob = pdfInstance.getBlob();
+          const url = URL.createObjectURL(blob);
+          window.open(url, "_blank");
+        }
+      }
+
+      // Start default
+      document.addEventListener("DOMContentLoaded", () => initEditor());
+    </script>
+  </body>
+</html>

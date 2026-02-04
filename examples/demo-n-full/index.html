@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DrawPDF - Full Feature Demo</title>
+    <meta charset="utf-8" />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: #f0f2f5;
+        padding: 40px;
+        margin: 0;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        text-align: center;
+        color: #1a1a1a;
+        margin-bottom: 40px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+      }
+      .card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: transform 0.2s, box-shadow 0.2s;
+        display: flex;
+        flex-direction: column;
+      }
+      .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+      }
+      .card h2 {
+        margin-top: 0;
+        color: #2c3e50;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+      }
+      .card p {
+        color: #666;
+        line-height: 1.6;
+        flex-grow: 1;
+        margin-bottom: 20px;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: 600;
+        transition: background 0.2s;
+        width: 100%;
+        margin-top: auto;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      button.secondary {
+        background: #6c757d;
+      }
+      button.secondary:hover {
+        background: #5a6268;
+      }
+      button.success {
+        background: #28a745;
+      }
+      button.success:hover {
+        background: #218838;
+      }
+      .badge {
+        display: inline-block;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        margin-left: 8px;
+        vertical-align: middle;
+      }
+      .badge.new {
+        background: #e3f2fd;
+        color: #0d47a1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>DrawPDF Feature Demos</h1>
+      
+      <div class="grid">
+        <!-- 1. Leave Request -->
+        <div class="card">
+          <h2>📝 Đơn Xin Nghỉ Phép</h2>
+          <p>
+            Demo tạo form đơn từ hoàn chỉnh. 
+            <br>Tính năng:
+            <ul>
+              <li>Header & Footer</li>
+              <li>Signature from File</li>
+              <li>Smart Signature (Fallback)</li>
+            </ul>
+          </p>
+          <button onclick="generateLeaveRequestPDF()">Generate PDF</button>
+        </div>
+
+        <!-- 2. Dual Signature -->
+        <div class="card">
+          <h2>🤝 Biên Bản Giao Nhận</h2>
+          <p>
+            Demo chữ ký đôi (Bên A - Bên B).
+            <br>Tính năng:
+            <ul>
+              <li>Dual Signature</li>
+              <li>List & Bullet Points</li>
+              <li>Formatting Text</li>
+            </ul>
+          </p>
+          <button onclick="generateDualSignaturePDF()">Generate PDF</button>
+        </div>
+
+        <!-- 3. Signature Comparison -->
+        <div class="card">
+          <h2>🔍 Comparison</h2>
+          <p>So sánh các loại chữ ký khác nhau trên cùng một trang.</p>
+          <button class="secondary" onclick="generateSignatureComparisonPDF()">View Comparison</button>
+        </div>
+
+        <!-- 4. Signature Methods -->
+        <div class="card">
+          <h2>🛠 Signature Tools</h2>
+          <p>Demo chi tiết các methods: `createFallback`, `createTextSignature`, `addSignatureWithImage`.</p>
+          <button class="secondary" onclick="generateSignatureMethodsPDF()">View Methods</button>
+        </div>
+
+        <!-- 5. Advanced Features -->
+        <div class="card">
+          <h2>🎨 Image Features</h2>
+          <p>Demo chèn ảnh nâng cao: Alignment, Caption, Border, Auto-fit.</p>
+          <button class="secondary" onclick="generateImageFeaturesPDF()">View Images</button>
+        </div>
+
+        <!-- 6. Leader Dots -->
+        <div class="card">
+          <h2>📑 Leader Dots & TOC</h2>
+          <p>Demo tạo Mục lục, Menu, Index với Leader Dots (...).</p>
+          <button onclick="createLeaderDotsDemo()">Generate Leader Docs</button>
+        </div>
+
+        <!-- 7. Generate All -->
+        <div class="card" style="background: #e8f5e9;">
+          <h2>🚀 Generate All</h2>
+          <p>Chạy tất cả các demo và lưu file cùng lúc.</p>
+          <button class="success" onclick="generateAllPDFs()">RUN EVERYTHING</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Load Library -->
+    <script src="../../dist/drawpdf.standalone.umd.cjs"></script>
+    
+    <!-- Init Global JsPdfService -->
+    <script>
+      // Đảm bảo JsPdfService có sẵn global cho script.js
+      window.addEventListener('load', () => {
+        if (window.DrawPDF && window.DrawPDF.default && window.DrawPDF.default.JsPdfService) {
+           window.JsPdfService = window.DrawPDF.default.JsPdfService;
+           console.log("JsPdfService exposed globally.");
+        } else {
+           console.error("Failed to expose JsPdfService!");
+           alert("Library load failed. Check console.");
+        }
+      });
+    </script>
+
+    <!-- Demo Script -->
+    <script src="script.js"></script>
+  </body>
+</html>
