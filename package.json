@@ -14,8 +14,6 @@
   },
   "files": [
     "dist",
-    "src",
-    "public/fonts",
     "README.md"
   ],
   "scripts": {

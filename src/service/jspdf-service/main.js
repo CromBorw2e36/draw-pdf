@@ -5,7 +5,7 @@ const { jsPDF } = window.jspdf;
 import { applyPlugin } from 'jspdf-autotable';
 applyPlugin(jsPDF);
 
-import { FONT_CONFIG } from '../utils/constants.js';
+import { FONT_CONFIG } from '../../utils/constants.js';
 
 // Ensure window.jspdf exists for font file compatibility
 // Font .js files use window.jspdf.jsPDF.API to register themselves

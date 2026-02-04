@@ -4,7 +4,7 @@
  */
 
 import { TemplateEngine } from '../utils/TemplateEngine.js';
-import JsPdfService from '../service/jspdf-service.js';
+import JsPdfService from '../service/jspdf-service/main.js';
 import { FONT_CONFIG } from '../utils/constants.js';
 
 class PDFRenderer {

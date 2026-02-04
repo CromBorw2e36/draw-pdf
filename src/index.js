@@ -19,7 +19,7 @@ export { default as RichTextTokenizer } from './parser/RichTextTokenizer.js';
 export { default as PDFRenderer } from './renderer/PDFRenderer.js';
 
 // Service - Low-level jsPDF wrapper with 88+ methods
-export { default as JsPdfService } from './service/jspdf-service.js';
+export { default as JsPdfService } from './service/jspdf-service/main.js';
 
 // Utils - Template engine with variables, loops, conditionals
 export { TemplateEngine } from './utils/TemplateEngine.js';

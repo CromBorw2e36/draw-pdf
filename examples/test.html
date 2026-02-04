@@ -48,7 +48,7 @@
 
     <button onclick="showInfo()">ℹ️ Show Info</button>
 
-    <div id="output">Click một button để test...</div>
+    <div id="editor"></div>
 
     <!-- Load standalone bundle - includes jsPDF + AutoTable + CKEditor -->
     <script src="../dist/drawpdf.standalone.umd.cjs"></script>
@@ -57,7 +57,7 @@
         // Access DrawPDF từ window
         document.addEventListener("DOMContentLoaded", async function () {
             const DrawPDF = window.DrawPDF.default;
-            const pdf = new DrawPDF();
+            const pdf = await DrawPDF.create("#editor");
             window.pdf = pdf;
         });
         //window.pdf.setData(bluePrint).download('document.pdf',dataSample)
