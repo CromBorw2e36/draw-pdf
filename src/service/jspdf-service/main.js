@@ -295,34 +295,49 @@ class JsPdfService {
 
     const startY = options.y !== undefined ? options.y : this.currentY;
 
-    // Build styles from options
-    const tableStyles = {
+    // 1. Prepare base styles (defaults)
+    const baseTableStyles = {
       font: this.defaultFont,
       fontSize: 10,
       cellPadding: 3,
       overflow: 'linebreak'
     };
 
-    // Apply table-level border
-    if (options.lineWidth !== undefined) {
-      tableStyles.lineWidth = options.lineWidth;
-    }
-    if (options.lineColor) {
-      tableStyles.lineColor = options.lineColor;
-    }
-    if (options.fillColor) {
-      tableStyles.fillColor = options.fillColor;
-    }
+    // Add legacy direct layout options to styles to maintain backward compatibility
+    if (options.lineWidth !== undefined) baseTableStyles.lineWidth = options.lineWidth;
+    if (options.lineColor) baseTableStyles.lineColor = options.lineColor;
+    if (options.fillColor) baseTableStyles.fillColor = options.fillColor;
 
-    // Calculate table position based on alignment
+    // 2. Merge with user provided 'styles' object
+    // Key fix: this preserves 'font: this.defaultFont' unless user explicitly overrides 'font'
+    const mergedStyles = {
+      ...baseTableStyles,
+      ...(options.styles || {})
+    };
+
+    // 3. Prepare headStyles
+    const mergedHeadStyles = {
+      fillColor: false, 
+      textColor: [0, 0, 0],
+      halign: 'center',
+      ...(options.headStyles || {})
+    };
+
+    // 4. Calculate margins / alignment
+    // Start with page margins
     let tableMargin = {
       top: this.margins.top,
       right: this.margins.right,
       bottom: this.margins.bottom,
       left: this.margins.left
     };
+    
+    // Mix in user provided margins (if any)
+    if (options.margin) {
+        tableMargin = { ...tableMargin, ...options.margin };
+    }
 
-    // Table width and alignment
+    // Handle special table alignment
     let tableWidth = options.tableWidth || 'auto';
     if (options.tableAlign === 'center' && options.tableWidth) {
       const pageContentWidth = this.pageWidth - this.margins.left - this.margins.right;
@@ -334,32 +349,33 @@ class JsPdfService {
       tableMargin.left = this.margins.left + offset;
     }
 
-    // Merge headStyles with defaults
-    const headStyles = {
-      fillColor: false, // No default - let user control via CKEditor
-      textColor: [0, 0, 0],
-      // fontStyle: 'bold', // Theo config của CKEditor
-      halign: 'center',
-      ...(options.headStyles || {})
-    };
+    // 5. Construct final options
+    // Filter out keys we've already handled/merged to prevent overwrites
+    const { 
+        y, 
+        lineWidth, lineColor, fillColor, 
+        tableWidth: _tw, tableAlign, 
+        styles, headStyles, margin, 
+        ...otherOptions 
+    } = options;
 
-    const defaultOptions = {
+    const finalOptions = {
       startY: startY,
       head: [headers],
       body: data,
       theme: 'grid',
-      styles: tableStyles,
-      headStyles: headStyles,
-      columnStyles: {},
+      styles: mergedStyles,
+      headStyles: mergedHeadStyles,
+      columnStyles: {}, 
       margin: tableMargin,
       tableWidth: typeof tableWidth === 'number' ? tableWidth : 'auto',
       didDrawPage: (data) => {
         this.currentY = data.cursor.y + 5;
       },
-      ...options
+      ...otherOptions
     };
 
-    this.doc.autoTable(defaultOptions);
+    this.doc.autoTable(finalOptions);
 
     if (this.doc.lastAutoTable) {
       this.currentY = this.doc.lastAutoTable.finalY + 10;
