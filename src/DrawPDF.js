@@ -162,7 +162,13 @@ class DrawPDF {
         };
 
         // Merge user options (excluding fonts config which is handled separately)
-        const { fonts: fontsConfig, ...editorOptions } = options;
+        // Also exclude PDF-specific options (format, orientation, margins, unit) from CKEditor config
+        const { 
+            fonts: fontsConfig, 
+            format, orientation, margins, unit, 
+            ...editorOptions 
+        } = options;
+        
         const config = { ...defaultConfig, ...editorOptions };
 
         // Handle font configuration
@@ -175,8 +181,16 @@ class DrawPDF {
             await this._loadFontFiles(this.fontConfig.register);
         }
 
-        // Create renderer with font configuration
-        this.renderer = new PDFRenderer(this.fontConfig);
+        // Create renderer with full configuration (fonts, page size, margins...)
+        // We merged user options into 'config' earlier, but let's ensure we pass 
+        // relevant PDF generation options.
+        const rendererOptions = {
+            ...this.fontConfig, // Flat font props if any
+            fonts: this.fontConfig, // Nested fonts prop
+            ...options // Pass format, orientation, margins directly
+        };
+        
+        this.renderer = new PDFRenderer(rendererOptions);
 
         try {
             this.editor = await EditorClass.create(element, config);
@@ -194,7 +208,8 @@ class DrawPDF {
                 } else {
                     // Case 2: Auto-insert before the editor element
                     if (element instanceof HTMLElement && element.parentNode) {
-                        element.parentNode.insertBefore(this.editor.ui.view.toolbar.element, element);
+                        this._toolbarElement = this.editor.ui.view.toolbar.element; // Store ref
+                        element.parentNode.insertBefore(this._toolbarElement, element);
                     }
                 }
             }
@@ -394,6 +409,12 @@ class DrawPDF {
      */
     destroy() {
         if (this.editor) {
+            // Manual cleanup of inserted toolbar
+            if (this._toolbarElement && this._toolbarElement.parentNode) {
+                this._toolbarElement.parentNode.removeChild(this._toolbarElement);
+            }
+            this._toolbarElement = null;
+
             this.editor.destroy();
             this.editor = null;
             this._initialized = false;

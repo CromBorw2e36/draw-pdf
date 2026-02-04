@@ -20,18 +20,48 @@ class JsPdfService {
    * @param {string} fontConfig.defaultFont - Primary font name (default: 'Roboto')
    * @param {string} fontConfig.fallback - Fallback font name (default: 'helvetica')
    */
-  constructor(fontConfig = {}) {
+  constructor(options = {}) {
+    // Separate font config and page config
+    const { 
+        defaultFont, fallback, register, // Font config keys
+        format, orientation, unit,       // Page config keys
+        margins,                         // Margins
+        ...otherOptions 
+    } = options;
+
     // Merge with default font config
-    this.fontConfig = { ...FONT_CONFIG, ...fontConfig };
+    this.fontConfig = { 
+        ...FONT_CONFIG, 
+        ...(defaultFont ? { defaultFont } : {}),
+        ...(fallback ? { fallback } : {}),
+        ...(register ? { register } : {})
+    };
+    
     this.defaultFont = this.fontConfig.defaultFont;
     this.fallbackFont = this.fontConfig.fallback;
 
-    this.doc = new jsPDF();
-    this.currentY = 20; // Vị trí Y hiện tại để tự động xuống dòng
-    this.lineHeight = 1; // Khoảng cách giữa các dòng (giảm từ 7 xuống 4.5)
+    // Initialize jsPDF with page options
+    // jsPDF options: { orientation: 'p', unit: 'mm', format: 'a4' }
+    const jsPdfOptions = {
+        orientation: orientation || 'portrait',
+        unit: unit || 'mm',
+        format: format || 'a4'
+    };
+
+    this.doc = new jsPDF(jsPdfOptions);
+    
+    // Page dimensions
     this.pageHeight = this.doc.internal.pageSize.height;
     this.pageWidth = this.doc.internal.pageSize.width;
+    
+    // Margins logic
     this.margins = { left: 15, right: 15, top: 20, bottom: 20 };
+    if (margins) {
+        this.margins = { ...this.margins, ...margins };
+    }
+
+    this.currentY = this.margins.top; 
+    this.lineHeight = 1;
 
     // Setup default font
     this._setupDefaultFont();

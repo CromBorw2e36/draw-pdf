@@ -14,17 +14,27 @@ class PDFRenderer {
    * @param {string} fontConfig.defaultFont - Primary font name
    * @param {string} fontConfig.fallback - Fallback font name
    */
-  constructor(fontConfig = {}) {
-    this.fontConfig = { ...FONT_CONFIG, ...fontConfig };
+  constructor(options = {}) {
+    this.options = { ...options };
+    // Extract font config for backward compatibility if needed, 
+    // but primarily we pass 'this.options' to JsPdfService
+    this.fontConfig = { ...FONT_CONFIG, ...options.fonts, ...options };
+    
     this.pdfService = null;
+    
     // Content-flow: Store margins for position calculation
-    this.margins = {
+    this.margins = options.margins || {
       left: 15,
       right: 15,
       top: 20,
       bottom: 20
     };
-    this.pageWidth = 210; // A4 width in mm
+    
+    this.pageWidth = 210; // Default A4 width
+    // TODO: Ideally we should calculate this from 'options.format' if possible, 
+    // but strict mm calculation from string formats (a4, letter...) requires map.
+    // For now, rely on PdfService to handle actual page size, this is just for layout estimation.
+    
     this.contentWidth = this.pageWidth - this.margins.left - this.margins.right;
   }
 
@@ -44,8 +54,8 @@ class PDFRenderer {
    * @returns {JsPdfService} PDF service instance
    */
   render(blueprint, data = {}) {
-    // Create new JsPdfService instance with font configuration
-    this.pdfService = new JsPdfService(this.fontConfig);
+    // Create new JsPdfService instance with full options
+    this.pdfService = new JsPdfService(this.options);
 
     // Update margins from blueprint if available
     if (blueprint.margins) {
