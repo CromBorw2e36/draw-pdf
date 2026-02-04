@@ -361,7 +361,7 @@ class JsPdfService {
 
     const finalOptions = {
       startY: startY,
-      head: [headers],
+      head: (Array.isArray(headers) && headers.length > 0 && Array.isArray(headers[0])) ? headers : [headers],
       body: data,
       theme: 'grid',
       styles: mergedStyles,

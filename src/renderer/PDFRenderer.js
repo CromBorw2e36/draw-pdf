@@ -362,16 +362,35 @@ class PDFRenderer {
       };
     };
 
-    // Build header row
-    const headerRow = rows[0]?.map((cell, idx) => processCell(cell, 0, idx)) || [];
+    // Identify header rows based on 'isHeader' property (from <th> tags)
+    let headerRowCount = 0;
+    for (let i = 0; i < rows.length; i++) {
+        const row = rows[i];
+        // If row contains any header cell, consider it part of the header section
+        // Note: consecutive rows from top only
+        if (row.some(cell => cell.isHeader)) {
+            headerRowCount++;
+        } else {
+            break;
+        }
+    }
+    // Fallback: If no explicit headers found but rows exist, use first row as header (legacy behavior)
+    if (headerRowCount === 0 && rows.length > 0) {
+        headerRowCount = 1;
+    }
 
-    // Extract header background color from first cell (assume consistent)
+    // Process header rows
+    const headerRows = rows.slice(0, headerRowCount).map((row, rIdx) => 
+        row.map((cell, cIdx) => processCell(cell, rIdx, cIdx))
+    );
+
+    // Extract header background color from first cell of first row
     const firstHeaderCell = rows[0]?.[0];
     const headerBgColor = firstHeaderCell?.cellStyle?.backgroundColor;
 
-    // Build data rows
-    const dataRows = rows.slice(1).map((row, rIdx) =>
-      row.map((cell, cIdx) => processCell(cell, rIdx + 1, cIdx))
+    // Process data rows
+    const dataRows = rows.slice(headerRowCount).map((row, rIdx) =>
+      row.map((cell, cIdx) => processCell(cell, rIdx + headerRowCount, cIdx))
     );
 
     // Build table options from tableStyle
@@ -408,7 +427,7 @@ class PDFRenderer {
 
     // Use addTable from service
     if (typeof this.pdfService.addTable === 'function') {
-      this.pdfService.addTable(headerRow, dataRows, tableOptions);
+      this.pdfService.addTable(headerRows, dataRows, tableOptions);
     } else {
       this.drawTableManually(element, data);
     }
