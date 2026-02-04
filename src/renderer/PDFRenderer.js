@@ -808,7 +808,7 @@ class PDFRenderer {
         map: (arr, fn) => Array.isArray(arr) ? arr.map(fn) : [],
         join: (arr, sep = ', ') => Array.isArray(arr) ? arr.join(sep) : '',
 
-        // Convenience shortcuts
+        // Shortcuts aliases
         addText: (text, x, y, opts) => this.pdfService.addText(text, x, y, opts),
         addTitle: (text, opts) => this.pdfService.addTitle(text, opts),
         addTable: (headers, rows, opts) => this.pdfService.addTable(headers, rows, opts),
@@ -816,6 +816,26 @@ class PDFRenderer {
         addLine: () => this.pdfService.addHorizontalLine(),
         addImage: (src, x, y, w, h) => this.pdfService.addImage(src, x, y, w, h),
         newPage: () => this.pdfService.addNewPage(),
+        
+        // Extended features requested by user
+        addHeader: (content, opts) => this.pdfService.addHeader(content, opts),
+        addFooter: (content, opts) => this.pdfService.addFooter(content, opts),
+        addPageNumbers: (opts) => this.pdfService.addFooter(opts.format || "{pageNumber}", opts), // Compatibility
+        addFilter: (label, opts) => this.pdfService.addFillInLine(label, opts), // Alias for addFillInLine
+        addFiller: (label, opts) => this.pdfService.addFillInLine(label, opts), // Clearer alias
+        addSign: (signers, opts) => this.pdfService.addDottedSignature(signers, opts), // Alias for addDottedSignature
+        addSignature: (signers, opts) => this.pdfService.addSignatureFillIn(signers, opts), // Safe default      
+        // Full Signature Suite
+        addDualSignature: (...args) => this.pdfService.addDualSignature(...args),
+        addSimpleSignature: (...args) => this.pdfService.addSimpleSignature(...args),
+        addSecondarySignature: (...args) => this.pdfService.addSecondarySignature(...args),
+        addSmartSignature: (...args) => this.pdfService.addSmartSignature(...args),
+        addSignatureFromFile: (...args) => this.pdfService.addSignatureFromFile(...args),
+        addSignatureWithImage: (...args) => this.pdfService.addSignatureWithImage(...args),
+        
+        // Generic alias defaulting to Smart Signature if robust, or FillIn if form-based. 
+        // User listed 'addSignature' separately. Let's map it to addSignatureFillIn as a safe default block.
+        addSignature: (...args) => this.pdfService.addSignatureFillIn(...args),
       };
 
       // Create function with all context vars
