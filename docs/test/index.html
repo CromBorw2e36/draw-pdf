@@ -1,0 +1,317 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DrawPDF - Blueprint Testing</title>
+    <meta charset="utf-8" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 20px;
+      }
+      .panel {
+        flex: 1;
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        height: 90vh;
+        overflow: auto;
+      }
+      h2 {
+        margin-top: 0;
+        color: #333;
+        border-bottom: 2px solid #eee;
+        padding-bottom: 10px;
+      }
+      h3 {
+        color: #555;
+        margin-top: 20px;
+      }
+      pre {
+        background: #f4f4f4;
+        padding: 15px;
+        border-radius: 5px;
+        overflow-x: auto;
+      }
+      button {
+        background: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+        width: 100%;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+      button.secondary {
+        background: #6c757d;
+      }
+      button.secondary:hover {
+        background: #5a6268;
+      }
+      button.success {
+        background: #28a745;
+      }
+      button.success:hover {
+        background: #218838;
+      }
+      #editor {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        background: #fff;
+      }
+      #file-input {
+        display: none;
+      }
+      .action-group {
+        margin-top: 30px;
+        padding: 15px;
+        background: #e9ecef;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <input
+      type="file"
+      id="file-input"
+      accept=".json"
+      onchange="handleFileUpload(this)"
+    />
+
+    <!-- Panel Trái: Documentation -->
+    <div class="panel" style="flex: 0 0 40%">
+      <h2>🧪 Blueprint Testing</h2>
+      <p>
+        Trang này dùng để test và thao tác với Blueprint của DrawPDF. Bạn có thể
+        load, edit, và export blueprint.
+      </p>
+
+      <h3>1. Load Blueprint</h3>
+      <p>
+        Click nút "Load Blueprint" để chọn file JSON blueprint từ máy tính. File
+        JSON phải có cấu trúc blueprint hợp lệ.
+      </p>
+      <pre><code class="language-json">{
+  "pages": [...],
+  "sourceHtml": "..."
+}</code></pre>
+
+      <h3>2. Get Blueprint</h3>
+      <p>Lấy blueprint hiện tại từ editor. Blueprint sẽ được:</p>
+      <ul>
+        <li>Tự động download dưới dạng file <code>blueprint.json</code></li>
+        <li>Copy vào clipboard (nếu trình duyệt hỗ trợ)</li>
+      </ul>
+
+      <h3>3. Print PDF</h3>
+      <p>
+        Xuất nội dung hiện tại ra file PDF. PDF sẽ được tạo từ blueprint và tự
+        động download.
+      </p>
+
+      <div class="action-group">
+        <strong>Thử Nghiệm:</strong><br />
+        Sử dụng các nút bên dưới để thao tác với Blueprint.
+        <br />
+        <button onclick="triggerFileUpload()" style="margin-bottom: 10px">
+          📂 Load Blueprint (JSON)
+        </button>
+        <button
+          onclick="getBlueprint()"
+          class="success"
+          style="margin-bottom: 10px"
+        >
+          💾 Get Blueprint
+        </button>
+        <button onclick="printPdf()">🖨️ Print PDF</button>
+      </div>
+
+      <div class="action-group" style="margin-top: 15px">
+        <strong>Load Sample:</strong><br />
+        Hoặc load một blueprint mẫu nhanh
+        <br />
+        <button onclick="loadSampleBlueprint()" class="secondary">
+          📝 Load Sample Blueprint
+        </button>
+      </div>
+    </div>
+
+    <!-- Panel Phải: Editor -->
+    <div class="panel">
+      <h2>📄 Live Editor</h2>
+      <div id="editor"></div>
+    </div>
+
+    <script src="https://unpkg.com/masax-drawpdf@2.2.0/dist/drawpdf.standalone.umd.cjs"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+
+    <script>
+      const DrawPDF = window.DrawPDF.default;
+      let pdfInstance = null;
+
+      // Initialize DrawPDF Editor
+      document.addEventListener("DOMContentLoaded", async () => {
+        try {
+          pdfInstance = await DrawPDF.create("#editor");
+          console.log("DrawPDF Instance created:", pdfInstance);
+        } catch (error) {
+          console.error("Failed to create DrawPDF instance:", error);
+          alert("Failed to initialize editor. Check console.");
+        }
+      });
+
+      function triggerFileUpload() {
+        document.getElementById("file-input").click();
+      }
+
+      function handleFileUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          try {
+            const json = JSON.parse(e.target.result);
+            if (pdfInstance) {
+              pdfInstance.setData(json);
+              alert("Blueprint loaded successfully!");
+            }
+          } catch (err) {
+            console.error(err);
+            alert("Invalid JSON file: " + err.message);
+          }
+        };
+        reader.readAsText(file);
+        input.value = ""; // Reset
+      }
+
+      async function getBlueprint() {
+        if (!pdfInstance) {
+          alert("Editor not initialized yet.");
+          return;
+        }
+
+        try {
+          const bp = pdfInstance.getData();
+          const jsonStr = JSON.stringify(bp, null, 2);
+
+          // Copy to Clipboard
+          try {
+            await navigator.clipboard.writeText(jsonStr);
+            // Also Download
+            downloadString(jsonStr, "blueprint.json");
+            alert(
+              "✅ Blueprint copied to clipboard AND downloaded as blueprint.json",
+            );
+          } catch (err) {
+            // If clipboard fails (e.g. permission), just download
+            downloadString(jsonStr, "blueprint.json");
+            alert("✅ Blueprint downloaded as blueprint.json");
+          }
+        } catch (e) {
+          console.error(e);
+          alert("Error getting blueprint: " + e.message);
+        }
+      }
+
+      function downloadString(text, filename) {
+        const blob = new Blob([text], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }
+
+      async function printPdf() {
+        if (!pdfInstance) {
+          alert("Editor not initialized yet.");
+          return;
+        }
+
+        try {
+          // Sync editor content to blueprint before generating PDF
+          pdfInstance.getData();
+          await pdfInstance.download("document-export.pdf");
+        } catch (e) {
+          console.error(e);
+          alert("Error printing: " + e.message);
+        }
+      }
+
+      function loadSampleBlueprint() {
+        if (!pdfInstance) {
+          alert("Editor not initialized yet.");
+          return;
+        }
+
+        const sampleHtml = `
+          <h1 style="color:darkblue; text-align:center;">Sample Blueprint Document</h1>
+          <p>This is a sample blueprint loaded for testing purposes.</p>
+          
+          <h2>Features Demonstrated:</h2>
+          <ul>
+            <li>HTML to Blueprint conversion</li>
+            <li>Rich text formatting</li>
+            <li>Table rendering</li>
+          </ul>
+
+          <table border="1" style="width:100%; border-collapse:collapse; margin-top: 20px;">
+            <thead>
+              <tr style="background-color:#eee;">
+                <th style="padding:8px;">Item</th>
+                <th style="padding:8px;">Description</th>
+                <th style="padding:8px;">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="padding:8px;">Blueprint Load</td>
+                <td style="padding:8px;">Load JSON from file</td>
+                <td style="padding:8px; color:green;">✓ Working</td>
+              </tr>
+              <tr>
+                <td style="padding:8px;">Blueprint Export</td>
+                <td style="padding:8px;">Save to JSON</td>
+                <td style="padding:8px; color:green;">✓ Working</td>
+              </tr>
+              <tr>
+                <td style="padding:8px;">PDF Export</td>
+                <td style="padding:8px;">Generate and download PDF</td>
+                <td style="padding:8px; color:green;">✓ Working</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p style="margin-top: 20px; text-align:right;">
+            <em>Generated: ${new Date().toLocaleDateString()}</em>
+          </p>
+        `;
+
+        const blueprint = DrawPDF.parseHtml(sampleHtml);
+        pdfInstance.setData(blueprint);
+        alert("Sample blueprint loaded!");
+      }
+    </script>
+  </body>
+</html>
