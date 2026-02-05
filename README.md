@@ -3,6 +3,8 @@
 📄 **PDF Template Builder** - Convert HTML templates to PDF with Vietnamese support, variables, loops, and conditionals.
 
 [![npm version](https://img.shields.io/npm/v/drawpdf.svg)](https://www.npmjs.com/package/drawpdf)
+[![npm downloads](https://img.shields.io/npm/dm/drawpdf.svg)](https://www.npmjs.com/package/drawpdf)
+[![jsdelivr hits](https://data.jsdelivr.com/v1/package/npm/drawpdf/badge)](https://www.jsdelivr.com/package/npm/drawpdf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ Features
