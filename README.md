@@ -461,9 +461,10 @@ npm run build
 ## 📁 Project Structure
 
 ```
-pdf-builder/
+draw-pdf/
 ├── src/
 │   ├── index.js              # Library entry point
+│   ├── DrawPDF.js            # Main Class Wrapper
 │   ├── parser/
 │   │   ├── CKEditorParser.js # HTML → JSON Blueprint
 │   │   └── RichTextTokenizer.js
@@ -473,8 +474,8 @@ pdf-builder/
 │   │   └── jspdf-service/main.js  # jsPDF wrapper (3000+ lines)
 │   └── utils/
 │       └── TemplateEngine.js # Template processing
-├── examples/
-│   └── basic-usage.html      # Demo page
+├── docs/                     # Documentation & Examples
+│   └── index.html            # Main demo
 ├── dist/                     # Build output
 │   ├── drawpdf.js           # ES Module
 │   └── drawpdf.umd.cjs      # CommonJS
