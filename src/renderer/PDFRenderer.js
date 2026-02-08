@@ -54,14 +54,31 @@ class PDFRenderer {
    * @returns {JsPdfService} PDF service instance
    */
   render(blueprint, data = {}) {
-    // Create new JsPdfService instance with full options
-    this.pdfService = new JsPdfService(this.options);
+    // Merge blueprint options (pageSize, margins) with instance options
+    const renderOptions = { ...this.options };
 
     // Update margins from blueprint if available
     if (blueprint.margins) {
-      this.margins = { ...this.margins, ...blueprint.margins };
-      this.contentWidth = this.pageWidth - this.margins.left - this.margins.right;
+      renderOptions.margins = { ...(renderOptions.margins || {}), ...blueprint.margins };
+      this.margins = renderOptions.margins;
     }
+
+    // Update page size/format from blueprint if available
+    if (blueprint.pageSize) {
+        if (blueprint.pageSize.width && blueprint.pageSize.height) {
+            renderOptions.format = [blueprint.pageSize.width, blueprint.pageSize.height];
+        }
+        if (blueprint.pageSize.unit) {
+            renderOptions.unit = blueprint.pageSize.unit;
+        }
+    }
+
+    // Create new JsPdfService instance with full options
+    this.pdfService = new JsPdfService(renderOptions);
+    
+    // Recalculate content width based on new margins/page size
+    this.pageWidth = this.pdfService.pageWidth;
+    this.contentWidth = this.pageWidth - this.margins.left - this.margins.right;
 
     // Render each page
     blueprint.pages.forEach((page, pageIndex) => {
@@ -405,7 +422,8 @@ class PDFRenderer {
 
     // Build table options from tableStyle
     const tableOptions = {
-      tableWidth: element.width
+      // Clamp table width to content width to prevent overflow
+      tableWidth: element.width ? Math.min(element.width, this.contentWidth) : this.contentWidth
     };
 
     // Table border
@@ -491,7 +509,9 @@ class PDFRenderer {
   drawTableManually(element, data) {
     const rows = element.rows || [];
     const startX = element.x || this.pdfService.margins.left;
-    const tableWidth = element.width || (this.pdfService.pageWidth - startX - this.pdfService.margins.right);
+    // Calculate table width, clamping to available space
+    const availableWidth = this.pdfService.pageWidth - startX - this.pdfService.margins.right;
+    const tableWidth = element.width ? Math.min(element.width, availableWidth) : availableWidth;
     const rowHeight = element.rowHeight || 8;
     const numCols = rows[0]?.length || 1;
     const colWidth = tableWidth / numCols;

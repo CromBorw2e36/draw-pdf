@@ -5,14 +5,19 @@
 
 import RichTextTokenizer from './RichTextTokenizer.js';
 
-// Page dimensions in mm
-const PAGE = {
+// Default Page dimensions in mm (A4)
+const DEFAULT_PAGE = {
   WIDTH: 210,
   HEIGHT: 297,
   MARGIN_TOP: 20,
   MARGIN_BOTTOM: 20,
   MARGIN_LEFT: 15,
-  MARGIN_RIGHT: 15,
+  MARGIN_RIGHT: 15
+};
+
+// Kept for backward compatibility
+const PAGE = {
+  ...DEFAULT_PAGE,
   get CONTENT_WIDTH() { return this.WIDTH - this.MARGIN_LEFT - this.MARGIN_RIGHT; },
   get CONTENT_HEIGHT() { return this.HEIGHT - this.MARGIN_TOP - this.MARGIN_BOTTOM; }
 };
@@ -27,11 +32,69 @@ const FONTS = {
 };
 
 class CKEditorParser {
-  constructor() {
-    this.currentY = PAGE.MARGIN_TOP;
+  constructor(options = {}) {
+    this.config = {
+      width: DEFAULT_PAGE.WIDTH,
+      height: DEFAULT_PAGE.HEIGHT,
+      margins: {
+        top: DEFAULT_PAGE.MARGIN_TOP,
+        bottom: DEFAULT_PAGE.MARGIN_BOTTOM,
+        left: DEFAULT_PAGE.MARGIN_LEFT,
+        right: DEFAULT_PAGE.MARGIN_RIGHT
+      },
+      ...options
+    };
+
+    if (options.format) {
+        this._applyFormat(options.format);
+    }
+
+    this.currentY = this.config.margins.top;
     this.currentPage = 0;
     this.pages = [{ pageNumber: 1, elements: [] }];
     this.tokenizer = new RichTextTokenizer();
+  }
+
+  /**
+   * Update configuration
+   * @param {Object} options 
+   */
+  setConfig(options = {}) {
+    this.config = { 
+        ...this.config, 
+        ...options,
+        margins: { ...this.config.margins, ...(options.margins || {}) }
+    };
+
+    if (options.format) {
+        this._applyFormat(options.format);
+    }
+  }
+
+  /**
+   * Apply format (e.g., 'a4', [80, 297]) to width/height
+   * @private
+   */
+  _applyFormat(format) {
+      if (Array.isArray(format) && format.length === 2) {
+          this.config.width = format[0];
+          this.config.height = format[1];
+      } else if (typeof format === 'string') {
+          // Basic support for common formats if needed
+          // For now mainly relying on explicit array input or default A4
+          const fmt = format.toLowerCase();
+          if (fmt === 'a4') {
+              this.config.width = 210;
+              this.config.height = 297;
+          } else if (fmt === 'letter') {
+              this.config.width = 215.9;
+              this.config.height = 279.4;
+          }
+      }
+  }
+
+  get contentWidth() {
+      return this.config.width - this.config.margins.left - this.config.margins.right;
   }
 
   /**
@@ -70,7 +133,7 @@ class CKEditorParser {
    */
   parse(html) {
     // Reset state
-    this.currentY = PAGE.MARGIN_TOP;
+    this.currentY = this.config.margins.top;
     this.currentPage = 0;
     this.pages = [{ pageNumber: 1, elements: [] }];
 
@@ -81,18 +144,17 @@ class CKEditorParser {
     // Process all child nodes of body
     const children = doc.body.children;
     for (let i = 0; i < children.length; i++) {
-      this.processNode(children[i]);
+        this.processNode(children[i]);
     }
 
     return {
       version: '1.0',
-      pageSize: { width: PAGE.WIDTH, height: PAGE.HEIGHT, unit: 'mm' },
-      margins: {
-        top: PAGE.MARGIN_TOP,
-        bottom: PAGE.MARGIN_BOTTOM,
-        left: PAGE.MARGIN_LEFT,
-        right: PAGE.MARGIN_RIGHT
+      pageSize: { 
+          width: this.config.width, 
+          height: this.config.height, 
+          unit: 'mm' 
       },
+      margins: this.config.margins,
       pages: this.pages
     };
   }
@@ -263,7 +325,7 @@ class CKEditorParser {
 
     this.addElement({
       type: 'table',
-      width: tableStyle.width || PAGE.CONTENT_WIDTH,
+      width: tableStyle.width || this.contentWidth,
       rows: rows,
       style: tableStyle
     });
@@ -278,7 +340,7 @@ class CKEditorParser {
     if (isNaN(num)) return null;
     // If percentage, calculate from content width
     if (String(value).includes('%')) {
-      return (num / 100) * PAGE.CONTENT_WIDTH;
+      return (num / 100) * this.contentWidth;
     }
     // If px, convert to mm
     if (String(value).includes('px')) {
@@ -350,7 +412,7 @@ class CKEditorParser {
     const height = parseInt(imgNode.height) || 50;
     
     // Convert px to mm (approximate)
-    const widthMm = Math.min(width * 0.264, PAGE.CONTENT_WIDTH);
+    const widthMm = Math.min(width * 0.264, this.contentWidth);
     const heightMm = height * 0.264;
 
     // Content-flow: Image element without fixed x,y position
@@ -458,7 +520,7 @@ class CKEditorParser {
     
     // Calculate effective width considering indent
     const totalIndent = (styles.indent || 0) + (styles.marginLeft || 0);
-    const effectiveWidth = PAGE.CONTENT_WIDTH - totalIndent;
+    const effectiveWidth = this.contentWidth - totalIndent;
 
     this.addElement({
       type: 'richtext',
@@ -496,7 +558,7 @@ class CKEditorParser {
       pageNumber: this.currentPage + 1,
       elements: []
     });
-    this.currentY = PAGE.MARGIN_TOP;
+    this.currentY = this.config.margins.top;
   }
 
   /**

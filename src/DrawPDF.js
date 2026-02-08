@@ -24,13 +24,14 @@ import { FONT_CONFIG } from './utils/constants.js';
 class DrawPDF {
     static JsPdfService = JsPdfService;
 
-    constructor() {
+    constructor(options = {}) {
+        this.options = options;
         this.editor = null;
-        this.parser = new CKEditorParser();
+        this.parser = new CKEditorParser(options);
         this.renderer = null;  // Will be created with font config in init()
         this.blueprint = null;  // JSON Blueprint storage
         this._initialized = false;
-        this.fontConfig = { ...FONT_CONFIG };  // Default font config
+        this.fontConfig = { ...FONT_CONFIG, ...(options.fonts || {}) };
     }
 
     /**
@@ -172,11 +173,17 @@ class DrawPDF {
             ...editorOptions 
         } = options;
         
+        // Merge with instance options
+        this.options = { ...this.options, ...options };
+        
+        // Pass page config to parser
+        this.parser.setConfig({ format, orientation, margins, unit });
+
         const config = { ...defaultConfig, ...editorOptions };
 
         // Handle font configuration
         if (fontsConfig) {
-            this.fontConfig = { ...FONT_CONFIG, ...fontsConfig };
+            this.fontConfig = { ...this.fontConfig, ...fontsConfig };
         }
 
         // Load custom font files if specified
@@ -299,6 +306,28 @@ class DrawPDF {
         }
         this.blueprint = blueprint;
 
+        // Update parser config and instance options from blueprint details
+        if (blueprint.pageSize || blueprint.margins) {
+            const newConfig = {};
+            if (blueprint.pageSize) {
+                if (blueprint.pageSize.width && blueprint.pageSize.height) {
+                    newConfig.format = [blueprint.pageSize.width, blueprint.pageSize.height];
+                }
+                if (blueprint.pageSize.unit) {
+                    newConfig.unit = blueprint.pageSize.unit;
+                }
+            }
+            if (blueprint.margins) {
+                newConfig.margins = blueprint.margins;
+            }
+            
+            // Update instance options so renderer gets them
+            this.options = { ...this.options, ...newConfig };
+            
+            // Update parser so subsequent getData() calls preserve dimensions
+            this.parser.setConfig(newConfig);
+        }
+
         // If editor is initialized and blueprint has sourceHtml, load it
         if (this._initialized && blueprint.sourceHtml) {
             this.editor.setData(blueprint.sourceHtml);
@@ -317,6 +346,7 @@ class DrawPDF {
              const rendererOptions = {
                 ...this.fontConfig,
                 fonts: this.fontConfig,
+                ...this.options // Include format, margins, etc.
             };
             this.renderer = new PDFRenderer(rendererOptions);
         }
@@ -452,7 +482,7 @@ class DrawPDF {
      * @returns {Promise<DrawPDF>} Initialized DrawPDF instance
      */
     static async create(element, options = {}) {
-        const instance = new DrawPDF();
+        const instance = new DrawPDF(options);
         await instance.init(element, options);
         return instance;
     }
