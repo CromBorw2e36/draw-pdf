@@ -2,8 +2,8 @@ var Y = Object.defineProperty;
 var B = (x, t, i) => t in x ? Y(x, t, { enumerable: !0, configurable: !0, writable: !0, value: i }) : x[t] = i;
 var I = (x, t, i) => B(x, typeof t != "symbol" ? t + "" : t, i);
 import "jspdf";
-import { applyPlugin as M } from "jspdf-autotable";
-class R {
+import { applyPlugin as R } from "jspdf-autotable";
+class M {
   constructor() {
     this.inlineTags = ["b", "strong", "i", "em", "u", "s", "strike", "span"];
   }
@@ -188,7 +188,7 @@ const _ = {
 };
 class v {
   constructor() {
-    this.currentY = _.MARGIN_TOP, this.currentPage = 0, this.pages = [{ pageNumber: 1, elements: [] }], this.tokenizer = new R();
+    this.currentY = _.MARGIN_TOP, this.currentPage = 0, this.pages = [{ pageNumber: 1, elements: [] }], this.tokenizer = new M();
   }
   /**
    * Decode HTML entities in text
@@ -808,7 +808,7 @@ class w {
     return Array.from(i);
   }
 }
-const P = {
+const E = {
   defaultFont: "Roboto",
   // Primary font for PDF rendering
   fallback: "helvetica",
@@ -816,7 +816,7 @@ const P = {
   register: []
   // Custom font files to load (URLs to .js files)
 }, { jsPDF: k } = window.jspdf;
-M(k);
+R(k);
 typeof window < "u" && !window.jspdf && (window.jspdf = { jsPDF: k });
 class N {
   /**
@@ -840,7 +840,7 @@ class N {
       ...l
     } = t;
     this.fontConfig = {
-      ...P,
+      ...E,
       ...i ? { defaultFont: i } : {},
       ...e ? { fallback: e } : {},
       ...r ? { register: r } : {}
@@ -2669,7 +2669,7 @@ class N {
     });
   }
 }
-class z {
+class P {
   /**
    * Create PDFRenderer instance
    * @param {Object} fontConfig - Font configuration (optional)
@@ -2677,7 +2677,7 @@ class z {
    * @param {string} fontConfig.fallback - Fallback font name
    */
   constructor(t = {}) {
-    this.options = { ...t }, this.fontConfig = { ...P, ...t.fonts, ...t }, this.pdfService = null, this.margins = t.margins || {
+    this.options = { ...t }, this.fontConfig = { ...E, ...t.fonts, ...t }, this.pdfService = null, this.margins = t.margins || {
       left: 15,
       right: 15,
       top: 20,
@@ -3162,9 +3162,9 @@ class z {
     });
   }
 }
-const E = class E {
+const z = class z {
   constructor() {
-    this.editor = null, this.parser = new v(), this.renderer = null, this.blueprint = null, this._initialized = !1, this.fontConfig = { ...P };
+    this.editor = null, this.parser = new v(), this.renderer = null, this.blueprint = null, this._initialized = !1, this.fontConfig = { ...E };
   }
   /**
    * Initialize CKEditor into a container element
@@ -3344,7 +3344,7 @@ Sử dụng {{tênBiến}} để chèn biến.`,
       unit: d,
       ...h
     } = i, g = { ...s, ...h };
-    n && (this.fontConfig = { ...P, ...n }), this.fontConfig.register && this.fontConfig.register.length > 0 && await this._loadFontFiles(this.fontConfig.register);
+    n && (this.fontConfig = { ...E, ...n }), this.fontConfig.register && this.fontConfig.register.length > 0 && await this._loadFontFiles(this.fontConfig.register);
     const u = {
       ...this.fontConfig,
       // Flat font props if any
@@ -3353,7 +3353,7 @@ Sử dụng {{tênBiến}} để chèn biến.`,
       ...i
       // Pass format, orientation, margins directly
     };
-    this.renderer = new z(u);
+    this.renderer = new P(u);
     try {
       if (this.editor = await o.create(e, g), (m = (S = (p = this.editor.ui) == null ? void 0 : p.view) == null ? void 0 : S.toolbar) != null && m.element)
         if (i.toolbarContainer) {
@@ -3421,6 +3421,21 @@ Sử dụng {{tênBiến}} để chèn biến.`,
     return this.blueprint = t, this._initialized && t.sourceHtml && this.editor.setData(t.sourceHtml), this;
   }
   /**
+   * Ensure renderer is initialized with defaults if not already set
+   * @returns {PDFRenderer} Initialized renderer
+   * @private
+   */
+  _ensureRenderer() {
+    if (!this.renderer) {
+      const t = {
+        ...this.fontConfig,
+        fonts: this.fontConfig
+      };
+      this.renderer = new P(t);
+    }
+    return this.renderer;
+  }
+  /**
    * Render PDF from stored blueprint
    * @param {Object} data - Variable data for template replacement
    * @returns {string} PDF as data URL (base64)
@@ -3428,7 +3443,8 @@ Sử dụng {{tênBiến}} để chèn biến.`,
   render(t = {}) {
     if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
       throw new Error("DrawPDF: No blueprint. Call getData() or setData() first.");
-    return this.renderer.render(this.blueprint, t), this.renderer.getDataUrl();
+    const i = this._ensureRenderer();
+    return i.render(this.blueprint, t), i.getDataUrl();
   }
   /**
    * Download PDF from stored blueprint
@@ -3439,7 +3455,8 @@ Sử dụng {{tênBiến}} để chèn biến.`,
   download(t = "document.pdf", i = {}) {
     if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
       throw new Error("DrawPDF: No blueprint. Call getData() or setData() first.");
-    return this.renderer.render(this.blueprint, i), this.renderer.download(t), this;
+    const e = this._ensureRenderer();
+    return e.render(this.blueprint, i), e.download(t), this;
   }
   /**
    * Get PDF as Blob (for custom handling)
@@ -3449,7 +3466,8 @@ Sử dụng {{tênBiến}} để chèn biến.`,
   getBlob(t = {}) {
     if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
       throw new Error("DrawPDF: No blueprint.");
-    return this.renderer.render(this.blueprint, t), this.renderer.getBlob();
+    const i = this._ensureRenderer();
+    return i.render(this.blueprint, t), i.getBlob();
   }
   /**
    * Preview PDF in new browser tab
@@ -3458,7 +3476,8 @@ Sử dụng {{tênBiến}} để chèn biến.`,
   preview(t = {}) {
     if (!this.blueprint && this._initialized && this.getData(), !this.blueprint)
       throw new Error("DrawPDF: No blueprint.");
-    this.renderer.render(this.blueprint, t), this.renderer.preview();
+    const i = this._ensureRenderer();
+    i.render(this.blueprint, t), i.preview();
   }
   /**
    * Get current blueprint without re-parsing
@@ -3498,7 +3517,7 @@ Sử dụng {{tênBiến}} để chèn biến.`,
    * @returns {Promise<DrawPDF>} Initialized DrawPDF instance
    */
   static async create(t, i = {}) {
-    const e = new E();
+    const e = new z();
     return await e.init(t, i), e;
   }
   /**
@@ -3517,7 +3536,7 @@ Sử dụng {{tênBiến}} để chèn biến.`,
    * @returns {string} PDF as data URL
    */
   static renderBlueprint(t, i = {}) {
-    const e = new z();
+    const e = new P();
     return e.render(t, i), e.getDataUrl();
   }
   /**
@@ -3527,22 +3546,22 @@ Sử dụng {{tênBiến}} để chèn biến.`,
    * @param {Object} data - Variable data
    */
   static downloadBlueprint(t, i = "document.pdf", e = {}) {
-    const r = new z();
+    const r = new P();
     r.render(t, e), r.download(i);
   }
 };
-I(E, "JsPdfService", N);
-let L = E;
+I(z, "JsPdfService", N);
+let L = z;
 const V = "2.1.0";
 export {
   v as CKEditorParser,
   L as DrawPDF,
   C as FONTS,
-  P as FONT_CONFIG,
+  E as FONT_CONFIG,
   N as JsPdfService,
   _ as PAGE,
-  z as PDFRenderer,
-  R as RichTextTokenizer,
+  P as PDFRenderer,
+  M as RichTextTokenizer,
   w as TemplateEngine,
   V as VERSION,
   L as default
