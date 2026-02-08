@@ -308,6 +308,22 @@ class DrawPDF {
     }
 
     /**
+     * Ensure renderer is initialized with defaults if not already set
+     * @returns {PDFRenderer} Initialized renderer
+     * @private
+     */
+    _ensureRenderer() {
+        if (!this.renderer) {
+             const rendererOptions = {
+                ...this.fontConfig,
+                fonts: this.fontConfig,
+            };
+            this.renderer = new PDFRenderer(rendererOptions);
+        }
+        return this.renderer;
+    }
+
+    /**
      * Render PDF from stored blueprint
      * @param {Object} data - Variable data for template replacement
      * @returns {string} PDF as data URL (base64)
@@ -322,8 +338,9 @@ class DrawPDF {
             throw new Error('DrawPDF: No blueprint. Call getData() or setData() first.');
         }
 
-        this.renderer.render(this.blueprint, data);
-        return this.renderer.getDataUrl();
+        const renderer = this._ensureRenderer();
+        renderer.render(this.blueprint, data);
+        return renderer.getDataUrl();
     }
 
     /**
@@ -342,8 +359,9 @@ class DrawPDF {
             throw new Error('DrawPDF: No blueprint. Call getData() or setData() first.');
         }
 
-        this.renderer.render(this.blueprint, data);
-        this.renderer.download(filename);
+        const renderer = this._ensureRenderer();
+        renderer.render(this.blueprint, data);
+        renderer.download(filename);
         return this;
     }
 
@@ -359,8 +377,9 @@ class DrawPDF {
         if (!this.blueprint) {
             throw new Error('DrawPDF: No blueprint.');
         }
-        this.renderer.render(this.blueprint, data);
-        return this.renderer.getBlob();
+        const renderer = this._ensureRenderer();
+        renderer.render(this.blueprint, data);
+        return renderer.getBlob();
     }
 
     /**
@@ -374,8 +393,9 @@ class DrawPDF {
         if (!this.blueprint) {
             throw new Error('DrawPDF: No blueprint.');
         }
-        this.renderer.render(this.blueprint, data);
-        this.renderer.preview();
+        const renderer = this._ensureRenderer();
+        renderer.render(this.blueprint, data);
+        renderer.preview();
     }
 
     /**
