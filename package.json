@@ -1,6 +1,6 @@
 {
   "name": "masax-drawpdf",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "description": "PDF Template Builder - CKEditor to PDF with Vietnamese support, template engine with variables, loops, conditionals",
   "type": "module",
   "main": "dist/drawpdf.umd.cjs",
